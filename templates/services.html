@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% macro table_head() %}
+    <tr>
+        <th>&nbsp;</th>
+        <th>Услуга</th>
+        <th>ОГВ</th>
+        <th>Сроки</th>
+        <th>Примечание</th>
+    </tr>
+{% endmacro %}
+{% macro service_row(service) %}
+    <tr>
+        <td><input name="service" value="{{ service.id() }}" type="checkbox"
+                   id="{{ service.id() }}"/>
+        </td>
+        <td>
+            <label for="{{ service.id() }}">
+                <a href="{{ service.kb_id|to_url }}"
+                   title="Посмотреть в Базе знаний">
+                    {{ service.name }}
+                </a>
+            </label>
+        </td>
+        <td>{{ service.ogv.short_name }}</td>
+        <td>{{ service.max_days }} к. д. +{{ service.max_work_days }} р. д.
+        </td>
+        <td>
+            {% if service.terms_description %}
+                {{ service.terms_description }}
+            {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+{% block title %}Выбор услуг{% endblock %}
+{% block js %}
+    <script type="application/javascript">
+        var toBeChecked = {{ service_ids|safe }};
+        var dependencyGraph = {{ dependency_graph|safe }};
+    </script>
+{% endblock %}
+{% block head %}{{ kompleks.name }} — Услуги{% endblock %}
+{% block content %}
+    <form method="post">
+        <p>Выберите нужные услуги:</p>
+        <table>
+            <thead>{{ table_head() }}</thead>
+            <tbody>
+            {% for service in contained_services %}
+                {{ service_row(service) }}
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if related_services %}
+            <p>Эти услуги не входят в комплекс, но подходят по жизненной
+                ситуации:
+            </p>
+            <table>
+                <thead>{{ table_head() }}</thead>
+                <tbody>
+                {% for service in related_services %}
+                    {{ service_row(service) }}
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        <p>{{ navigation('/prerequisites', '/services') }}</p>
+    </form>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Выбор предусловий{% endblock %}
+{% block js %}
+    <script type="application/javascript">
+        var toBeChecked = {{ prereqs_satisfied|safe }};
+        var dependencyGraph = {{ dependency_graph|safe }};
+    </script>
+{% endblock %}
+{% block head %}{{ kompleks.name }} — Предусловия{% endblock %}
+{% block content %}
+    <p>Если какие-то из этих условий уже удовлетворены — отметьте:</p>
+    <form action="/prerequisites" method="post">
+        <table>
+            <tbody>
+            {% for p in prerequisites %}
+            <tr>
+                <td>
+                    <input type="checkbox" name="prerequisite"
+                           value="{{ p.id() }}" id="{{ p.id() }}"/>
+                </td>
+                <td>
+                    <label for="{{ p.id() }}">
+                        {{ p.prerequisite_description }}
+                    </label>
+                </td>
+            </tr>
+            {% endfor  %}
+            </tbody>
+        </table>
+        <p>{{ navigation('/', '/prerequsistes') }}</p>
+    </form>
+{% endblock content %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{# Process differently descriptions, that were stored as plain text and      #}
+{# those stored as XHTML                                                     #}
+{% macro put_description(s) %}
+    {% if s.startswith('<div>') %}
+        {{ s|safe }}
+    {% else %}
+        <p>{{ s }}</p>
+    {% endif %}
+{% endmacro %}
+
+{% macro assemble_description(d) %}
+    {% if d.from_doc %}
+        {{ put_description(d.from_doc) }}
+    {% endif %}
+    {% if d.from_dts %}
+        {{ put_description(d.from_dts) }}
+    {% endif %}
+{% endmacro %}
+
+{% block title %}Результат{% endblock %}
+{% block head %}{{ kompleks.name }} — Документы
+{% endblock %}
+<p>Для получения услуги потребуются следующие документы:</p>
+{% block content %}
+    <table>
+        <thead>
+        <tr>
+            <th id="srv-name-head">Документ</th>
+            <th id="srv-description-head">Описание</th>
+            <th id="o-count-col-head">Оригиналы</th>
+            <th id="c-count-col-head">Копии</th>
+            <th id="o-supply-type-head">Возврат оригинала</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for d in documents %}
+            <tr>
+                <td>{{ d.name }}</td>
+                <td>
+                {% if d.description is list %}
+                    {% for e in d.description %}
+                        <div class="multidescr-srv-plank">
+                            Для услуги <span class="multidescr-srv-name">
+                            {{ e.service.name }}</span>:
+                        </div>
+                        <div class="multidescr-srv-body">
+                            {{ assemble_description(e) }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {{ assemble_description(d.description) }}
+                {% endif %}
+                </td>
+                <td class="quantity-col">{{ d.n_originals }}</td>
+                <td class="quantity-col">{{ d.n_copies }}</td>
+                <td>{{ d.o_supply_type }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ navigation('/services', with_submit=false) }}
+{% endblock %}

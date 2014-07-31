@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+{# Reusable template chunks #}
+{% macro navigation(back, with_submit=true) %}
+    <input type="button" name="back" value="Назад"
+           onclick="window.location.href = '{{ back }}'"/>
+    {% if with_submit %}
+        <input type="submit" name="submit" value="Далее"/>
+    {% endif %}
+{% endmacro %}
+<head>
+    <title>{% block title %}{% endblock %} — Kompleks</title>
+    <link rel="stylesheet" href="static/styles.css" type="text/css"/>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    {% block js %}{% endblock %}
+    <script src="static/base.js" type="application/javascript"></script>
+</head>
+<body>
+    <h1>{% block head %}{% endblock %}</h1>
+    {% block content %}{% endblock %}
+</body>
+</html>
