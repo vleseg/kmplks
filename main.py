@@ -20,9 +20,10 @@ import json
 import logging
 import os
 # Third-party imports
+from google.appengine.ext.ndb import Query
+from jinja2 import Environment, FileSystemLoader
 import webapp2
 from webapp2_extras import sessions
-from jinja2 import Environment, FileSystemLoader
 # Project imports
 from model import *
 
@@ -47,6 +48,15 @@ def to_url(value):
 
 ENV.tests['list'] = is_list
 ENV.filters['to_url'] = to_url
+
+
+def from_urlsafe(urlsafe, multi=False, key_only=False):
+    if multi:
+        return [from_urlsafe(e, key_only=key_only) for e in urlsafe]
+
+    if key_only:
+        return ndb.Key(urlsafe=urlsafe)
+    return ndb.Key(urlsafe=urlsafe).get()
 
 
 class BaseHandler(webapp2.RequestHandler):
@@ -158,17 +168,18 @@ class BaseHandler(webapp2.RequestHandler):
 
         :type services: list[Service]
         """
-        service_keys = [s.key() for s in services]
-        service_ids = [k.id() for k in service_keys]
+        service_keys = [s.key for s in services]
+        service_ids = [k.urlsafe() for k in service_keys]
 
         service_graph = dict(
-            (k, {'children': [], 'parents': []}) for k in service_ids)
+            (id_, {'children': [], 'parents': []}) for id_ in service_ids)
 
         for s, sid in zip(services, service_ids):
             relations = service_graph[sid]
+
             for parent_key in s.dependencies:
                 if parent_key in service_keys:
-                    parent_id = parent_key.id()
+                    parent_id = parent_key.urlsafe()
                     relations['parents'].append(parent_id)
                     service_graph[parent_id]['children'].append(sid)
 
@@ -189,19 +200,18 @@ class KompleksHandler(BaseHandler):
     def get(self):
         kompleks_id = self.request.get("id")
         if kompleks_id:
-            kompleks_id = int(kompleks_id)
             self.store_session_data('kompleks_id', kompleks_id)
-            self.store_services_in_session(
-                Kompleks.by_id(kompleks_id, force_list=False))
+            self.store_services_in_session(kompleks_id)
             self.redirect('/prerequisites')
 
+        k_iter = Query(kind='Kompleks').iter()
+
         # Constructing context.
-        self.context["komplekses"] = Kompleks.all()
-        self.context['mfc_model'] = MFC
+        self.context['komplekses'] = (self.prepare(k) for k in k_iter)
 
         self.render()
 
-    def store_services_in_session(self, kompleks):
+    def store_services_in_session(self, kompleks_id):
         """
         Retrieve ids of services (both related and contained), that are bound
         to kompleks and save them in session store.
@@ -209,24 +219,30 @@ class KompleksHandler(BaseHandler):
         This is a sub of a KompleksHandler.get() routine. It was made a
         separate method to avoid cluttering of KompleksHandler.get()
 
-        :type kompleks: Kompleks
+        :type kompleks_id: str
         """
         # Services, that are contained in the kompleks.
         contained_ids = []
         # Services, that are related to the kompleks (see model.Service docs
         # for better understanding).
         related_ids = []
-        k_key = kompleks.key()
+        kompleks = from_urlsafe(kompleks_id)
 
-        for service in Service.all():
-            if k_key in service.containing_komplekses:
-                contained_ids.append(service.id())
-            elif k_key in service.related_komplekses:
-                related_ids.append(service.id())
+        for service in Query(kind='Service').iter():
+            if kompleks.key in service.containing_komplekses:
+                contained_ids.append(service.urlsafe())
+            elif kompleks.key in service.related_komplekses:
+                related_ids.append(service.urlsafe())
 
         # Writing session data.
         self.store_session_data("contained_ids", contained_ids)
         self.store_session_data("related_ids", related_ids)
+
+    @staticmethod
+    def prepare(kompleks):
+        mfcs = (mfc_key.get() for mfc_key in kompleks.mfcs)
+        return {'name': kompleks.name, 'mfcs': mfcs,
+                'urlsafe': kompleks.urlsafe()}
 
 
 class PrerequisiteChoiceHandler(BaseHandler):
@@ -249,12 +265,10 @@ class PrerequisiteChoiceHandler(BaseHandler):
         prereqs_satisfied = self.get_session_data(
             'prereqs_satisfied', obligatory=False)
 
-        logging.info(self.session)
-
-        kompleks = Kompleks.by_id(
-            session_data['kompleks_id'], force_list=False)
-        services = Service.by_id(
-            chain(session_data['contained_ids'], session_data['related_ids']))
+        kompleks = from_urlsafe(session_data['kompleks_id'])
+        services = from_urlsafe(
+            chain(session_data['contained_ids'], session_data['related_ids']),
+            multi=True)
 
         # Since services can share prerequisites, we need to filter unique
         # ones before rendering.
@@ -263,13 +277,14 @@ class PrerequisiteChoiceHandler(BaseHandler):
         for service in services:
             prereq_keys |= set(service.dependencies)
 
-        prerequisites = Service.get(prereq_keys)
+        prerequisites = ndb.get_multi(prereq_keys)
         """:type prerequisites: Service | list[Service]"""
         dependency_graph = self.construct_service_graph(prerequisites)
 
         # Constructing context.
         self.context["kompleks"] = kompleks
-        self.context["prerequisites"] = prerequisites
+        self.context["prerequisites"] = [
+            self.prepare(s) for s in prerequisites]
 
         # If our last choice of prerequisites was saved in session -- restore
         # it.
@@ -290,6 +305,10 @@ class PrerequisiteChoiceHandler(BaseHandler):
 
         self.redirect('/services')
 
+    @staticmethod
+    def prepare(service):
+        return {'id': service.urlsafe(),
+                'text': service.prerequisite_description}
 
 class ServiceChoiceHandler(BaseHandler):
     """

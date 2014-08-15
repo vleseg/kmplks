@@ -7,11 +7,11 @@
         {% for kompleks in komplekses %}
             <tr>
                 <td>
-                    <a href="/?id={{ kompleks.id() }}">
+                    <a href="/?id={{ kompleks.urlsafe }}">
                     {{ kompleks.name }}</a>
                 </td>
                 <td>
-                    {% for mfc in mfc_model.get(kompleks.mfcs) %}
+                    {% for mfc in kompleks.mfcs %}
                         {{ mfc.name }}{% if not loop.last %}, {% endif %}
                     {% endfor %}
                 </td>

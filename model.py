@@ -1,7 +1,7 @@
 # coding=utf-8
 # TODO: update UML schema and description in Evernote correspondingly
 # Third-party imports
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 
 
 ORIGINAL_SUPPLY_TYPE = ('demonstrate', 'return_with_result', 'no_return')
@@ -12,34 +12,12 @@ class KompleksModelError(BaseException):
     pass
 
 
-class BaseModel(db.Model):
+class BaseModel(ndb.Model):
     """
     Base class for models in Kompleks app. Inherit new models from it.
     """
-    @classmethod
-    def by_id(cls, ids, parent=None, force_list=True, **kwargs):
-        """
-        Get entity or entities from datastore by id.
-
-        Convenience wrapper for db.Model.get_by_id() method.
-
-        :param bool force_list: if True, by_id() always returns a list, even if
-            a single element was returned by get_by_id()
-        :type ids: int | list | tuple
-        """
-        result = cls.get_by_id(ids, parent, **kwargs)
-        if isinstance(result, list):
-            return sorted(result, key=lambda e: e.id())
-        elif result is None:
-            return None
-        else:
-            return [result] if force_list else result
-
-    def id(self):
-        """
-        Get current entity's id (from key).
-        """
-        return self.key().id()
+    def urlsafe(self):
+        return self.key.urlsafe()
 
 
 class MFC(BaseModel):
@@ -52,7 +30,7 @@ class MFC(BaseModel):
         village), where MFC operates, so that RCTO operator could always tell
         if a caller is able to apply for a kompleks in his/her area.
     """
-    name = db.StringProperty(required=True)
+    name = ndb.StringProperty(required=True)
 
 
 class OGV(BaseModel):
@@ -66,8 +44,8 @@ class OGV(BaseModel):
     short_name: Abbreviation of OGV's official name. This property must store a
         shortening, well-known among common people.
     """
-    name = db.StringProperty(required=True)
-    short_name = db.StringProperty(required=True)
+    name = ndb.StringProperty(required=True)
+    short_name = ndb.StringProperty(required=True)
 
 
 class Kompleks(BaseModel):
@@ -85,11 +63,10 @@ class Kompleks(BaseModel):
         situation or a citizen category.
     mfcs: MFCs, where the kompleks is available.
     """
-
-    name = db.StringProperty(required=True)
+    name = ndb.StringProperty(required=True)
 
     # Relationships
-    mfcs = db.ListProperty(db.Key)  # MFC
+    mfcs = ndb.KeyProperty(MFC, repeated=True)
 
 
 class Service(BaseModel):
@@ -127,19 +104,19 @@ class Service(BaseModel):
         can be omitted only if a condition described in
         prerequisite_description is met.
     """
-    name = db.StringProperty(required=True)
-    short_description = db.StringProperty(required=True)
-    kb_id = db.IntegerProperty(required=True)
-    prerequisite_description = db.StringProperty()
-    max_days = db.IntegerProperty(required=True)
-    max_work_days = db.IntegerProperty(required=True)
-    terms_description = db.StringProperty()
+    name = ndb.StringProperty(required=True)
+    short_description = ndb.StringProperty(required=True)
+    kb_id = ndb.IntegerProperty(required=True)
+    prerequisite_description = ndb.StringProperty()
+    max_days = ndb.IntegerProperty(required=True)
+    max_work_days = ndb.IntegerProperty(required=True)
+    terms_description = ndb.StringProperty()
 
     # Relationships
-    ogv = db.ReferenceProperty(OGV, required=True)
-    containing_komplekses = db.ListProperty(db.Key)  # Kompleks
-    related_komplekses = db.ListProperty(db.Key)  # Kompleks
-    dependencies = db.ListProperty(db.Key)  # Service
+    ogv = ndb.KeyProperty(OGV, required=True)
+    containing_komplekses = ndb.KeyProperty(Kompleks, repeated=True)
+    related_komplekses = ndb.KeyProperty(Kompleks, repeated=True)
+    dependencies = ndb.KeyProperty(kind="Service", repeated=True)
 
 
 class Document(BaseModel):
@@ -171,18 +148,18 @@ class Document(BaseModel):
     is_a_paper_document: Designation of whether this document has a physical
         (paper) form.
     """
-    name = db.StringProperty(required=True)
-    description = db.TextProperty(
+    name = ndb.StringProperty(required=True)
+    description = ndb.TextProperty(
         default=u'Предоставляется в любом случае')
-    o_count_method = db.StringProperty(
+    o_count_method = ndb.StringProperty(
         default='one_for_all', choices=COUNT_METHOD)
-    c_count_method = db.StringProperty(
+    c_count_method = ndb.StringProperty(
         default='per_service', choices=COUNT_METHOD)
-    o_supply_type = db.StringProperty(
+    o_supply_type = ndb.StringProperty(
         default='demonstrate', choices=ORIGINAL_SUPPLY_TYPE)
-    n_originals = db.IntegerProperty(default=1)
-    n_copies = db.IntegerProperty(default=1)
-    is_a_paper_document = db.BooleanProperty(default=True)
+    n_originals = ndb.IntegerProperty(default=1)
+    n_copies = ndb.IntegerProperty(default=1)
+    is_a_paper_document = ndb.BooleanProperty(default=True)
 
     def precompile_description(self, dts_items):
         """
@@ -232,8 +209,8 @@ class Document(BaseModel):
 
     def count_up(self, what, dts_items):
         """
-        Count up originals or copies of the document for result list taking in 
-        account all DocumentToService instances provided and own o_count_method 
+        Count up originals or copies of the document for result list taking in
+        account all DocumentToService instances provided and own o_count_method
         and c_count_method properties.
 
         :param str what: 'originals' or 'copies'
@@ -316,13 +293,13 @@ class DocumentToService(BaseModel):
         property is defined and user chooses another kompleks (not the one
         referenced by this property) at runtime.
     """
-    description = db.TextProperty()
-    n_originals = db.IntegerProperty()
-    n_copies = db.IntegerProperty()
-    o_supply_type = db.StringProperty(choices=ORIGINAL_SUPPLY_TYPE)
-    override_description = db.BooleanProperty(default=False)
+    description = ndb.TextProperty()
+    n_originals = ndb.IntegerProperty()
+    n_copies = ndb.IntegerProperty()
+    o_supply_type = ndb.StringProperty(choices=ORIGINAL_SUPPLY_TYPE)
+    override_description = ndb.BooleanProperty(default=False)
 
     # Relations
-    document = db.ReferenceProperty(Document, required=True)
-    service = db.ReferenceProperty(Service, required=True)
-    kompleks = db.ReferenceProperty(Kompleks)
+    document = ndb.KeyProperty(Document, required=True)
+    service = ndb.KeyProperty(Service, required=True)
+    kompleks = ndb.KeyProperty(Kompleks)

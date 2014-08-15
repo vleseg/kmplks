@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Выбор предусловий{% endblock %}
 {% block js %}
-    <script type="application/javascript">
-        var toBeChecked = {{ prereqs_satisfied|safe }};
-        var dependencyGraph = {{ dependency_graph|safe }};
-    </script>
+    var toBeChecked = {{ prereqs_satisfied|safe }};
+    var dependencyGraph = {{ dependency_graph|safe }};
 {% endblock %}
 {% block head %}{{ kompleks.name }} — Предусловия{% endblock %}
 {% block content %}
@@ -16,12 +14,10 @@
             <tr>
                 <td>
                     <input type="checkbox" name="prerequisite"
-                           value="{{ p.id() }}" id="{{ p.id() }}"/>
+                           value="{{ p.id }}" id="{{ p.id }}"/>
                 </td>
                 <td>
-                    <label for="{{ p.id() }}">
-                        {{ p.prerequisite_description }}
-                    </label>
+                    <label for="{{ p.id }}">{{ p.text }}</label>
                 </td>
             </tr>
             {% endfor  %}

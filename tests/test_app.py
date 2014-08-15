@@ -15,6 +15,7 @@ class AppTest(unittest.TestCase):
         cls.testbed = testbed.Testbed()
         cls.testbed.activate()
         cls.testbed.init_datastore_v3_stub()
+        cls.testbed.init_memcache_stub()
         init_test_db()
 
     def test_kompleks_choice_handler(self):
@@ -24,6 +25,20 @@ class AppTest(unittest.TestCase):
         for assert_str in (u'Рождение ребенка', u'МФЦ г. Якутск',
                            u'МФЦ г. Нюрба'):
             self.assertIn(assert_str, response)
+
+    def test_prerequisite_choice_handler(self):
+        # Start with kompleks choice page and choose a kompleks
+        primary_response = self.testapp.get('/').click(
+            description=u'Рождение ребенка')
+        # Choice is stored in session; follow redirect
+        final_response = primary_response.follow()
+
+        self.assertEqual(final_response.status_int, 200)
+
+        for assert_str in (u'Рождение ребенка',
+                           u'Уже есть свидетельство о рождении',
+                           u'Уже есть прописка'):
+            self.assertIn(assert_str, final_response)
 
     def test_service_choice_handler(self):
         # Start with kompleks choice page and choose a kompleks
@@ -35,8 +50,6 @@ class AppTest(unittest.TestCase):
         self.assertEqual(final_response.status_int, 200)
 
         kompleks_name = u'Рождение ребенка',
-        prerequisite_summaries = (
-            u'Уже есть свидетельство о рождении', u'Уже есть прописка')
         contained_services_names = (
             u'Государственная регистрация рождения ребенка (Тест)',
             u'Регистрация по месту жительства (Тест)',
@@ -51,9 +64,8 @@ class AppTest(unittest.TestCase):
             u'Эти услуги не входят в комплекс, но подходят по жизненной '
             u'ситуации')
 
-        assert_strings = (kompleks_name + prerequisite_summaries +
-                          contained_services_names + related_services_names +
-                          intermediate_messages)
+        assert_strings = (kompleks_name + contained_services_names +
+                          related_services_names + intermediate_messages)
 
         for assert_str in assert_strings:
             self.assertIn(assert_str, final_response)
@@ -77,11 +89,6 @@ class AppTest(unittest.TestCase):
         #
         # TODO: finish this
         #
-
-        assert_strings = service_names
-
-        for assert_str in assert_strings:
-            self.assertIn(assert_str, final_response)
 
     @classmethod
     def tearDownClass(cls):
