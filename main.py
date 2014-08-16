@@ -333,7 +333,7 @@ class ServiceChoiceHandler(BaseHandler):
 
         contained_ids = set(d['contained_ids']) - set(d['prereqs_satisfied'])
         contained_services = from_urlsafe(contained_ids, multi=True)
-        related_services = from_urlsafe(contained_ids, multi=True)
+        related_services = from_urlsafe(d['related_ids'], multi=True)
 
         # Constructing context.
         self.context["kompleks"] = from_urlsafe(d['kompleks_id'])

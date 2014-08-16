@@ -8,10 +8,6 @@ from lxml import etree
 import model
 
 
-Reference = namedtuple(
-    'Reference', ['refd_kind', 'refd_field', 'type'])
-
-
 class TestDbInitException(BaseException):
     pass
 
@@ -84,10 +80,11 @@ def get_entity(kind, prop, value):
         return result.key
 
 
-def put_new_entity(entity_class, entity_init_kwargs):
+def put_new_entity(entity_class, entity_init_kwargs, from_console=False):
     new_entity = entity_class(**entity_init_kwargs)
     new_entity.put()
-    sleep(0.01)
+    if from_console:
+        sleep(0.25)
 
 
 def init_test_db(from_console=False):
