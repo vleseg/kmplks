@@ -242,7 +242,7 @@ class KompleksHandler(BaseHandler):
     def prepare(kompleks):
         mfcs = (mfc_key.get() for mfc_key in kompleks.mfcs)
         return {'name': kompleks.name, 'mfcs': mfcs,
-                'urlsafe': kompleks.urlsafe()}
+                'id': kompleks.urlsafe()}
 
 
 class PrerequisiteChoiceHandler(BaseHandler):
@@ -297,8 +297,7 @@ class PrerequisiteChoiceHandler(BaseHandler):
     def post(self):
         # Please note that prerequisites can only be part of 'contained' list,
         # but not of 'related'. Might be changed in future.
-        prereqs_satisfied = map(
-            int, self.request.get_all('prerequisite'))
+        prereqs_satisfied = self.request.get_all('prerequisite')
 
         # Writing session data.
         self.store_session_data('prereqs_satisfied', prereqs_satisfied)
@@ -309,6 +308,7 @@ class PrerequisiteChoiceHandler(BaseHandler):
     def prepare(service):
         return {'id': service.urlsafe(),
                 'text': service.prerequisite_description}
+
 
 class ServiceChoiceHandler(BaseHandler):
     """
@@ -332,14 +332,14 @@ class ServiceChoiceHandler(BaseHandler):
         logging.info(self.session)
 
         contained_ids = set(d['contained_ids']) - set(d['prereqs_satisfied'])
-        contained_services = Service.by_id(contained_ids)
-        related_services = Service.by_id(d['related_ids'])
+        contained_services = from_urlsafe(contained_ids, multi=True)
+        related_services = from_urlsafe(contained_ids, multi=True)
 
         # Constructing context.
-        self.context["kompleks"] = Kompleks.by_id(
-            d['kompleks_id'], force_list=False)
-        self.context["contained_services"] = contained_services
-        self.context["related_services"] = related_services
+        self.context["kompleks"] = from_urlsafe(d['kompleks_id'])
+        self.context["contained_services"] = map(self.prepare,
+                                                 contained_services)
+        self.context["related_services"] = map(self.prepare, related_services)
 
         # If our last choice of services was saved in session -- restore it.
         self.context['service_ids'] = json.dumps(
@@ -357,6 +357,15 @@ class ServiceChoiceHandler(BaseHandler):
         self.store_session_data('service_ids', service_ids)
 
         self.redirect('/result')
+
+    @staticmethod
+    def prepare(service):
+        return {'id': service.key.urlsafe(), 'name': service.name,
+                'description': service.short_description,
+                'ogv': service.ogv.get().short_name,
+                'max_days':  service.max_days, 'kb_id': service.kb_id,
+                'max_work_days': service.max_work_days,
+                'terms_description': service.terms_description}
 
 
 class ResultHandler(BaseHandler):

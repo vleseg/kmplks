@@ -10,11 +10,11 @@
 {% endmacro %}
 {% macro service_row(service) %}
     <tr>
-        <td><input name="service" value="{{ service.id() }}" type="checkbox"
-                   id="{{ service.id() }}"/>
+        <td><input name="service" value="{{ service.id }}" type="checkbox"
+                   id="{{ service.id }}"/>
         </td>
         <td>
-            <label for="{{ service.id() }}">
+            <label for="{{ service.id }}">
                 <a href="{{ service.kb_id|to_url }}"
                    title="Посмотреть в Базе знаний">
                     {{ service.name }}

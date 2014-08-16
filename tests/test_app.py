@@ -41,17 +41,24 @@ class AppTest(unittest.TestCase):
             self.assertIn(assert_str, final_response)
 
     def test_service_choice_handler(self):
-        # Start with kompleks choice page and choose a kompleks
+        # Start with kompleks choice page and choose a kompleks.
         primary_response = self.testapp.get('/').click(
             description=u'Рождение ребенка')
-        # Choice is stored in session; follow redirect
-        final_response = primary_response.follow()
+        # Choice is stored in session; follow redirect.
+        secondary_response = primary_response.follow()
+        # Pick a 'satisfied' prerequisite.
+        id_to_use = None
+        for cell in secondary_response.html.findAll('td'):
+            if u'Уже есть свидетельство о рождении' in cell.get_text():
+                id_to_use = cell.label['for']
+        # Next page.
+        final_response = self.testapp.post(
+            '/prerequisites', {'prerequisite': id_to_use}).follow()
 
         self.assertEqual(final_response.status_int, 200)
 
         kompleks_name = u'Рождение ребенка',
         contained_services_names = (
-            u'Государственная регистрация рождения ребенка (Тест)',
             u'Регистрация по месту жительства (Тест)',
             u'Ежемесячное пособие на ребенка (Тест)')
         related_services_names = (
