@@ -17,11 +17,13 @@ import new
 import unittest
 
 from pytz import timezone
+
 from babel import dates
 from babel.util import FixedOffsetTimezone
 
 
 class DateTimeFormatTestCase(unittest.TestCase):
+
     def test_quarter_format(self):
         d = date(2006, 6, 8)
         fmt = dates.DateTimeFormat(d, locale='en_US')
@@ -108,38 +110,38 @@ class DateTimeFormatTestCase(unittest.TestCase):
         self.assertEqual('5', fmt['F'])
 
     def test_local_day_of_week(self):
-        d = date(2007, 4, 1)  # a sunday
+        d = date(2007, 4, 1) # a sunday
         fmt = dates.DateTimeFormat(d, locale='de_DE')
-        self.assertEqual('7', fmt['e'])  # monday is first day of week
+        self.assertEqual('7', fmt['e']) # monday is first day of week
         fmt = dates.DateTimeFormat(d, locale='en_US')
-        self.assertEqual('01', fmt['ee'])  # sunday is first day of week
+        self.assertEqual('01', fmt['ee']) # sunday is first day of week
         fmt = dates.DateTimeFormat(d, locale='dv_MV')
-        self.assertEqual('03', fmt['ee'])  # friday is first day of week
+        self.assertEqual('03', fmt['ee']) # friday is first day of week
 
-        d = date(2007, 4, 2)  # a monday
+        d = date(2007, 4, 2) # a monday
         fmt = dates.DateTimeFormat(d, locale='de_DE')
-        self.assertEqual('1', fmt['e'])  # monday is first day of week
+        self.assertEqual('1', fmt['e']) # monday is first day of week
         fmt = dates.DateTimeFormat(d, locale='en_US')
-        self.assertEqual('02', fmt['ee'])  # sunday is first day of week
+        self.assertEqual('02', fmt['ee']) # sunday is first day of week
         fmt = dates.DateTimeFormat(d, locale='dv_MV')
-        self.assertEqual('04', fmt['ee'])  # friday is first day of week
+        self.assertEqual('04', fmt['ee']) # friday is first day of week
 
     def test_local_day_of_week_standalone(self):
-        d = date(2007, 4, 1)  # a sunday
+        d = date(2007, 4, 1) # a sunday
         fmt = dates.DateTimeFormat(d, locale='de_DE')
-        self.assertEqual('7', fmt['c'])  # monday is first day of week
+        self.assertEqual('7', fmt['c']) # monday is first day of week
         fmt = dates.DateTimeFormat(d, locale='en_US')
-        self.assertEqual('1', fmt['c'])  # sunday is first day of week
+        self.assertEqual('1', fmt['c']) # sunday is first day of week
         fmt = dates.DateTimeFormat(d, locale='dv_MV')
-        self.assertEqual('3', fmt['c'])  # friday is first day of week
+        self.assertEqual('3', fmt['c']) # friday is first day of week
 
-        d = date(2007, 4, 2)  # a monday
+        d = date(2007, 4, 2) # a monday
         fmt = dates.DateTimeFormat(d, locale='de_DE')
-        self.assertEqual('1', fmt['c'])  # monday is first day of week
+        self.assertEqual('1', fmt['c']) # monday is first day of week
         fmt = dates.DateTimeFormat(d, locale='en_US')
-        self.assertEqual('2', fmt['c'])  # sunday is first day of week
+        self.assertEqual('2', fmt['c']) # sunday is first day of week
         fmt = dates.DateTimeFormat(d, locale='dv_MV')
-        self.assertEqual('4', fmt['c'])  # friday is first day of week
+        self.assertEqual('4', fmt['c']) # friday is first day of week
 
     def test_fractional_seconds(self):
         t = time(15, 30, 12, 34567)
@@ -218,6 +220,7 @@ class DateTimeFormatTestCase(unittest.TestCase):
 
 
 class FormatDateTestCase(unittest.TestCase):
+
     def test_with_time_fields_in_pattern(self):
         self.assertRaises(AttributeError, dates.format_date, date(2007, 04, 01),
                           "yyyy-MM-dd HH:mm", locale='en_US')
@@ -229,6 +232,7 @@ class FormatDateTestCase(unittest.TestCase):
 
 
 class FormatTimeTestCase(unittest.TestCase):
+
     def test_with_naive_datetime_and_tzinfo(self):
         string = dates.format_time(datetime(2007, 4, 1, 15, 30),
                                    'long', tzinfo=timezone('US/Eastern'),
@@ -248,10 +252,8 @@ class FormatTimeTestCase(unittest.TestCase):
 class TimeZoneAdjustTestCase(unittest.TestCase):
     def _utc(self):
         UTC = FixedOffsetTimezone(0, 'UTC')
-
         def fake_localize(self, dt, is_dst=False):
             raise NotImplementedError()
-
         UTC.localize = new.instancemethod(fake_localize, UTC, UTC.__class__)
         # This is important to trigger the actual bug (#257)
         self.assertEqual(False, hasattr(UTC, 'normalize'))
@@ -273,7 +275,6 @@ def suite():
     suite.addTest(unittest.makeSuite(FormatTimeTestCase))
     suite.addTest(unittest.makeSuite(TimeZoneAdjustTestCase))
     return suite
-
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

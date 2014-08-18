@@ -17,11 +17,14 @@ in applications.
 .. note: the code in this module is not used by Babel itself
 """
 
-from datetime import date, datetime
+from datetime import date, datetime, time
 import gettext
 
 from babel.core import Locale
-
+from babel.dates import format_date, format_datetime, format_time, LC_TIME
+from babel.numbers import format_number, format_decimal, format_currency, \
+                          format_percent, format_scientific, LC_NUMERIC
+from babel.util import set, UTC
 
 __all__ = ['Format', 'LazyProxy', 'Translations']
 __docformat__ = 'restructuredtext en'
@@ -180,7 +183,6 @@ class LazyProxy(object):
             value = self._func(*self._args, **self._kwargs)
             object.__setattr__(self, '_value', value)
         return self._value
-
     value = property(value)
 
     def __contains__(self, key):
@@ -261,7 +263,7 @@ class LazyProxy(object):
     def __setitem__(self, key, value):
         self.value[key] = value
 
-
+    
 class Translations(gettext.GNUTranslations, object):
     """An extended translation catalog class."""
 
@@ -300,7 +302,6 @@ class Translations(gettext.GNUTranslations, object):
         if not filename:
             return gettext.NullTranslations()
         return cls(fileobj=open(filename, 'rb'), domain=domain)
-
     load = classmethod(load)
 
     def __repr__(self):
@@ -360,31 +361,31 @@ class Translations(gettext.GNUTranslations, object):
         domain.
         """
         return self._domains.get(domain, self).gettext(message)
-
+    
     def ldgettext(self, domain, message):
         """Like ``lgettext()``, but look the message up in the specified 
         domain.
-        """
+        """ 
         return self._domains.get(domain, self).lgettext(message)
-
+    
     def dugettext(self, domain, message):
         """Like ``ugettext()``, but look the message up in the specified
         domain.
         """
         return self._domains.get(domain, self).ugettext(message)
-
+    
     def dngettext(self, domain, singular, plural, num):
         """Like ``ngettext()``, but look the message up in the specified
         domain.
         """
         return self._domains.get(domain, self).ngettext(singular, plural, num)
-
+    
     def ldngettext(self, domain, singular, plural, num):
         """Like ``lngettext()``, but look the message up in the specified
         domain.
         """
         return self._domains.get(domain, self).lngettext(singular, plural, num)
-
+    
     def dungettext(self, domain, singular, plural, num):
         """Like ``ungettext()`` but look the message up in the specified
         domain.

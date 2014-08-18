@@ -16,12 +16,10 @@ import unittest
 
 from babel import util
 
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocTestSuite(util))
     return suite
-
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

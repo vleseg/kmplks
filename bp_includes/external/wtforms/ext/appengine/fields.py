@@ -7,7 +7,6 @@ import warnings
 from wtforms import fields, widgets
 from wtforms.compat import text_type, string_types
 
-
 class ReferencePropertyField(fields.SelectFieldBase):
     """
     A field for ``db.ReferenceProperty``. The list items are rendered in a
@@ -36,9 +35,7 @@ class ReferencePropertyField(fields.SelectFieldBase):
         super(ReferencePropertyField, self).__init__(label, validators,
                                                      **kwargs)
         if label_attr is not None:
-            warnings.warn(
-                'label_attr= will be removed in WTForms 1.1, use get_label= instead.',
-                DeprecationWarning)
+            warnings.warn('label_attr= will be removed in WTForms 1.1, use get_label= instead.', DeprecationWarning)
             self.get_label = operator.attrgetter(label_attr)
         elif get_label is None:
             self.get_label = lambda x: x
@@ -74,7 +71,7 @@ class ReferencePropertyField(fields.SelectFieldBase):
         for obj in self.query:
             key = str(obj.key())
             label = self.get_label(obj)
-            yield (key, label, self.data and ( self.data.key() == obj.key() ) )
+            yield (key, label, self.data and ( self.data.key( ) == obj.key() ) )
 
     def process_formdata(self, valuelist):
         if valuelist:
@@ -98,7 +95,6 @@ class StringListPropertyField(fields.TextAreaField):
     A field for ``db.StringListProperty``. The list items are rendered in a
     textarea.
     """
-
     def _value(self):
         if self.raw_data:
             return self.raw_data[0]
@@ -114,11 +110,11 @@ class StringListPropertyField(fields.TextAreaField):
 
 
 class GeoPtPropertyField(fields.TextField):
+
     def process_formdata(self, valuelist):
         if valuelist:
             try:
                 lat, lon = valuelist[0].split(',')
-                self.data = '%s,%s' % (
-                decimal.Decimal(lat.strip()), decimal.Decimal(lon.strip()),)
+                self.data = '%s,%s' % (decimal.Decimal(lat.strip()), decimal.Decimal(lon.strip()),)
             except (decimal.InvalidOperation, ValueError):
                 raise ValueError('Not a valid coordinate location')

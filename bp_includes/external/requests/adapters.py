@@ -133,8 +133,7 @@ class HTTPAdapter(BaseAdapter):
                 cert_loc = DEFAULT_CA_BUNDLE_PATH
 
             if not cert_loc:
-                raise Exception(
-                    "Could not find a suitable SSL CA certificate bundle.")
+                raise Exception("Could not find a suitable SSL CA certificate bundle.")
 
             conn.cert_reqs = 'CERT_REQUIRED'
             conn.ca_certs = cert_loc
@@ -202,8 +201,8 @@ class HTTPAdapter(BaseAdapter):
 
             if not proxy in self.proxy_manager:
                 self.proxy_manager[proxy] = proxy_from_url(
-                    proxy,
-                    proxy_headers=proxy_headers)
+                                                proxy,
+                                                proxy_headers=proxy_headers)
 
             conn = self.proxy_manager[proxy].connection_from_url(url)
         else:
@@ -286,8 +285,7 @@ class HTTPAdapter(BaseAdapter):
 
         return headers
 
-    def send(self, request, stream=False, timeout=None, verify=True, cert=None,
-             proxies=None):
+    def send(self, request, stream=False, timeout=None, verify=True, cert=None, proxies=None):
         """Sends PreparedRequest object. Returns Response object.
 
         :param request: The :class:`PreparedRequest <PreparedRequest>` being sent.
@@ -304,8 +302,7 @@ class HTTPAdapter(BaseAdapter):
         url = self.request_url(request, proxies)
         self.add_headers(request)
 
-        chunked = not (
-        request.body is None or 'Content-Length' in request.headers)
+        chunked = not (request.body is None or 'Content-Length' in request.headers)
 
         if stream:
             timeout = TimeoutSauce(connect=timeout)

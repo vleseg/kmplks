@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# #
+##
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,16 +16,16 @@
 __author__ = 'Kord Campbell'
 __website__ = 'http://www.tinyprobe.com'
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
+try: import simplejson as json
+except ImportError: import json
 import oauth_client as oauth2
+import logging
 
 # Github OAuth Implementation
 class GithubAuth(object):
-    def __init__(self, github_server, github_client_id, github_client_secret,
-                 github_redirect_uri, scope):
+    
+    def __init__(self, github_server, github_client_id, github_client_secret, github_redirect_uri, scope):
+
         # load github shizzle from config.py
         self.oauth_settings = {
             'client_id': github_client_id,
@@ -38,14 +38,14 @@ class GithubAuth(object):
 
     # get our auth url and return to login handler
     def get_authorize_url(self):
-        oauth_client = oauth2.Client(
-            self.oauth_settings['client_id'],
-            self.oauth_settings['client_secret'],
-            self.oauth_settings['authorization_url']
+        oauth_client = oauth2.Client( 
+            self.oauth_settings['client_id'], 
+            self.oauth_settings['client_secret'], 
+            self.oauth_settings['authorization_url'] 
         )
-
-        authorization_url = oauth_client.authorization_url(
-            redirect_uri=self.oauth_settings['redirect_url'],
+        
+        authorization_url = oauth_client.authorization_url( 
+            redirect_uri=self.oauth_settings['redirect_url'],  
             params={'scope': self.oauth_settings['scope']}
         )
 
@@ -57,16 +57,16 @@ class GithubAuth(object):
             self.oauth_settings['client_secret'],
             self.oauth_settings['access_token_url']
         )
-
-        data = oauth_client.access_token(code,
-                                         self.oauth_settings['redirect_url'])
-
+        
+        data = oauth_client.access_token(code, self.oauth_settings['redirect_url'])
+        
         access_token = data.get('access_token')
 
         return access_token
 
 
     def get_user_info(self, access_token):
+
         oauth_client = oauth2.Client(
             self.oauth_settings['client_id'],
             self.oauth_settings['client_secret'],

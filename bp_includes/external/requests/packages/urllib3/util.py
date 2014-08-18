@@ -113,7 +113,7 @@ class Timeout(object):
         request.
     """
 
-    # : A sentinel object representing the default timeout value
+    #: A sentinel object representing the default timeout value
     DEFAULT_TIMEOUT = _GLOBAL_DEFAULT_TIMEOUT
 
     def __init__(self, total=None, connect=_Default, read=_Default):
@@ -155,7 +155,7 @@ class Timeout(object):
                 raise ValueError("Attempted to set %s timeout to %s, but the "
                                  "timeout cannot be set to a value less "
                                  "than 0." % (name, value))
-        except TypeError:  # Python 3
+        except TypeError: # Python 3
             raise ValueError("Timeout value %s was %s, but it must be an "
                              "int or float." % (name, value))
 
@@ -252,9 +252,9 @@ class Timeout(object):
             has not yet been called on this object.
         """
         if (self.total is not None and
-                    self.total is not self.DEFAULT_TIMEOUT and
-                    self._read is not None and
-                    self._read is not self.DEFAULT_TIMEOUT):
+            self.total is not self.DEFAULT_TIMEOUT and
+            self._read is not None and
+            self._read is not self.DEFAULT_TIMEOUT):
             # in case the connect timeout has not yet been established.
             if self._start_connect is None:
                 return self._read
@@ -266,18 +266,15 @@ class Timeout(object):
             return self._read
 
 
-class Url(namedtuple('Url', ['scheme', 'auth', 'host', 'port', 'path', 'query',
-                             'fragment'])):
+class Url(namedtuple('Url', ['scheme', 'auth', 'host', 'port', 'path', 'query', 'fragment'])):
     """
     Datastructure for representing an HTTP URL. Used as a return value for
     :func:`parse_url`.
     """
     slots = ()
 
-    def __new__(cls, scheme=None, auth=None, host=None, port=None, path=None,
-                query=None, fragment=None):
-        return super(Url, cls).__new__(cls, scheme, auth, host, port, path,
-                                       query, fragment)
+    def __new__(cls, scheme=None, auth=None, host=None, port=None, path=None, query=None, fragment=None):
+        return super(Url, cls).__new__(cls, scheme, auth, host, port, path, query, fragment)
 
     @property
     def hostname(self):
@@ -332,7 +329,7 @@ def split_first(s, delims):
     if min_idx is None or min_idx < 0:
         return s, '', None
 
-    return s[:min_idx], s[min_idx + 1:], min_delim
+    return s[:min_idx], s[min_idx+1:], min_delim
 
 
 def parse_url(url):
@@ -479,13 +476,11 @@ def make_headers(keep_alive=None, accept_encoding=None, user_agent=None,
 
     if basic_auth:
         headers['authorization'] = 'Basic ' + \
-                                   b64encode(six.b(basic_auth)).decode('utf-8')
+            b64encode(six.b(basic_auth)).decode('utf-8')
 
     if proxy_basic_auth:
         headers['proxy-authorization'] = 'Basic ' + \
-                                         b64encode(
-                                             six.b(proxy_basic_auth)).decode(
-                                             'utf-8')
+            b64encode(six.b(proxy_basic_auth)).decode('utf-8')
 
     return headers
 
@@ -501,11 +496,11 @@ def is_connection_dropped(conn):  # Platform-specific
     let the platform handle connection recycling transparently for us.
     """
     sock = getattr(conn, 'sock', False)
-    if not sock:  # Platform-specific: AppEngine
+    if not sock: # Platform-specific: AppEngine
         return False
 
     if not poll:
-        if not select:  # Platform-specific: AppEngine
+        if not select: # Platform-specific: AppEngine
             return False
 
         try:
@@ -596,7 +591,6 @@ def assert_fingerprint(cert, fingerprint):
         raise SSLError('Fingerprints did not match. Expected "{0}", got "{1}".'
                        .format(hexlify(fingerprint_bytes),
                                hexlify(cert_digest)))
-
 
 def is_fp_closed(obj):
     """

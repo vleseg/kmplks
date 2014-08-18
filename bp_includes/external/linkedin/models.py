@@ -1,7 +1,6 @@
 import collections
 
-AccessToken = collections.namedtuple('AccessToken',
-                                     ['access_token', 'expires_in'])
+AccessToken = collections.namedtuple('AccessToken', ['access_token', 'expires_in'])
 
 
 class LinkedInRecipient(object):

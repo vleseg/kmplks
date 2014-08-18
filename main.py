@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# #
+##
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__),
                                 'bp_includes/external'))
 
 import webapp2
+
 
 from bp_includes.lib.error_handler import handle_error
 from bp_includes import config as config_boilerplate

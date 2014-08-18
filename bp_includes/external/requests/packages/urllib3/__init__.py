@@ -12,6 +12,7 @@ __author__ = 'Andrey Petrov (andrey.petrov@shazow.net)'
 __license__ = 'MIT'
 __version__ = 'dev'
 
+
 from .connectionpool import (
     HTTPConnectionPool,
     HTTPSConnectionPool,
@@ -27,7 +28,6 @@ from .util import make_headers, get_host, Timeout
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
-
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:
@@ -36,7 +36,6 @@ except ImportError:
             pass
 
 logging.getLogger(__name__).addHandler(NullHandler())
-
 
 def add_stderr_logger(level=logging.DEBUG):
     """
@@ -49,8 +48,7 @@ def add_stderr_logger(level=logging.DEBUG):
     # even if urllib3 is vendored within another package.
     logger = logging.getLogger(__name__)
     handler = logging.StreamHandler()
-    handler.setFormatter(
-        logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+    handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     logger.addHandler(handler)
     logger.setLevel(level)
     logger.debug('Added an stderr logging handler to logger: %s' % __name__)

@@ -24,7 +24,6 @@ import struct
 __all__ = ['write_mo']
 __docformat__ = 'restructuredtext en'
 
-
 def write_mo(fileobj, catalog, use_fuzzy=False):
     """Write a catalog to the specified file-like object using the GNU MO file
     format.
@@ -113,10 +112,10 @@ def write_mo(fileobj, catalog, use_fuzzy=False):
     offsets = koffsets + voffsets
 
     fileobj.write(struct.pack('Iiiiiii',
-                              0x950412deL,  # magic
-                              0,  # version
-                              len(messages),  # number of entries
-                              7 * 4,  # start of key index
-                              7 * 4 + len(messages) * 8,  # start of value index
-                              0, 0  # size and offset of hash table
+        0x950412deL,                # magic
+        0,                          # version
+        len(messages),              # number of entries
+        7 * 4,                      # start of key index
+        7 * 4 + len(messages) * 8,  # start of value index
+        0, 0                        # size and offset of hash table
     ) + array.array("i", offsets).tostring() + ids + strs)

@@ -21,6 +21,7 @@ from babel.messages import extract
 
 
 class ExtractPythonTestCase(unittest.TestCase):
+
     def test_nested_calls(self):
         buf = StringIO("""\
 msg1 = _(i18n_arg.replace(r'\"', '"'))
@@ -36,19 +37,18 @@ msg10 = dngettext(getDomain(), 'Page', 'Pages', 3)
 """)
         messages = list(extract.extract_python(buf,
                                                extract.DEFAULT_KEYWORDS.keys(),
-            [], {}))
+                                               [], {}))
         self.assertEqual([
-                             (1, '_', None, []),
-                             (2, 'ungettext', (None, None, None), []),
-                             (3, 'ungettext', (u'Babel', None, None), []),
-                             (4, 'ungettext', (None, u'Babels', None), []),
-                             (5, 'ungettext', (u'bunny', u'bunnies', None), []),
-                             (6, 'ungettext', (None, u'bunnies', None), []),
-                             (7, '_', None, []),
-                             (8, 'gettext', u'Rabbit', []),
-                             (9, 'dgettext', (u'wiki', None), []),
-                             (10, 'dngettext', (None, u'Page', u'Pages', None),
-                              [])],
+                (1, '_', None, []),
+                (2, 'ungettext', (None, None, None), []),
+                (3, 'ungettext', (u'Babel', None, None), []),
+                (4, 'ungettext', (None, u'Babels', None), []),
+                (5, 'ungettext', (u'bunny', u'bunnies', None), []),
+                (6, 'ungettext', (None, u'bunnies', None), []),
+                (7, '_', None, []),
+                (8, 'gettext', u'Rabbit', []),
+                (9, 'dgettext', (u'wiki', None), []),
+                (10, 'dngettext', (None, u'Page', u'Pages', None), [])],
                          messages)
 
     def test_nested_comments(self):
@@ -80,10 +80,9 @@ add_notice(req, ngettext("Foo deleted.", "Foos deleted.", len(selected)))
 add_notice(req, ngettext("Bar deleted.",
                          "Bars deleted.", len(selected)))
 """)
-        messages = list(
-            extract.extract_python(buf, ('ngettext', '_'), ['NOTE:'],
+        messages = list(extract.extract_python(buf, ('ngettext','_'), ['NOTE:'],
 
-                                   {'strip_comment_tags': False}))
+                                               {'strip_comment_tags':False}))
         self.assertEqual((6, '_', 'Locale deleted.',
                           [u'NOTE: This Comment SHOULD Be Extracted']),
                          messages[1])
@@ -92,9 +91,9 @@ add_notice(req, ngettext("Bar deleted.",
                           [u'NOTE: This Comment SHOULD Be Extracted']),
                          messages[2])
         self.assertEqual((3, 'ngettext',
-                          (u'Catalog deleted.',
-                           u'Catalogs deleted.', None),
-                          [u'NOTE: This Comment SHOULD Be Extracted']),
+                           (u'Catalog deleted.',
+                            u'Catalogs deleted.', None),
+                           [u'NOTE: This Comment SHOULD Be Extracted']),
                          messages[0])
         self.assertEqual((15, 'ngettext', (u'Bar deleted.', u'Bars deleted.',
                                            None),
@@ -115,7 +114,7 @@ class Meta:
 """)
         messages = list(extract.extract_python(buf,
                                                extract.DEFAULT_KEYWORDS.keys(),
-            [], {}))
+                                               [], {}))
         self.assertEqual([(3, '_', u'Page arg 1', []),
                           (3, '_', u'Page arg 2', []),
                           (8, '_', u'log entry', [])],
@@ -142,7 +141,7 @@ msg2 = ngettext(\"\"\"elvis\"\"\", 'elvises', count)
 """)
         messages = list(extract.extract_python(buf,
                                                extract.DEFAULT_KEYWORDS.keys(),
-            [], {}))
+                                               [], {}))
         self.assertEqual([(1, '_', (u'pylons'), []),
                           (2, 'ngettext', (u'elvis', u'elvises', None), []),
                           (3, 'ngettext', (u'elvis', u'elvises', None), [])],
@@ -156,7 +155,7 @@ gettext message catalog library.''')
 """)
         messages = list(extract.extract_python(buf,
                                                extract.DEFAULT_KEYWORDS.keys(),
-            [], {}))
+                                               [], {}))
         self.assertEqual(
             [(1, '_',
               u'This module provides internationalization and localization\n'
@@ -170,7 +169,7 @@ foobar = _('foo' 'bar')
 """)
         messages = list(extract.extract_python(buf,
                                                extract.DEFAULT_KEYWORDS.keys(),
-            [], {}))
+                                               [], {}))
         self.assertEqual(u'foobar', messages[0][2])
 
     def test_unicode_string_arg(self):
@@ -195,9 +194,8 @@ msg = _(u'Foo Bar')
 """)
         messages = list(extract.extract_python(buf, ('_',), ['NOTE:'], {}))
         self.assertEqual(u'Foo Bar', messages[0][2])
-        self.assertEqual(
-            [u'NOTE: A translation comment', u'with a second line'],
-            messages[0][3])
+        self.assertEqual([u'NOTE: A translation comment', u'with a second line'],
+                         messages[0][3])
 
     def test_translator_comments_with_previous_non_translator_comments(self):
         buf = StringIO("""
@@ -209,9 +207,8 @@ msg = _(u'Foo Bar')
 """)
         messages = list(extract.extract_python(buf, ('_',), ['NOTE:'], {}))
         self.assertEqual(u'Foo Bar', messages[0][2])
-        self.assertEqual(
-            [u'NOTE: A translation comment', u'with a second line'],
-            messages[0][3])
+        self.assertEqual([u'NOTE: A translation comment', u'with a second line'],
+                         messages[0][3])
 
     def test_comment_tags_not_on_start_of_comment(self):
         buf = StringIO("""
@@ -240,8 +237,7 @@ msg = _(u'Foo Bar2')
         self.assertEqual([u'NOTE1: A translation comment for tag1',
                           u'with a second line'], messages[0][3])
         self.assertEqual(u'Foo Bar2', messages[1][2])
-        self.assertEqual([u'NOTE2: A translation comment for tag2'],
-                         messages[1][3])
+        self.assertEqual([u'NOTE2: A translation comment for tag2'], messages[1][3])
 
     def test_two_succeeding_comments(self):
         buf = StringIO("""
@@ -366,9 +362,8 @@ _('Servus')
 # NOTE: This is a multiline comment with
 # a prefix too
 _('Babatschi')""")
-        messages = list(
-            extract.extract('python', buf, comment_tags=['NOTE:', ':'],
-                            strip_comment_tags=True))
+        messages = list(extract.extract('python', buf, comment_tags=['NOTE:', ':'],
+                                        strip_comment_tags=True))
         self.assertEqual(u'Servus', messages[0][1])
         self.assertEqual([u'This is a comment with a very simple',
                           u'prefix specified'], messages[0][2])
@@ -378,6 +373,7 @@ _('Babatschi')""")
 
 
 class ExtractJavaScriptTestCase(unittest.TestCase):
+
     def test_simple_extract(self):
         buf = StringIO("""\
 msg1 = _('simple')
@@ -386,7 +382,7 @@ msg3 = ngettext('s', 'p', 42)
         """)
         messages = \
             list(extract.extract('javascript', buf, extract.DEFAULT_KEYWORDS,
-                [], {}))
+                                 [], {}))
 
         self.assertEqual([(1, 'simple', []),
                           (2, 'simple', []),
@@ -406,9 +402,8 @@ msg9 = dgettext('wiki', model.addPage())
 msg10 = dngettext(domain, 'Page', 'Pages', 3)
 """)
         messages = \
-            list(
-                extract.extract('javascript', buf, extract.DEFAULT_KEYWORDS, [],
-                    {}))
+            list(extract.extract('javascript', buf, extract.DEFAULT_KEYWORDS, [],
+                                 {}))
         self.assertEqual([(5, (u'bunny', u'bunnies'), []),
                           (8, u'Rabbit', []),
                           (10, (u'Page', u'Pages'), [])], messages)
@@ -431,8 +426,7 @@ msg = _('Bonjour à tous')
 """)
         messages = list(extract.extract_javascript(buf, ('_',), ['NOTE:'], {}))
         self.assertEqual(u'Bonjour à tous', messages[0][2])
-        self.assertEqual([u'NOTE: hello', 'and bonjour', '  and servus'],
-                         messages[0][3])
+        self.assertEqual([u'NOTE: hello', 'and bonjour', '  and servus'], messages[0][3])
 
     def test_ignore_function_definitions(self):
         buf = StringIO("""\
@@ -470,6 +464,7 @@ _('no comment here')
 
 
 class ExtractTestCase(unittest.TestCase):
+
     def test_invalid_filter(self):
         buf = StringIO("""\
 msg1 = _(i18n_arg.replace(r'\"', '"'))
@@ -485,7 +480,7 @@ msg10 = dngettext(domain, 'Page', 'Pages', 3)
 """)
         messages = \
             list(extract.extract('python', buf, extract.DEFAULT_KEYWORDS, [],
-                {}))
+                                 {}))
         self.assertEqual([(5, (u'bunny', u'bunnies'), []),
                           (8, u'Rabbit', []),
                           (10, (u'Page', u'Pages'), [])], messages)
@@ -505,7 +500,7 @@ n = ngettext('foo')
 """)
         messages = \
             list(extract.extract('python', buf, extract.DEFAULT_KEYWORDS, [],
-                {}))
+                                 {}))
         self.assertEqual(len(messages), 2)
         self.assertEqual(u'foo', messages[0][1])
         self.assertEqual((u'hello', u'there'), messages[1][1])
@@ -519,7 +514,7 @@ msg = _('')
         try:
             messages = \
                 list(extract.extract('python', buf, extract.DEFAULT_KEYWORDS,
-                    [], {}))
+                                     [], {}))
             self.assertEqual([], messages)
             assert 'warning: Empty msgid.' in sys.stderr.getvalue()
         finally:
@@ -533,7 +528,6 @@ def suite():
     suite.addTest(unittest.makeSuite(ExtractJavaScriptTestCase))
     suite.addTest(unittest.makeSuite(ExtractTestCase))
     return suite
-
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

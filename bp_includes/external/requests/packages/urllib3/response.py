@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 
 class DeflateDecoder(object):
+
     def __init__(self):
         self._first_try = True
         self._data = binary_type()
@@ -215,7 +216,7 @@ class HTTPResponse(io.IOBase):
             if self._original_response and self._original_response.isclosed():
                 self.release_conn()
 
-    def stream(self, amt=2 ** 16, decode_content=None):
+    def stream(self, amt=2**16, decode_content=None):
         """
         A generator wrapper for the read() method. A call will block until
         ``amt`` bytes have been read from the connection or until the
@@ -255,7 +256,7 @@ class HTTPResponse(io.IOBase):
             k = k.lower()
 
             has_value = headers.get(k)
-            if has_value:  # Python 3: Repeating header keys are unmerged.
+            if has_value: # Python 3: Repeating header keys are unmerged.
                 v = ', '.join([has_value, v])
 
             headers[k] = v

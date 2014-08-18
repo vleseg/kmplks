@@ -5,12 +5,11 @@ import signal
 import subprocess
 import tempfile
 
+import nose
+
 import httplib2
 from httplib2 import socks
 from httplib2.test import miniserver
-
-import nose
-
 
 tinyproxy_cfg = """
 User "%(user)s"

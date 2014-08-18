@@ -52,7 +52,7 @@ class RequestMethods(object):
 
     def urlopen(self, method, url, body=None, headers=None,
                 encode_multipart=True, multipart_boundary=None,
-                **kw):  # Abstract
+                **kw): # Abstract
         raise NotImplemented("Classes extending RequestMethods must implement "
                              "their own ``urlopen`` method.")
 
@@ -71,12 +71,12 @@ class RequestMethods(object):
 
         if method in self._encode_url_methods:
             return self.request_encode_url(method, url, fields=fields,
-                                           headers=headers,
-                                           **urlopen_kw)
-        else:
-            return self.request_encode_body(method, url, fields=fields,
                                             headers=headers,
                                             **urlopen_kw)
+        else:
+            return self.request_encode_body(method, url, fields=fields,
+                                             headers=headers,
+                                             **urlopen_kw)
 
     def request_encode_url(self, method, url, fields=None, **urlopen_kw):
         """
@@ -127,10 +127,10 @@ class RequestMethods(object):
         """
         if encode_multipart:
             body, content_type = encode_multipart_formdata(fields or {},
-                                                           boundary=multipart_boundary)
+                                    boundary=multipart_boundary)
         else:
             body, content_type = (urlencode(fields or {}),
-                                  'application/x-www-form-urlencoded')
+                                    'application/x-www-form-urlencoded')
 
         if headers is None:
             headers = self.headers

@@ -72,16 +72,13 @@ class ContactHandler(BaseHandler):
             self.app.config.get('captcha_private_key'),
             remote_ip)
 
-        if re.search(r"(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})",
-                     message) and not cResponse.is_valid:
+        if re.search(r"(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})", message) and not cResponse.is_valid:
             chtml = captcha.displayhtml(
-                public_key=self.app.config.get('captcha_public_key'),
-                use_ssl=(self.request.scheme == 'https'),
-                error=None)
-            if self.app.config.get(
-                    'captcha_public_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE" or \
-                            self.app.config.get(
-                                    'captcha_private_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE":
+            public_key=self.app.config.get('captcha_public_key'),
+            use_ssl=(self.request.scheme == 'https'),
+            error=None)
+            if self.app.config.get('captcha_public_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE" or \
+                            self.app.config.get('captcha_private_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE":
                 chtml = '<div class="alert alert-danger"><strong>Error</strong>: You have to ' \
                         '<a href="http://www.google.com/recaptcha/whyrecaptcha" target="_blank">sign up ' \
                         'for API keys</a> in order to use reCAPTCHA.</div>' \
@@ -95,12 +92,12 @@ class ContactHandler(BaseHandler):
 
             }
             if not cResponse.is_valid and response is None:
-                _message = _(
-                    "Please insert the Captcha in order to finish the process of sending the message")
+                _message = _("Please insert the Captcha in order to finish the process of sending the message")
                 self.add_message(_message, 'warning')
             elif not cResponse.is_valid:
                 _message = _('Wrong image verification code. Please try again.')
                 self.add_message(_message, 'danger')
+
 
             return self.render_template('contact.html', **template_val)
         else:
@@ -110,16 +107,14 @@ class ContactHandler(BaseHandler):
                 ua = httpagentparser.detect(user_agent)
                 _os = ua.has_key('flavor') and 'flavor' or 'os'
 
-                operating_system = str(ua[_os]['name']) if "name" in ua[
-                    _os] else "-"
+                operating_system = str(ua[_os]['name']) if "name" in ua[_os] else "-"
                 if 'version' in ua[_os]:
                     operating_system += ' ' + str(ua[_os]['version'])
                 if 'dist' in ua:
                     operating_system += ' ' + str(ua['dist'])
 
                 browser = str(ua['browser']['name']) if 'browser' in ua else "-"
-                browser_version = str(
-                    ua['browser']['version']) if 'browser' in ua else "-"
+                browser_version = str(ua['browser']['version']) if 'browser' in ua else "-"
 
                 template_val = {
                     "name": name,
@@ -142,8 +137,7 @@ class ContactHandler(BaseHandler):
                 subject = _("Contact") + " " + self.app.config.get('app_name')
                 # exceptions for error pages that redirect to contact
                 if exception != "":
-                    subject = "{} (Exception error: {})".format(subject,
-                                                                exception)
+                    subject = "{} (Exception error: {})".format(subject, exception)
 
                 body_path = "emails/contact.txt"
                 body = self.jinja2.render_template(body_path, **template_val)
@@ -162,8 +156,7 @@ class ContactHandler(BaseHandler):
 
             except (AttributeError, KeyError), e:
                 logging.error('Error sending contact form: %s' % e)
-                message = _(
-                    'Error sending the message. Please try again later.')
+                message = _('Error sending the message. Please try again later.')
                 self.add_message(message, 'danger')
                 return self.redirect_to('contact')
 
@@ -200,16 +193,15 @@ class SecureRequestHandler(BaseHandler):
 
 
 class DeleteAccountHandler(BaseHandler):
+
     @user_required
     def get(self, **kwargs):
         chtml = captcha.displayhtml(
             public_key=self.app.config.get('captcha_public_key'),
             use_ssl=(self.request.scheme == 'https'),
             error=None)
-        if self.app.config.get(
-                'captcha_public_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE" or \
-                        self.app.config.get(
-                                'captcha_private_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE":
+        if self.app.config.get('captcha_public_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE" or \
+                        self.app.config.get('captcha_private_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE":
             chtml = '<div class="alert alert-danger"><strong>Error</strong>: You have to ' \
                     '<a href="http://www.google.com/recaptcha/whyrecaptcha" target="_blank">sign up ' \
                     'for API keys</a> in order to use reCAPTCHA.</div>' \
@@ -254,20 +246,16 @@ class DeleteAccountHandler(BaseHandler):
                 user = self.user_model.get_by_auth_password(auth_id, password)
                 if user:
                     # Delete Social Login
-                    for social in models_boilerplate.SocialUser.get_by_user(
-                            user_info.key):
+                    for social in models_boilerplate.SocialUser.get_by_user(user_info.key):
                         social.key.delete()
 
                     user_info.key.delete()
 
-                    ndb.Key("Unique",
-                            "User.username:%s" % user.username).delete_async()
-                    ndb.Key("Unique",
-                            "User.auth_id:own:%s" % user.username).delete_async()
-                    ndb.Key("Unique",
-                            "User.email:%s" % user.email).delete_async()
+                    ndb.Key("Unique", "User.username:%s" % user.username).delete_async()
+                    ndb.Key("Unique", "User.auth_id:own:%s" % user.username).delete_async()
+                    ndb.Key("Unique", "User.email:%s" % user.email).delete_async()
 
-                    # TODO: Delete UserToken objects
+                    #TODO: Delete UserToken objects
 
                     self.auth.unset_session()
 
@@ -280,8 +268,7 @@ class DeleteAccountHandler(BaseHandler):
             except (InvalidAuthIdError, InvalidPasswordError), e:
                 # Returns error message to self.response.write in
                 # the BaseHandler.dispatcher
-                message = _(
-                    "Incorrect password! Please enter your current password to change your account settings.")
+                message = _("Incorrect password! Please enter your current password to change your account settings.")
                 self.add_message(message, 'danger')
             return self.redirect_to('delete-account')
 

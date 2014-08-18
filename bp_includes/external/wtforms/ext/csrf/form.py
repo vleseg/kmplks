@@ -12,8 +12,7 @@ class SecureForm(Form):
     """
     csrf_token = CSRFTokenField()
 
-    def __init__(self, formdata=None, obj=None, prefix='', csrf_context=None,
-                 **kwargs):
+    def __init__(self, formdata=None, obj=None, prefix='', csrf_context=None, **kwargs):
         """
         :param csrf_context: 
             Optional extra data which is passed transparently to your 

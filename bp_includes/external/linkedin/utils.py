@@ -28,6 +28,5 @@ def to_utf8(st):
     else:
         return str(st)
 
-
 HTTP_METHODS = make_enum('HTTPMethod', GET='GET', POST='POST',
                          PUT='PUT', DELETE='DELETE', PATCH='PATCH')

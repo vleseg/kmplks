@@ -17,12 +17,10 @@
 """
 
 from itertools import izip
-
 from babel.messages.catalog import TranslationError, PYTHON_FORMAT
 from babel.util import set
 
-
-# : list of format chars that are compatible to each other
+#: list of format chars that are compatible to each other
 _string_format_compatibilities = [
     set(['i', 'd', 'u']),
     set(['x', 'X']),

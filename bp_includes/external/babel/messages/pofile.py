@@ -18,16 +18,16 @@ format.
        <http://www.gnu.org/software/gettext/manual/gettext.html#PO-Files>`_
 """
 
-from datetime import datetime
+from datetime import date, datetime
 import os
 import re
 
+from babel import __version__ as VERSION
 from babel.messages.catalog import Catalog, Message
-
+from babel.util import set, wraptext, LOCALTZ
 
 __all__ = ['read_po', 'write_po']
 __docformat__ = 'restructuredtext en'
-
 
 def unescape(string):
     r"""Reverse `escape` the given string.
@@ -42,11 +42,10 @@ def unescape(string):
     :rtype: `str` or `unicode`
     """
     return string[1:-1].replace('\\\\', '\\') \
-        .replace('\\t', '\t') \
-        .replace('\\r', '\r') \
-        .replace('\\n', '\n') \
-        .replace('\\"', '\"')
-
+                       .replace('\\t', '\t') \
+                       .replace('\\r', '\r') \
+                       .replace('\\n', '\n') \
+                       .replace('\\"', '\"')
 
 def denormalize(string):
     r"""Reverse the normalization done by the `normalize` function.
@@ -78,7 +77,6 @@ def denormalize(string):
         return ''.join(lines)
     else:
         return unescape(string)
-
 
 def read_po(fileobj, locale=None, domain=None, ignore_obsolete=False):
     """Read messages from a ``gettext`` PO (portable object) file from the given
@@ -160,12 +158,8 @@ def read_po(fileobj, locale=None, domain=None, ignore_obsolete=False):
                 catalog.obsolete[msgid] = message
         else:
             catalog[msgid] = message
-        del messages[:];
-        del translations[:];
-        del locations[:];
-        del flags[:];
-        del auto_comments[:];
-        del user_comments[:]
+        del messages[:]; del translations[:]; del locations[:];
+        del flags[:]; del auto_comments[:]; del user_comments[:]
         obsolete[0] = False
         counter[0] += 1
 
@@ -222,7 +216,7 @@ def read_po(fileobj, locale=None, domain=None, ignore_obsolete=False):
             elif line[1:].startswith('.'):
                 # These are called auto-comments
                 comment = line[2:].strip()
-                if comment:  # Just check that we're not adding empty comments
+                if comment: # Just check that we're not adding empty comments
                     auto_comments.append(comment)
             else:
                 # These are called user comments
@@ -242,13 +236,11 @@ def read_po(fileobj, locale=None, domain=None, ignore_obsolete=False):
 
     return catalog
 
-
 WORD_SEP = re.compile('('
-                      r'\s+|'  # any whitespace
-                      r'[^\s\w]*\w+[a-zA-Z]-(?=\w+[a-zA-Z])|'  # hyphenated words
-                      r'(?<=[\w\!\"\'\&\.\,\?])-{2,}(?=\w)'  # em-dash
-                      ')')
-
+    r'\s+|'                                 # any whitespace
+    r'[^\s\w]*\w+[a-zA-Z]-(?=\w+[a-zA-Z])|' # hyphenated words
+    r'(?<=[\w\!\"\'\&\.\,\?])-{2,}(?=\w)'   # em-dash
+')')
 
 def escape(string):
     r"""Escape the given string so that it can be included in double-quoted
@@ -264,11 +256,10 @@ def escape(string):
     :rtype: `str` or `unicode`
     """
     return '"%s"' % string.replace('\\', '\\\\') \
-        .replace('\t', '\\t') \
-        .replace('\r', '\\r') \
-        .replace('\n', '\\n') \
-        .replace('\"', '\\"')
-
+                          .replace('\t', '\\t') \
+                          .replace('\r', '\\r') \
+                          .replace('\n', '\\n') \
+                          .replace('\"', '\\"')
 
 def normalize(string, prefix='', width=76):
     r"""Convert a string into a format that is appropriate for .po files.
@@ -332,7 +323,6 @@ def normalize(string, prefix='', width=76):
         lines[-1] += '\n'
     return u'""\n' + u'\n'.join([(prefix + escape(l)) for l in lines])
 
-
 def write_po(fileobj, catalog, width=76, no_location=False, omit_header=False,
              sort_output=False, sort_by_file=False, ignore_obsolete=False,
              include_previous=False):
@@ -376,7 +366,6 @@ def write_po(fileobj, catalog, width=76, no_location=False, omit_header=False,
     :param include_previous: include the old msgid as a comment when
                              updating the catalog
     """
-
     def _normalize(key, prefix=''):
         return normalize(key, prefix=prefix, width=width) \
             .encode(catalog.charset, 'backslashreplace')
@@ -421,10 +410,10 @@ def write_po(fileobj, catalog, width=76, no_location=False, omit_header=False,
     if sort_output:
         messages.sort()
     elif sort_by_file:
-        messages.sort(lambda x, y: cmp(x.locations, y.locations))
+        messages.sort(lambda x,y: cmp(x.locations, y.locations))
 
     for message in messages:
-        if not message.id:  # This is the header "message"
+        if not message.id: # This is the header "message"
             if omit_header:
                 continue
             comment_header = catalog.header_comment

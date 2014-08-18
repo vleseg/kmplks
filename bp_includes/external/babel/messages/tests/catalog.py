@@ -20,6 +20,7 @@ from babel.messages import catalog
 
 
 class MessageTestCase(unittest.TestCase):
+
     def test_python_format(self):
         assert catalog.PYTHON_FORMAT.search('foo %d bar')
         assert catalog.PYTHON_FORMAT.search('foo %s bar')
@@ -42,9 +43,9 @@ class MessageTestCase(unittest.TestCase):
         self.assertEqual(mess.user_comments, ['Comment About `foo`'])
         mess = catalog.Message('foo',
                                auto_comments=['Comment 1 About `foo`',
-                                              'Comment 2 About `foo`'])
+                                         'Comment 2 About `foo`'])
         self.assertEqual(mess.auto_comments, ['Comment 1 About `foo`',
-                                              'Comment 2 About `foo`'])
+                                         'Comment 2 About `foo`'])
 
     def test_clone_message_object(self):
         msg = catalog.Message('foo', locations=[('foo.py', 42)])
@@ -56,6 +57,7 @@ class MessageTestCase(unittest.TestCase):
 
 
 class CatalogTestCase(unittest.TestCase):
+
     def test_two_messages_with_same_singular(self):
         cat = catalog.Catalog()
         cat.add('foo')
@@ -207,7 +209,7 @@ class CatalogTestCase(unittest.TestCase):
 
         self.assertEqual(None, cat2['foo'].string)
         self.assertEqual(False, cat2['foo'].fuzzy)
-
+        
     def test_update_po_updates_pot_creation_date(self):
         template = catalog.Catalog()
         localized_catalog = copy.deepcopy(template)
@@ -217,11 +219,11 @@ class CatalogTestCase(unittest.TestCase):
         self.assertEqual(template.creation_date,
                          localized_catalog.creation_date)
         template.creation_date = datetime.datetime.now() - \
-                                 datetime.timedelta(minutes=5)
+                                                datetime.timedelta(minutes=5)
         localized_catalog.update(template)
         self.assertEqual(template.creation_date,
                          localized_catalog.creation_date)
-
+        
     def test_update_po_keeps_po_revision_date(self):
         template = catalog.Catalog()
         localized_catalog = copy.deepcopy(template)
@@ -233,33 +235,30 @@ class CatalogTestCase(unittest.TestCase):
         self.assertEqual(template.creation_date,
                          localized_catalog.creation_date)
         template.creation_date = datetime.datetime.now() - \
-                                 datetime.timedelta(minutes=5)
+                                                datetime.timedelta(minutes=5)
         localized_catalog.update(template)
         self.assertEqual(localized_catalog.revision_date, fake_rev_date)
 
     def test_stores_datetime_correctly(self):
         localized = catalog.Catalog()
         localized.locale = 'de_DE'
-        localized[''] = catalog.Message('',
-                                        "POT-Creation-Date: 2009-03-09 15:47-0700\n" +
-                                        "PO-Revision-Date: 2009-03-09 15:47-0700\n")
+        localized[''] = catalog.Message('', 
+                       "POT-Creation-Date: 2009-03-09 15:47-0700\n" +
+                       "PO-Revision-Date: 2009-03-09 15:47-0700\n")
         for key, value in localized.mime_headers:
             if key in ('POT-Creation-Date', 'PO-Revision-Date'):
                 self.assertEqual(value, '2009-03-09 15:47-0700')
 
-
 def suite():
     suite = unittest.TestSuite()
     if hasattr(doctest, 'ELLIPSIS'):
-        suite.addTest(
-            doctest.DocTestSuite(catalog, optionflags=doctest.ELLIPSIS))
+        suite.addTest(doctest.DocTestSuite(catalog, optionflags=doctest.ELLIPSIS))
     else:
         # Python 2.3 has no doctest.ELLIPSIS option, it's implicit
         suite.addTest(doctest.DocTestSuite(catalog))
     suite.addTest(unittest.makeSuite(MessageTestCase))
     suite.addTest(unittest.makeSuite(CatalogTestCase))
     return suite
-
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

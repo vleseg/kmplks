@@ -5,6 +5,8 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 import codecs
+import mimetypes
+
 from uuid import uuid4
 from io import BytesIO
 
@@ -36,10 +38,10 @@ def iter_field_objects(fields):
         i = iter(fields)
 
     for field in i:
-        if isinstance(field, RequestField):
-            yield field
-        else:
-            yield RequestField.from_tuples(*field)
+      if isinstance(field, RequestField):
+        yield field
+      else:
+        yield RequestField.from_tuples(*field)
 
 
 def iter_fields(fields):

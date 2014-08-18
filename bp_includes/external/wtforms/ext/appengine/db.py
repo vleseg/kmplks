@@ -91,9 +91,9 @@ class:
    ContactForm = model_form(Contact, base_class=BaseContactForm)
 
 """
+from wtforms import Form, validators, widgets, fields as f
 from wtforms.compat import iteritems
-from wtforms.ext.appengine.fields import GeoPtPropertyField, \
-    ReferencePropertyField, StringListPropertyField
+from wtforms.ext.appengine.fields import GeoPtPropertyField, ReferencePropertyField, StringListPropertyField
 
 
 def get_TextField(kwargs):
@@ -311,34 +311,33 @@ class ModelConverter(object):
     +====================+===================+==============+==================+
     """
     default_converters = {
-        'StringProperty': convert_StringProperty,
-        'ByteStringProperty': convert_ByteStringProperty,
-        'BooleanProperty': convert_BooleanProperty,
-        'IntegerProperty': convert_IntegerProperty,
-        'FloatProperty': convert_FloatProperty,
-        'DateTimeProperty': convert_DateTimeProperty,
-        'DateProperty': convert_DateProperty,
-        'TimeProperty': convert_TimeProperty,
-        'ListProperty': convert_ListProperty,
-        'StringListProperty': convert_StringListProperty,
-        'ReferenceProperty': convert_ReferenceProperty,
+        'StringProperty':        convert_StringProperty,
+        'ByteStringProperty':    convert_ByteStringProperty,
+        'BooleanProperty':       convert_BooleanProperty,
+        'IntegerProperty':       convert_IntegerProperty,
+        'FloatProperty':         convert_FloatProperty,
+        'DateTimeProperty':      convert_DateTimeProperty,
+        'DateProperty':          convert_DateProperty,
+        'TimeProperty':          convert_TimeProperty,
+        'ListProperty':          convert_ListProperty,
+        'StringListProperty':    convert_StringListProperty,
+        'ReferenceProperty':     convert_ReferenceProperty,
         'SelfReferenceProperty': convert_SelfReferenceProperty,
-        'UserProperty': convert_UserProperty,
-        'BlobProperty': convert_BlobProperty,
-        'TextProperty': convert_TextProperty,
-        'CategoryProperty': convert_CategoryProperty,
-        'LinkProperty': convert_LinkProperty,
-        'EmailProperty': convert_EmailProperty,
-        'GeoPtProperty': convert_GeoPtProperty,
-        'IMProperty': convert_IMProperty,
-        'PhoneNumberProperty': convert_PhoneNumberProperty,
+        'UserProperty':          convert_UserProperty,
+        'BlobProperty':          convert_BlobProperty,
+        'TextProperty':          convert_TextProperty,
+        'CategoryProperty':      convert_CategoryProperty,
+        'LinkProperty':          convert_LinkProperty,
+        'EmailProperty':         convert_EmailProperty,
+        'GeoPtProperty':         convert_GeoPtProperty,
+        'IMProperty':            convert_IMProperty,
+        'PhoneNumberProperty':   convert_PhoneNumberProperty,
         'PostalAddressProperty': convert_PostalAddressProperty,
-        'RatingProperty': convert_RatingProperty,
+        'RatingProperty':        convert_RatingProperty,
     }
 
     # Don't automatically add a required validator for these properties
-    NO_AUTO_REQUIRED = frozenset(
-        ['ListProperty', 'StringListProperty', 'BooleanProperty'])
+    NO_AUTO_REQUIRED = frozenset(['ListProperty', 'StringListProperty', 'BooleanProperty'])
 
     def __init__(self, converters=None):
         """
@@ -410,8 +409,7 @@ def model_fields(model, only=None, exclude=None, field_args=None,
     # Get the field names we want to include or exclude, starting with the
     # full list of model properties.
     props = model.properties()
-    sorted_props = sorted(iteritems(props),
-                          key=lambda prop: prop[1].creation_counter)
+    sorted_props = sorted(iteritems(props), key=lambda prop: prop[1].creation_counter)
     field_names = list(x[0] for x in sorted_props)
 
     if only:

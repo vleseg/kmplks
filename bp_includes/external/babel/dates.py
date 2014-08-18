@@ -21,12 +21,11 @@ following environment variables, in that order:
  * ``LANG``
 """
 
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, tzinfo
 import re
 
 from babel.core import default_locale, get_global, Locale
 from babel.util import UTC
-
 
 __all__ = ['format_date', 'format_datetime', 'format_time',
            'get_timezone_name', 'parse_date', 'parse_datetime', 'parse_time']
@@ -39,7 +38,6 @@ date_ = date
 datetime_ = datetime
 time_ = time
 
-
 def get_period_names(locale=LC_TIME):
     """Return the names for day periods (AM/PM) used by the locale.
     
@@ -51,7 +49,6 @@ def get_period_names(locale=LC_TIME):
     :rtype: `dict`
     """
     return Locale.parse(locale).periods
-
 
 def get_day_names(width='wide', context='format', locale=LC_TIME):
     """Return the day names used by the locale for the specified format.
@@ -71,7 +68,6 @@ def get_day_names(width='wide', context='format', locale=LC_TIME):
     """
     return Locale.parse(locale).days[context][width]
 
-
 def get_month_names(width='wide', context='format', locale=LC_TIME):
     """Return the month names used by the locale for the specified format.
     
@@ -90,7 +86,6 @@ def get_month_names(width='wide', context='format', locale=LC_TIME):
     """
     return Locale.parse(locale).months[context][width]
 
-
 def get_quarter_names(width='wide', context='format', locale=LC_TIME):
     """Return the quarter names used by the locale for the specified format.
     
@@ -107,7 +102,6 @@ def get_quarter_names(width='wide', context='format', locale=LC_TIME):
     """
     return Locale.parse(locale).quarters[context][width]
 
-
 def get_era_names(width='wide', locale=LC_TIME):
     """Return the era names used by the locale for the specified format.
     
@@ -122,7 +116,6 @@ def get_era_names(width='wide', locale=LC_TIME):
     :rtype: `dict`
     """
     return Locale.parse(locale).eras[width]
-
 
 def get_date_format(format='medium', locale=LC_TIME):
     """Return the date formatting patterns used by the locale for the specified
@@ -140,7 +133,6 @@ def get_date_format(format='medium', locale=LC_TIME):
     :rtype: `DateTimePattern`
     """
     return Locale.parse(locale).date_formats[format]
-
 
 def get_datetime_format(format='medium', locale=LC_TIME):
     """Return the datetime formatting patterns used by the locale for the
@@ -160,7 +152,6 @@ def get_datetime_format(format='medium', locale=LC_TIME):
         format = None
     return patterns[format]
 
-
 def get_time_format(format='medium', locale=LC_TIME):
     """Return the time formatting patterns used by the locale for the specified
     format.
@@ -177,7 +168,6 @@ def get_time_format(format='medium', locale=LC_TIME):
     :rtype: `DateTimePattern`
     """
     return Locale.parse(locale).time_formats[format]
-
 
 def get_timezone_gmt(datetime=None, width='long', locale=LC_TIME):
     """Return the timezone associated with the given `datetime` object formatted
@@ -225,7 +215,6 @@ def get_timezone_gmt(datetime=None, width='long', locale=LC_TIME):
     else:
         pattern = locale.zone_formats['gmt'] % '%+03d:%02d'
     return pattern % (hours, seconds // 60)
-
 
 def get_timezone_location(dt_or_tzinfo=None, locale=LC_TIME):
     """Return a representation of the given timezone using "location format".
@@ -285,7 +274,7 @@ def get_timezone_location(dt_or_tzinfo=None, locale=LC_TIME):
     region_format = locale.zone_formats['region']
     territory = get_global('zone_territories').get(zone)
     if territory not in locale.territories:
-        territory = 'ZZ'  # invalid/unknown
+        territory = 'ZZ' # invalid/unknown
     territory_name = locale.territories[territory]
     if territory and len(get_global('territory_zones').get(territory, [])) == 1:
         return region_format % (territory_name)
@@ -308,7 +297,6 @@ def get_timezone_location(dt_or_tzinfo=None, locale=LC_TIME):
         '0': city_name,
         '1': territory_name
     })
-
 
 def get_timezone_name(dt_or_tzinfo=None, width='long', uncommon=False,
                       locale=LC_TIME):
@@ -432,7 +420,6 @@ def get_timezone_name(dt_or_tzinfo=None, width='long', uncommon=False,
 
     return get_timezone_location(dt_or_tzinfo, locale=locale)
 
-
 def format_date(date=None, format='medium', locale=LC_TIME):
     """Return a date formatted according to the given pattern.
     
@@ -471,7 +458,6 @@ def format_date(date=None, format='medium', locale=LC_TIME):
     pattern = parse_pattern(format)
     return pattern.apply(date, locale)
 
-
 def format_datetime(datetime=None, format='medium', tzinfo=None,
                     locale=LC_TIME):
     """Return a date formatted according to the given pattern.
@@ -509,7 +495,7 @@ def format_datetime(datetime=None, format='medium', tzinfo=None,
         datetime = datetime.replace(tzinfo=UTC)
     if tzinfo is not None:
         datetime = datetime.astimezone(tzinfo)
-        if hasattr(tzinfo, 'normalize'):  # pytz
+        if hasattr(tzinfo, 'normalize'): # pytz
             datetime = tzinfo.normalize(datetime)
 
     locale = Locale.parse(locale)
@@ -520,7 +506,6 @@ def format_datetime(datetime=None, format='medium', tzinfo=None,
             .replace('{1}', format_date(datetime, format, locale=locale))
     else:
         return parse_pattern(format).apply(datetime, locale)
-
 
 def format_time(time=None, format='medium', tzinfo=None, locale=LC_TIME):
     """Return a time formatted according to the given pattern.
@@ -593,7 +578,7 @@ def format_time(time=None, format='medium', tzinfo=None, locale=LC_TIME):
     if isinstance(time, datetime):
         if tzinfo is not None:
             time = time.astimezone(tzinfo)
-            if hasattr(tzinfo, 'normalize'):  # pytz
+            if hasattr(tzinfo, 'normalize'): # pytz
                 time = tzinfo.normalize(time)
         time = time.timetz()
     elif tzinfo is not None:
@@ -603,7 +588,6 @@ def format_time(time=None, format='medium', tzinfo=None, locale=LC_TIME):
     if format in ('full', 'long', 'medium', 'short'):
         format = get_time_format(format, locale=locale)
     return parse_pattern(format).apply(time, locale)
-
 
 def parse_date(string, locale=LC_TIME):
     """Parse a date from a string.
@@ -634,7 +618,7 @@ def parse_date(string, locale=LC_TIME):
     indexes = dict([(item[1], idx) for idx, item in enumerate(indexes)])
 
     # FIXME: this currently only supports numbers, but should also support month
-    # names, both in the requested locale, and english
+    #        names, both in the requested locale, and english
 
     numbers = re.findall('(\d+)', string)
     year = numbers[indexes['Y']]
@@ -648,7 +632,6 @@ def parse_date(string, locale=LC_TIME):
         month, day = day, month
     return date(year, month, day)
 
-
 def parse_datetime(string, locale=LC_TIME):
     """Parse a date and time from a string.
     
@@ -661,7 +644,6 @@ def parse_datetime(string, locale=LC_TIME):
     :rtype: `datetime`
     """
     raise NotImplementedError
-
 
 def parse_time(string, locale=LC_TIME):
     """Parse a time from a string.
@@ -690,7 +672,7 @@ def parse_time(string, locale=LC_TIME):
     indexes = dict([(item[1], idx) for idx, item in enumerate(indexes)])
 
     # FIXME: support 12 hour clock, and 0-based hour specification
-    # and seconds should be optional, maybe minutes too
+    #        and seconds should be optional, maybe minutes too
     #        oh, and time-zones, of course
 
     numbers = re.findall('(\d+)', string)
@@ -701,6 +683,7 @@ def parse_time(string, locale=LC_TIME):
 
 
 class DateTimePattern(object):
+
     def __init__(self, pattern, format):
         self.pattern = pattern
         self.format = format
@@ -720,6 +703,7 @@ class DateTimePattern(object):
 
 
 class DateTimeFormat(object):
+
     def __init__(self, value, locale):
         assert isinstance(value, (date, datetime, time))
         if isinstance(value, (datetime, time)) and value.tzinfo is None:
@@ -809,7 +793,7 @@ class DateTimeFormat(object):
         return get_month_names(width, context, self.locale)[self.value.month]
 
     def format_week(self, char, num):
-        if char.islower():  # week of year
+        if char.islower(): # week of year
             day_of_year = self.get_day_of_year()
             week = self.get_week_number(day_of_year)
             if week == 0:
@@ -817,7 +801,7 @@ class DateTimeFormat(object):
                 week = self.get_week_number(self.get_day_of_year(date),
                                             date.weekday())
             return self.format(week, num)
-        else:  # week of month
+        else: # week of month
             week = self.get_week_number(self.value.day)
             if week == 0:
                 date = self.value - timedelta(days=self.value.day)
@@ -848,7 +832,7 @@ class DateTimeFormat(object):
 
     def format_frac_seconds(self, num):
         value = str(self.value.microsecond)
-        return self.format(round(float('.%s' % value), num) * 10 ** num, num)
+        return self.format(round(float('.%s' % value), num) * 10**num, num)
 
     def format_milliseconds_in_day(self, num):
         msecs = self.value.microsecond // 1000 + self.value.second * 1000 + \
@@ -912,20 +896,19 @@ class DateTimeFormat(object):
 
 
 PATTERN_CHARS = {
-    'G': [1, 2, 3, 4, 5],  # era
-    'y': None, 'Y': None, 'u': None,  # year
-    'Q': [1, 2, 3, 4], 'q': [1, 2, 3, 4],  # quarter
-    'M': [1, 2, 3, 4, 5], 'L': [1, 2, 3, 4, 5],  # month
-    'w': [1, 2], 'W': [1],  # week
-    'd': [1, 2], 'D': [1, 2, 3], 'F': [1], 'g': None,  # day
+    'G': [1, 2, 3, 4, 5],                                           # era
+    'y': None, 'Y': None, 'u': None,                                # year
+    'Q': [1, 2, 3, 4], 'q': [1, 2, 3, 4],                           # quarter
+    'M': [1, 2, 3, 4, 5], 'L': [1, 2, 3, 4, 5],                     # month
+    'w': [1, 2], 'W': [1],                                          # week
+    'd': [1, 2], 'D': [1, 2, 3], 'F': [1], 'g': None,               # day
     'E': [1, 2, 3, 4, 5], 'e': [1, 2, 3, 4, 5], 'c': [1, 3, 4, 5],  # week day
-    'a': [1],  # period
-    'h': [1, 2], 'H': [1, 2], 'K': [1, 2], 'k': [1, 2],  # hour
-    'm': [1, 2],  # minute
-    's': [1, 2], 'S': None, 'A': None,  # second
+    'a': [1],                                                       # period
+    'h': [1, 2], 'H': [1, 2], 'K': [1, 2], 'k': [1, 2],             # hour
+    'm': [1, 2],                                                    # minute
+    's': [1, 2], 'S': None, 'A': None,                              # second
     'z': [1, 2, 3, 4], 'Z': [1, 2, 3, 4], 'v': [1, 4], 'V': [1, 4]  # zone
 }
-
 
 def parse_pattern(pattern):
     """Parse date, time, and datetime format patterns.
@@ -972,7 +955,7 @@ def parse_pattern(pattern):
 
     for idx, char in enumerate(pattern.replace("''", '\0')):
         if quotebuf is None:
-            if char == "'":  # quote started
+            if char == "'": # quote started
                 if fieldchar[0]:
                     append_field()
                 elif charbuf:
@@ -994,10 +977,10 @@ def parse_pattern(pattern):
                 charbuf.append(char)
 
         elif quotebuf is not None:
-            if char == "'":  # end of quote
+            if char == "'": # end of quote
                 charbuf.extend(quotebuf)
                 quotebuf = None
-            else:  # inside quote
+            else: # inside quote
                 quotebuf.append(char)
 
     if fieldchar[0]:

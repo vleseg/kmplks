@@ -29,7 +29,6 @@ from .cookies import RequestsCookieJar, cookiejar_from_dict
 from .structures import CaseInsensitiveDict
 from .exceptions import MissingSchema, InvalidURL
 
-
 _hush_pyflakes = (RequestsCookieJar,)
 
 NETRC_FILES = ('.netrc', '_netrc')
@@ -64,7 +63,6 @@ def super_len(o):
     if hasattr(o, 'getvalue'):
         # e.g. BytesIO, cStringIO.StringI
         return len(o.getvalue())
-
 
 def get_netrc_auth(url):
     """Returns the Requests tuple auth for a given url from netrc."""
@@ -282,8 +280,7 @@ def get_encodings_from_content(content):
     """
 
     charset_re = re.compile(r'<meta.*?charset=["\']*(.+?)["\'>]', flags=re.I)
-    pragma_re = re.compile(r'<meta.*?content=["\']*;?charset=(.+?)["\'>]',
-                           flags=re.I)
+    pragma_re = re.compile(r'<meta.*?content=["\']*;?charset=(.+?)["\'>]', flags=re.I)
     xml_re = re.compile(r'^<\?xml.*?encoding=["\']*(.+?)["\'>]')
 
     return (charset_re.findall(content) +
@@ -418,8 +415,7 @@ def address_in_network(ip, net):
     """
     ipaddr = struct.unpack('=L', socket.inet_aton(ip))[0]
     netaddr, bits = net.split('/')
-    netmask = struct.unpack('=L', socket.inet_aton(dotted_netmask(int(bits))))[
-        0]
+    netmask = struct.unpack('=L', socket.inet_aton(dotted_netmask(int(bits))))[0]
     network = struct.unpack('=L', socket.inet_aton(netaddr))[0] & netmask
     return (ipaddr & netmask) == (network & netmask)
 
@@ -511,8 +507,7 @@ def default_user_agent(name="python-requests"):
                                                 sys.pypy_version_info.minor,
                                                 sys.pypy_version_info.micro)
         if sys.pypy_version_info.releaselevel != 'final':
-            _implementation_version = ''.join(
-                [_implementation_version, sys.pypy_version_info.releaselevel])
+            _implementation_version = ''.join([_implementation_version, sys.pypy_version_info.releaselevel])
     elif _implementation == 'Jython':
         _implementation_version = platform.python_version()  # Complete Guess
     elif _implementation == 'IronPython':
@@ -586,26 +581,26 @@ def guess_json_utf(data):
     # determine the encoding. Also detect a BOM, if present.
     sample = data[:4]
     if sample in (codecs.BOM_UTF32_LE, codecs.BOM32_BE):
-        return 'utf-32'  # BOM included
+        return 'utf-32'     # BOM included
     if sample[:3] == codecs.BOM_UTF8:
         return 'utf-8-sig'  # BOM included, MS style (discouraged)
     if sample[:2] in (codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE):
-        return 'utf-16'  # BOM included
+        return 'utf-16'     # BOM included
     nullcount = sample.count(_null)
     if nullcount == 0:
         return 'utf-8'
     if nullcount == 2:
-        if sample[::2] == _null2:  # 1st and 3rd are null
+        if sample[::2] == _null2:   # 1st and 3rd are null
             return 'utf-16-be'
         if sample[1::2] == _null2:  # 2nd and 4th are null
             return 'utf-16-le'
-            # Did not detect 2 valid UTF-16 ascii-range characters
+        # Did not detect 2 valid UTF-16 ascii-range characters
     if nullcount == 3:
         if sample[:3] == _null3:
             return 'utf-32-be'
         if sample[1:] == _null3:
             return 'utf-32-le'
-            # Did not detect a valid UTF-32 ascii-range character
+        # Did not detect a valid UTF-32 ascii-range character
     return None
 
 
