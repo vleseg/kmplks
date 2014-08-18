@@ -85,19 +85,34 @@ class AppTest(unittest.TestCase):
             if cell.get_text().strip() in srv_names:
                 ids_to_use.append(cell.label['for'])
 
-        req_params = 
+        req_params = {'service': ids_to_use}
+        response = self.testapp.post('/services', req_params).follow()
 
-        form = secondary_response.form
-        checkboxes = [form.get('service', index=i) for i in (1, 2, 3)]
-        for cb in checkboxes:
-            cb.checked = True
-        form.submit()
-        # Choice is stored in session; go to result in debug_mode
-        final_response = self.testapp.get('/result?debug_mode=1')
+        doc_names = [
+            u'Заявление о рождении, форма №1', u'Домовая книга',
+            u'Документ, удостоверяющий личность заявителя',
+            u'Документ, удостоверяющий личность второго родителя',
+            u'Свидетельство о заключении брака',
+            u'Медицинское свидетельство о рождении, форма №103/У',
+            u'Согласие на обработку персональных данных',
+            u'Доверенность на передачу согласия на обработку ПДн',
+            u'Заявление о регистрации по месту жительства, форма №6',
+            u'Свидетельство о рождении', u'Фотография 3х4',
+            u'Документ, удостоверяющий личность заявителя',
+            u'Документ о праве на жилое помещение',
+            u'Заявление о выдаче нагрудного знака и удостоверения многодетной '
+            u'семьи', u'Простая доверенность', u'Документ о перемене имени',
+            u'Документ, удостоверяющий личность заявителя',
+            u'Свидетельство о рождении', u'Свидетельство об усыновлении',
+            u'Свидетельство о смерти либо решение суда об объявлении '
+            u'гражданина умершим',
+            u'Решение суда о признании гражданина недееспособным, ограниченно '
+            u'дееспособным',
+            u'Решение суда об ограничении родительских прав, о лишении '
+            u'родительских прав, об отмене усыновления']
 
-        #
-        # TODO: finish this
-        #
+        for assert_str in doc_names:
+            self.assertIn(assert_str, response)
 
     @classmethod
     def tearDownClass(cls):

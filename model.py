@@ -175,16 +175,16 @@ class Document(BaseModel):
         :returns: Either a dictionary with keys 'from_doc' and 'from_dts' or a
             list of such dictionaries
         :rtype: dict[str, str | NoneType] |
-                list[dict[str, int | str | NoneType]]
+                list[dict[str, str | str | NoneType]]
         """
-        def _compile_single(dts, result):
-            if dts.description is None:
-                result['from_doc'] = self.description
-            elif dts.override_description:
-                result['from_dts'] = dts.description
+        def _compile_single(_dts, _result):
+            if _dts.description is None:
+                _result['from_doc'] = self.description
+            elif _dts.override_description:
+                _result['from_dts'] = _dts.description
             else:
-                result['from_doc'] = self.description
-                result['from_dts'] = dts.description
+                _result['from_doc'] = self.description
+                _result['from_dts'] = _dts.description
 
         result = {'from_doc': None, 'from_dts': None}
 
@@ -192,6 +192,8 @@ class Document(BaseModel):
             dts = dts_items[0]
             _compile_single(dts, result)
         else:
+            # If no description was specified for any of the DocumentToService
+            # entities.
             if all(dts.description is None for dts in dts_items):
                 result["from_doc"] = self.description
             # If all descriptions in DocumentToService entities are identical.
@@ -202,7 +204,7 @@ class Document(BaseModel):
                 for dts in dts_items:
                     result_item = {}
                     _compile_single(dts, result_item)
-                    result_item['service_id'] = dts.service.id()
+                    result_item['service'] = dts.service.get()
                     result.append(result_item)
 
         return result

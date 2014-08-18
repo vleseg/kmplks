@@ -20,12 +20,12 @@ import json
 import logging
 import os
 # Third-party imports
-from google.appengine.ext.ndb import Query
+from google.appengine.ext import ndb
 from jinja2 import Environment, FileSystemLoader
 import webapp2
 from webapp2_extras import sessions
 # Project imports
-from model import *
+from model import Kompleks, Service, DocumentToService
 
 ENV = Environment(autoescape=True,
                   loader=FileSystemLoader(
@@ -204,7 +204,7 @@ class KompleksHandler(BaseHandler):
             self.store_services_in_session(kompleks_id)
             self.redirect('/prerequisites')
 
-        k_iter = Query(kind='Kompleks').iter()
+        k_iter = Kompleks.query().iter()
 
         # Constructing context.
         self.context['komplekses'] = (self.prepare(k) for k in k_iter)
@@ -228,7 +228,7 @@ class KompleksHandler(BaseHandler):
         related_ids = []
         kompleks = from_urlsafe(kompleks_id)
 
-        for service in Query(kind='Service').iter():
+        for service in Service.query().iter():
             if kompleks.key in service.containing_komplekses:
                 contained_ids.append(service.urlsafe())
             elif kompleks.key in service.related_komplekses:
@@ -351,10 +351,8 @@ class ServiceChoiceHandler(BaseHandler):
         self.render()
 
     def post(self):
-        service_ids = map(int, self.request.get_all('service'))
-
         # Writing session data.
-        self.store_session_data('service_ids', service_ids)
+        self.store_session_data('service_ids', self.request.get_all('service'))
 
         self.redirect('/result')
 
@@ -377,61 +375,48 @@ class ResultHandler(BaseHandler):
     """
     template_filename = 'result.html'
 
-    @staticmethod
-    def _unfold_service(description_dict):
-        description_dict['service'] = Service.by_id(
-            description_dict['service_id'], force_list=False)
-        del description_dict['service_id']  # Don't ask why, I just want to.
-
     def get(self):
         d = self.get_session_data(['kompleks_id', 'service_ids'])
 
-        kompleks = Kompleks.by_id(d['kompleks_id'], force_list=False)
-        services = Service.by_id(d['service_ids'])
+        kompleks = from_urlsafe(d['kompleks_id'])
+        services = from_urlsafe(d['service_ids'], multi=True)
 
         # document id to DocumentToService instances mapping.
         doc_id_to_dts = {}
-        # Will be saved in context for rendering of result.
-        documents_serialized = []
 
         # dts == DocumentToService instance.
         for service in services:
-            for dts in service.documenttoservice_set:
-                doc_id = dts.document.id()
-                # Sometimes a service can map to different sets of documents --
-                # depending on the kompleks, that was picked in the very
-                # beginning.
-                if not dts.kompleks or dts.kompleks.id() == d['kompleks_id']:
+            for dts in DocumentToService.query(
+                    DocumentToService.service == service.key):
+                doc_id = dts.document.urlsafe()
+                # A service may map to different sets of documents -- depending
+                # on the kompleks, that was picked in the very beginning.
+                if (not dts.kompleks
+                        or dts.kompleks.urlsafe() == d['kompleks_id']):
                     if doc_id not in doc_id_to_dts:
                         doc_id_to_dts[doc_id] = [dts]
                     else:
                         doc_id_to_dts[doc_id].append(dts)
 
-        for document in Document.by_id(doc_id_to_dts.keys()):
-            dts_items = doc_id_to_dts[document.id()]
-
-            description = document.precompile_description(dts_items)
-            if isinstance(description, list):
-                for e in description:
-                    self._unfold_service(e)
-
-            document_view = {
-                "name": document.name,
-                "description": description,
-                "n_originals": document.count_up(
-                    what="originals", dts_items=dts_items),
-                "n_copies": document.count_up(
-                    what="copies", dts_items=dts_items),
-                "o_supply_type": document.define_o_supply_type(dts_items)
-            }
-
-            documents_serialized.append(document_view)
-
         # Constructing context.
         self.context["kompleks"] = kompleks
-        self.context["documents"] = documents_serialized
+        self.context["documents"] = [self.prepare(item) for item in
+                                     doc_id_to_dts.items()]
 
         self.render()
+
+    @staticmethod
+    def prepare(item):
+        doc_id, dts_items = item
+        document = from_urlsafe(doc_id)
+        description = document.precompile_description(dts_items)
+
+        return {
+            'name': document.name, 'description': description,
+            'n_originals': document.count_up('originals', dts_items),
+            'n_copies': document.count_up('copies', dts_items),
+            'o_supply_type': document.define_o_supply_type(dts_items)
+        }
 
 
 config = {'webapp2_extras.sessions': {
