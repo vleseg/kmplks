@@ -233,7 +233,8 @@ class Document(BaseModel):
                 # ...or from Document if former was not defined.
                 total += current_n if current_n else getattr(self, attr_name)
         else:  # count_method == 'per_ogv'
-            unique_ogv_names = set(dts.service.ogv.name for dts in dts_items)
+            unique_ogv_names = set(
+                dts.service.ogv.get().name for dts in dts_items)
             total = getattr(self, attr_name) * len(unique_ogv_names)
 
         return total
