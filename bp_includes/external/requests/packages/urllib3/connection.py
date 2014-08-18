@@ -7,31 +7,34 @@
 import socket
 from socket import timeout as SocketTimeout
 
-try: # Python 3
+try:  # Python 3
     from http.client import HTTPConnection, HTTPException
 except ImportError:
     from httplib import HTTPConnection, HTTPException
+
 
 class DummyConnection(object):
     "Used to detect a failed ConnectionCls import."
     pass
 
-try: # Compiled with SSL?
+
+try:  # Compiled with SSL?
     ssl = None
     HTTPSConnection = DummyConnection
 
     class BaseSSLError(BaseException):
         pass
 
-    try: # Python 3
+    try:  # Python 3
         from http.client import HTTPSConnection
     except ImportError:
         from httplib import HTTPSConnection
 
     import ssl
+
     BaseSSLError = ssl.SSLError
 
-except (ImportError, AttributeError): # Platform-specific: No SSL.
+except (ImportError, AttributeError):  # Platform-specific: No SSL.
     pass
 
 from .exceptions import (
@@ -44,6 +47,7 @@ from .util import (
     resolve_ssl_version,
     ssl_wrap_socket,
 )
+
 
 class VerifiedHTTPSConnection(HTTPSConnection):
     """
@@ -73,9 +77,9 @@ class VerifiedHTTPSConnection(HTTPSConnection):
                 timeout=self.timeout,
             )
         except SocketTimeout:
-                raise ConnectTimeoutError(
-                    self, "Connection to %s timed out. (connect timeout=%s)" %
-                    (self.host, self.timeout))
+            raise ConnectTimeoutError(
+                self, "Connection to %s timed out. (connect timeout=%s)" %
+                (self.host, self.timeout))
 
         resolved_cert_reqs = resolve_cert_reqs(self.cert_reqs)
         resolved_ssl_version = resolve_ssl_version(self.ssl_version)

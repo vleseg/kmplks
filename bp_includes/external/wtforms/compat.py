@@ -12,7 +12,7 @@ else:
     string_types = basestring,
     iteritems = lambda o: o.iteritems()
     itervalues = lambda o: o.itervalues()
-    from itertools import izip
+
 
 def with_metaclass(meta, base=object):
     return meta("NewBase", (base,), {})

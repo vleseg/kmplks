@@ -25,11 +25,10 @@ from babel import __version__ as VERSION
 from babel.core import Locale
 from babel.dates import format_datetime
 from babel.messages.plurals import get_plural
-from babel.util import odict, distinct, set, LOCALTZ, UTC, FixedOffsetTimezone
+
 
 __all__ = ['Message', 'Catalog', 'TranslationError']
 __docformat__ = 'restructuredtext en'
-
 
 PYTHON_FORMAT = re.compile(r'''(?x)
     \%
@@ -63,10 +62,10 @@ class Message(object):
         :param lineno: the line number on which the msgid line was found in the
                        PO file, if any
         """
-        self.id = id #: The message ID
+        self.id = id  # : The message ID
         if not string and self.pluralizable:
             string = (u'', u'')
-        self.string = string #: The message translation
+        self.string = string  # : The message translation
         self.locations = list(distinct(locations))
         self.flags = set(flags)
         if id and self.python_format:
@@ -115,6 +114,7 @@ class Message(object):
               in a catalog.
         """
         from babel.messages.checkers import checkers
+
         errors = []
         for checker in checkers:
             try:
@@ -125,6 +125,7 @@ class Message(object):
 
     def fuzzy(self):
         return 'fuzzy' in self.flags
+
     fuzzy = property(fuzzy, doc="""\
         Whether the translation is fuzzy.
 
@@ -141,6 +142,7 @@ class Message(object):
 
     def pluralizable(self):
         return isinstance(self.id, (list, tuple))
+
     pluralizable = property(pluralizable, doc="""\
         Whether the message is plurizable.
 
@@ -157,6 +159,7 @@ class Message(object):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
         return bool(filter(None, [PYTHON_FORMAT.search(id) for id in ids]))
+
     python_format = property(python_format, doc="""\
         Whether the message contains Python-style parameters.
 
@@ -210,15 +213,15 @@ class Catalog(object):
         :param charset: the encoding to use in the output
         :param fuzzy: the fuzzy bit on the catalog header
         """
-        self.domain = domain #: The message domain
+        self.domain = domain  # : The message domain
         if locale:
             locale = Locale.parse(locale)
-        self.locale = locale #: The locale or `None`
+        self.locale = locale  # : The locale or `None`
         self._header_comment = header_comment
         self._messages = odict()
 
-        self.project = project or 'PROJECT' #: The project name
-        self.version = version or 'VERSION' #: The project version
+        self.project = project or 'PROJECT'  # : The project name
+        self.version = version or 'VERSION'  # : The project version
         self.copyright_holder = copyright_holder or 'ORGANIZATION'
         self.msgid_bugs_address = msgid_bugs_address or 'EMAIL@ADDRESS'
 
@@ -233,24 +236,24 @@ class Catalog(object):
             creation_date = datetime.now(LOCALTZ)
         elif isinstance(creation_date, datetime) and not creation_date.tzinfo:
             creation_date = creation_date.replace(tzinfo=LOCALTZ)
-        self.creation_date = creation_date #: Creation date of the template
+        self.creation_date = creation_date  # : Creation date of the template
         if revision_date is None:
             revision_date = datetime.now(LOCALTZ)
         elif isinstance(revision_date, datetime) and not revision_date.tzinfo:
             revision_date = revision_date.replace(tzinfo=LOCALTZ)
-        self.revision_date = revision_date #: Last revision date of the catalog
-        self.fuzzy = fuzzy #: Catalog header fuzzy bit (`True` or `False`)
+        self.revision_date = revision_date  # : Last revision date of the catalog
+        self.fuzzy = fuzzy  # : Catalog header fuzzy bit (`True` or `False`)
 
-        self.obsolete = odict() #: Dictionary of obsolete messages
+        self.obsolete = odict()  # : Dictionary of obsolete messages
         self._num_plurals = None
         self._plural_expr = None
 
     def _get_header_comment(self):
         comment = self._header_comment
         comment = comment.replace('PROJECT', self.project) \
-                         .replace('VERSION', self.version) \
-                         .replace('YEAR', self.revision_date.strftime('%Y')) \
-                         .replace('ORGANIZATION', self.copyright_holder)
+            .replace('VERSION', self.version) \
+            .replace('YEAR', self.revision_date.strftime('%Y')) \
+            .replace('ORGANIZATION', self.copyright_holder)
         if self.locale:
             comment = comment.replace('Translations template', '%s translations'
                                       % self.locale.english_name)
@@ -310,8 +313,8 @@ class Catalog(object):
                                             'yyyy-MM-dd HH:mmZ', locale='en')))
             headers.append(('Last-Translator', self.last_translator))
             headers.append(('Language-Team',
-                           self.language_team.replace('LANGUAGE',
-                                                      str(self.locale))))
+                            self.language_team.replace('LANGUAGE',
+                                                       str(self.locale))))
             headers.append(('Plural-Forms', self.plural_forms))
         headers.append(('MIME-Version', '1.0'))
         headers.append(('Content-Type',
@@ -346,7 +349,7 @@ class Catalog(object):
                 self._plural_expr = params.get('plural', '(n != 1)')
             elif name == 'pot-creation-date':
                 # FIXME: this should use dates.parse_datetime as soon as that
-                #        is ready
+                # is ready
                 value, tzoffset, _ = re.split('([+-]\d{4})$', value, 1)
 
                 tt = time.strptime(value, '%Y-%m-%d %H:%M')
@@ -376,7 +379,7 @@ class Catalog(object):
                 # Keep the value if it's not the default one
                 if 'YEAR' not in value:
                     # FIXME: this should use dates.parse_datetime as soon as
-                    #        that is ready
+                    # that is ready
                     value, tzoffset, _ = re.split('([+-]\d{4})$', value, 1)
                     tt = time.strptime(value, '%Y-%m-%d %H:%M')
                     ts = time.mktime(tt)
@@ -459,6 +462,7 @@ class Catalog(object):
                 num = get_plural(self.locale)[0]
             self._num_plurals = num
         return self._num_plurals
+
     num_plurals = property(num_plurals, doc="""\
     The number of plurals used by the catalog or locale.
 
@@ -477,6 +481,7 @@ class Catalog(object):
                 expr = get_plural(self.locale)[1]
             self._plural_expr = expr
         return self._plural_expr
+
     plural_expr = property(plural_expr, doc="""\
     The plural expression used by the catalog or locale.
 
@@ -490,6 +495,7 @@ class Catalog(object):
 
     def plural_forms(self):
         return 'nplurals=%s; plural=%s' % (self.num_plurals, self.plural_expr)
+
     plural_forms = property(plural_forms, doc="""\
     Return the plural forms declaration for the locale.
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from bp_includes.lib.basehandler import BaseHandler
 from google.appengine.api import users
+
+from bp_includes.lib.basehandler import BaseHandler
 
 
 class AdminLogoutHandler(BaseHandler):

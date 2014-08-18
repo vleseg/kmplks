@@ -19,10 +19,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = 'TestProject',
-    version = '0.1',
-    license = 'BSD',
-    author = 'Foo Bar',
-    author_email = 'foo@bar.tld',
-    packages = find_packages(),
+    name='TestProject',
+    version='0.1',
+    license='BSD',
+    author='Foo Bar',
+    author_email='foo@bar.tld',
+    packages=find_packages(),
 )

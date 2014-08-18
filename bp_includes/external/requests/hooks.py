@@ -13,7 +13,6 @@ Available hooks:
 
 """
 
-
 HOOKS = ['response']
 
 
@@ -22,6 +21,7 @@ def default_hooks():
     for event in HOOKS:
         hooks[event] = []
     return hooks
+
 
 # TODO: response is the only one
 

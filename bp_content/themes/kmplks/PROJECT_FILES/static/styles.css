@@ -4,49 +4,60 @@ body {
     margin-left: 2%;
     margin-right: 2%;
 }
+
 h1 {
-    color:  #275279;
+    color: #275279;
     font-weight: lighter;
     border: 1px solid #a7c5e1;
 }
+
 table {
     width: 100%;
     border-collapse: collapse;
 }
+
 th {
     text-align: left;
     font-weight: bold;
     border-bottom: 1px solid #20588A;
 }
+
 td {
     border-bottom: 1px solid #73ADE1;
 }
+
 th, td {
     padding: 0.4em 0.2em;
 }
+
 td.quantity-col {
     text-align: center;
     font-weight: bolder;
     font-size: 1.6em;
     color: #20588A;
 }
+
 .disabled {
     color: #adc0cc;
     background-color: #dedfe6;
 }
+
 .disabled a {
     color: #adc0cc;
 }
+
 .multidescr-srv-plank {
     border-bottom: 1px solid #a7c5e1;
     border-top: 1px solid #a7c5e1;
     background-color: rgba(191, 227, 255, 0.25);
     margin-top: 0.6em;
 }
+
 .multidescr-srv-body {
     border: 1px solid #a7c5e1;
     display: none;
 }
+
 .multidescr-srv-name {
     color: #6290c3;
 }
@@ -55,15 +66,19 @@ td.quantity-col {
 #srv-name-head {
     width: 30.5%
 }
+
 #srv-description-head {
     width: 49.5%;
 }
+
 #o-count-col-head {
     width: 5%;
 }
+
 #c-count-col-head {
     width: 5%;
 }
+
 #o-supply-type-head {
     width: 10%;
 }

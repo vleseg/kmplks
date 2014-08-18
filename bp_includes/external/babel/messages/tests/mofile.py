@@ -18,8 +18,8 @@ from StringIO import StringIO
 
 from babel.messages import mofile, Catalog
 
-class WriteMoTestCase(unittest.TestCase):
 
+class WriteMoTestCase(unittest.TestCase):
     def test_sorting(self):
         # Ensure the header is sorted to the first entry so that its charset
         # can be applied to all subsequent messages by GNUTranslations
@@ -38,8 +38,10 @@ class WriteMoTestCase(unittest.TestCase):
         translations = gettext.GNUTranslations(fp=buf)
         self.assertEqual(u'Voh', translations.ugettext('foo'))
         assert isinstance(translations.ugettext('foo'), unicode)
-        self.assertEqual(u'Es gibt', translations.ungettext('There is', 'There are', 1))
-        assert isinstance(translations.ungettext('There is', 'There are', 1), unicode)
+        self.assertEqual(u'Es gibt',
+                         translations.ungettext('There is', 'There are', 1))
+        assert isinstance(translations.ungettext('There is', 'There are', 1),
+                          unicode)
         self.assertEqual(u'Fizz', translations.ugettext('Fizz'))
         assert isinstance(translations.ugettext('Fizz'), unicode)
         self.assertEqual(u'Fuzz', translations.ugettext('Fuzz'))
@@ -59,6 +61,7 @@ def suite():
     suite.addTest(doctest.DocTestSuite(mofile))
     suite.addTest(unittest.makeSuite(WriteMoTestCase))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

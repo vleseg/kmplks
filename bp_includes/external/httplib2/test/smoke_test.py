@@ -2,7 +2,6 @@ import os
 import unittest
 
 import httplib2
-
 from httplib2.test import miniserver
 
 

@@ -16,14 +16,15 @@ from __future__ import unicode_literals
 
 import hmac
 import os
-
 from hashlib import sha1
 from datetime import datetime, timedelta
 
 from ...validators import ValidationError
 from .form import SecureForm
 
+
 __all__ = ('SessionSecureForm', )
+
 
 class SessionSecureForm(SecureForm):
     TIME_FORMAT = '%Y%m%d%H%M%S'
@@ -32,9 +33,11 @@ class SessionSecureForm(SecureForm):
 
     def generate_csrf_token(self, csrf_context):
         if self.SECRET_KEY is None:
-            raise Exception('must set SECRET_KEY in a subclass of this form for it to work')
+            raise Exception(
+                'must set SECRET_KEY in a subclass of this form for it to work')
         if csrf_context is None:
-            raise TypeError('Must provide a session-like object as csrf context')
+            raise TypeError(
+                'Must provide a session-like object as csrf context')
 
         session = getattr(csrf_context, 'session', csrf_context)
 
@@ -43,13 +46,15 @@ class SessionSecureForm(SecureForm):
 
         self.csrf_token.csrf_key = session['csrf']
         if self.TIME_LIMIT:
-            expires = (datetime.now() + self.TIME_LIMIT).strftime(self.TIME_FORMAT)
+            expires = (datetime.now() + self.TIME_LIMIT).strftime(
+                self.TIME_FORMAT)
             csrf_build = '%s%s' % (session['csrf'], expires)
         else:
             expires = ''
             csrf_build = session['csrf']
 
-        hmac_csrf = hmac.new(self.SECRET_KEY, csrf_build.encode('utf8'), digestmod=sha1) 
+        hmac_csrf = hmac.new(self.SECRET_KEY, csrf_build.encode('utf8'),
+                             digestmod=sha1)
         return '%s##%s' % (expires, hmac_csrf.hexdigest())
 
     def validate_csrf_token(self, field):

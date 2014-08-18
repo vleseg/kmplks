@@ -5,7 +5,8 @@ It takes precedence over the config located in the boilerplate package.
 
 import os
 
-if 'HTTP_HOST' in os.environ and os.environ['HTTP_HOST'] == "appengine.beecoss.com":
+if 'HTTP_HOST' in os.environ and os.environ[
+    'HTTP_HOST'] == "appengine.beecoss.com":
     # Load Boilerplate config only in http://appengine.beecoss.com
     # this code is here just for testing purposes
     from boilerplate import config

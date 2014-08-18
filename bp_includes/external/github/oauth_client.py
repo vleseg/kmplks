@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-##
+# #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,14 +16,16 @@
 __author__ = 'Kord Campbell'
 __website__ = 'http://www.tinyprobe.com'
 
-
-import httplib2
 import urlparse
 import urllib
 
+import httplib2
+
+
 try:
     from urlparse import parse_qs
-    parse_qs # placate pyflakes
+
+    parse_qs  # placate pyflakes
 except ImportError:
     # fall back for Python 2.5
     from cgi import parse_qs
@@ -43,7 +45,7 @@ class Error(RuntimeError):
     def __str__(self):
         return self._message
 
-        
+
 # class written by github guys for their gist example at https://gist.github.com/e3fbd47fbb7ee3c626bb
 class Client(object):
     """Client for OAuth 2.0 draft spec
@@ -51,7 +53,7 @@ class Client(object):
     """
 
     def __init__(self, client_id, client_secret, oauth_base_url,
-        redirect_uri=None, cache=None, timeout=None, proxy_info=None):
+                 redirect_uri=None, cache=None, timeout=None, proxy_info=None):
 
         self.client_id = client_id
         self.client_secret = client_secret
@@ -59,11 +61,11 @@ class Client(object):
         self.oauth_base_url = oauth_base_url
 
         if self.client_id is None or self.client_secret is None or \
-           self.oauth_base_url is None:
+                        self.oauth_base_url is None:
             raise ValueError("Client_id and client_secret must be set.")
 
         self.http = httplib2.Http(cache=cache, timeout=timeout,
-            proxy_info=proxy_info)
+                                  proxy_info=proxy_info)
 
     @staticmethod
     def _split_url_string(param_str):
@@ -74,7 +76,7 @@ class Client(object):
         return parameters
 
     def authorization_url(self, redirect_uri=None, params=None, state=None,
-        immediate=None, endpoint='authorize'):
+                          immediate=None, endpoint='authorize'):
         """Get the URL to redirect the user for client authorization
         https://svn.tools.ietf.org/html/draft-hammer-oauth2-00#section-3.5.2.1
         """
@@ -97,10 +99,10 @@ class Client(object):
         args.update(params or {})
 
         return '%s?%s' % (urlparse.urljoin(self.oauth_base_url, endpoint),
-            urllib.urlencode(args))
+                          urllib.urlencode(args))
 
     def access_token(self, code, redirect_uri, params=None, secret_type=None,
-        endpoint='access_token'):
+                     endpoint='access_token'):
         """Get an access token from the supplied code
         https://svn.tools.ietf.org/html/draft-hammer-oauth2-00#section-3.5.2.2
         """
@@ -133,7 +135,7 @@ class Client(object):
         }
 
         response, content = self.http.request(uri, method='POST', body=body,
-            headers=headers)
+                                              headers=headers)
         if not response.status == 200:
             raise Error(content)
         response_args = Client._split_url_string(content)
@@ -148,7 +150,7 @@ class Client(object):
         return response_args
 
     def refresh(self, refresh_token, params=None, secret_type=None,
-        endpoint='access_token'):
+                endpoint='access_token'):
         """Get a new access token from the supplied refresh token
         https://svn.tools.ietf.org/html/draft-hammer-oauth2-00#section-4
         """
@@ -177,7 +179,7 @@ class Client(object):
         }
 
         response, content = self.http.request(uri, method='POST', body=body,
-            headers=headers)
+                                              headers=headers)
         if not response.status == 200:
             raise Error(content)
 
@@ -185,7 +187,7 @@ class Client(object):
         return response_args
 
     def request(self, base_uri, access_token=None, method='GET', body=None,
-        headers=None, params=None, token_param='oauth_token'):
+                headers=None, params=None, token_param='oauth_token'):
         """Make a request to the OAuth API"""
 
         args = {}

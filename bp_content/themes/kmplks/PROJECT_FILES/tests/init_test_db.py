@@ -1,4 +1,3 @@
-from collections import namedtuple
 import os
 from time import sleep
 # Third-party imports
@@ -18,6 +17,7 @@ class TextGetter(object):
     node attrs or contents -- as plain text, serialized XHTML or None, if it
     is not a leaf node.
     """
+
     def __init__(self, node):
         self.node = node
         if len(node) > 0:  # if it is not a leaf node

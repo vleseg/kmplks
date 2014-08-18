@@ -1,9 +1,11 @@
 import httpagentparser as hap
 
+
 class JakartaHTTPClinet(hap.Browser):
     name = 'Jakarta Commons-HttpClient'
     look_for = name
     version_splitters = ['/']
+
 
 class PythonRequests(hap.Browser):
     name = 'Python Requests'
@@ -17,7 +19,6 @@ hap.detectorshub.register(PythonRequests())
 # Tests
 
 if __name__ == '__main__':
-
     s = 'Jakarta Commons-HttpClient/3.1'
 
     print(hap.detect(s))

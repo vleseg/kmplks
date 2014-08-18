@@ -2,11 +2,10 @@
 
 This helps ensure compatibility with environments such as AppEngine.
 """
-import os
-import sys
 import unittest
 
 import httplib2
+
 
 class MissingSocketTest(unittest.TestCase):
     def setUp(self):

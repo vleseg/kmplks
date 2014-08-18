@@ -37,7 +37,7 @@ class OrderedDict(dict):
         try:
             self.__root
         except AttributeError:
-            self.__root = root = []                     # sentinel node
+            self.__root = root = []  # sentinel node
             root[:] = [root, root, None]
             self.__map = {}
         self.__update(*args, **kwds)
@@ -239,7 +239,7 @@ class OrderedDict(dict):
 
         '''
         if isinstance(other, OrderedDict):
-            return len(self)==len(other) and self.items() == other.items()
+            return len(self) == len(other) and self.items() == other.items()
         return dict.__eq__(self, other)
 
     def __ne__(self, other):

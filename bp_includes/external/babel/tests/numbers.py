@@ -13,6 +13,7 @@
 
 try:
     from decimal import Decimal
+
     have_decimal = True
 except ImportError:
     have_decimal = False
@@ -24,21 +25,20 @@ from babel import numbers
 
 
 class FormatDecimalTestCase(unittest.TestCase):
-
     def test_patterns(self):
-        self.assertEqual(numbers.format_decimal(12345, '##0', 
-                         locale='en_US'), '12345')
-        self.assertEqual(numbers.format_decimal(6.5, '0.00', locale='sv'), 
+        self.assertEqual(numbers.format_decimal(12345, '##0',
+                                                locale='en_US'), '12345')
+        self.assertEqual(numbers.format_decimal(6.5, '0.00', locale='sv'),
                          '6,50')
-        self.assertEqual(numbers.format_decimal(10.0**20, 
-                                                '#.00', locale='en_US'), 
+        self.assertEqual(numbers.format_decimal(10.0 ** 20,
+                                                '#.00', locale='en_US'),
                          '100000000000000000000.00')
 
     def test_subpatterns(self):
-        self.assertEqual(numbers.format_decimal(-12345, '#,##0.##;-#', 
-                         locale='en_US'), '-12,345')
-        self.assertEqual(numbers.format_decimal(-12345, '#,##0.##;(#)', 
-                         locale='en_US'), '(12,345)')
+        self.assertEqual(numbers.format_decimal(-12345, '#,##0.##;-#',
+                                                locale='en_US'), '-12,345')
+        self.assertEqual(numbers.format_decimal(-12345, '#,##0.##;(#)',
+                                                locale='en_US'), '(12,345)')
 
     def test_default_rounding(self):
         """
@@ -54,56 +54,58 @@ class FormatDecimalTestCase(unittest.TestCase):
 
     def test_significant_digits(self):
         """Test significant digits patterns"""
-        self.assertEqual(numbers.format_decimal(123004, '@@',locale='en_US'), 
-                        '120000')
+        self.assertEqual(numbers.format_decimal(123004, '@@', locale='en_US'),
+                         '120000')
         self.assertEqual(numbers.format_decimal(1.12, '@', locale='sv'), '1')
         self.assertEqual(numbers.format_decimal(1.1, '@@', locale='sv'), '1,1')
-        self.assertEqual(numbers.format_decimal(1.1, '@@@@@##', locale='sv'), 
+        self.assertEqual(numbers.format_decimal(1.1, '@@@@@##', locale='sv'),
                          '1,1000')
-        self.assertEqual(numbers.format_decimal(0.0001, '@@@', locale='sv'), 
+        self.assertEqual(numbers.format_decimal(0.0001, '@@@', locale='sv'),
                          '0,000100')
-        self.assertEqual(numbers.format_decimal(0.0001234, '@@@', locale='sv'), 
+        self.assertEqual(numbers.format_decimal(0.0001234, '@@@', locale='sv'),
                          '0,000123')
-        self.assertEqual(numbers.format_decimal(0.0001234, '@@@#',locale='sv'), 
+        self.assertEqual(numbers.format_decimal(0.0001234, '@@@#', locale='sv'),
                          '0,0001234')
-        self.assertEqual(numbers.format_decimal(0.0001234, '@@@#',locale='sv'), 
+        self.assertEqual(numbers.format_decimal(0.0001234, '@@@#', locale='sv'),
                          '0,0001234')
-        self.assertEqual(numbers.format_decimal(0.12345, '@@@',locale='sv'), 
+        self.assertEqual(numbers.format_decimal(0.12345, '@@@', locale='sv'),
                          '0,123')
-        self.assertEqual(numbers.format_decimal(3.14159, '@@##',locale='sv'), 
+        self.assertEqual(numbers.format_decimal(3.14159, '@@##', locale='sv'),
                          '3,142')
-        self.assertEqual(numbers.format_decimal(1.23004, '@@##',locale='sv'), 
+        self.assertEqual(numbers.format_decimal(1.23004, '@@##', locale='sv'),
                          '1,23')
-        self.assertEqual(numbers.format_decimal(1230.04, '@@,@@',locale='en_US'), 
-                         '12,30')
-        self.assertEqual(numbers.format_decimal(123.41, '@@##',locale='en_US'), 
+        self.assertEqual(
+            numbers.format_decimal(1230.04, '@@,@@', locale='en_US'),
+            '12,30')
+        self.assertEqual(numbers.format_decimal(123.41, '@@##', locale='en_US'),
                          '123.4')
-        self.assertEqual(numbers.format_decimal(1, '@@',locale='en_US'), 
+        self.assertEqual(numbers.format_decimal(1, '@@', locale='en_US'),
                          '1.0')
-        self.assertEqual(numbers.format_decimal(0, '@',locale='en_US'), 
+        self.assertEqual(numbers.format_decimal(0, '@', locale='en_US'),
                          '0')
-        self.assertEqual(numbers.format_decimal(0.1, '@',locale='en_US'), 
+        self.assertEqual(numbers.format_decimal(0.1, '@', locale='en_US'),
                          '0.1')
-        self.assertEqual(numbers.format_decimal(0.1, '@#',locale='en_US'), 
+        self.assertEqual(numbers.format_decimal(0.1, '@#', locale='en_US'),
                          '0.1')
-        self.assertEqual(numbers.format_decimal(0.1, '@@', locale='en_US'), 
+        self.assertEqual(numbers.format_decimal(0.1, '@@', locale='en_US'),
                          '0.10')
 
     if have_decimal:
         def test_decimals(self):
             """Test significant digits patterns"""
-            self.assertEqual(numbers.format_decimal(Decimal('1.2345'), 
-                                                    '#.00', locale='en_US'), 
+            self.assertEqual(numbers.format_decimal(Decimal('1.2345'),
+                                                    '#.00', locale='en_US'),
                              '1.23')
-            self.assertEqual(numbers.format_decimal(Decimal('1.2345000'), 
-                                                    '#.00', locale='en_US'), 
+            self.assertEqual(numbers.format_decimal(Decimal('1.2345000'),
+                                                    '#.00', locale='en_US'),
                              '1.23')
-            self.assertEqual(numbers.format_decimal(Decimal('1.2345000'), 
-                                                    '@@', locale='en_US'), 
+            self.assertEqual(numbers.format_decimal(Decimal('1.2345000'),
+                                                    '@@', locale='en_US'),
                              '1.2')
-            self.assertEqual(numbers.format_decimal(Decimal('12345678901234567890.12345'), 
-                                                    '#.00', locale='en_US'), 
-                             '12345678901234567890.12')
+            self.assertEqual(
+                numbers.format_decimal(Decimal('12345678901234567890.12345'),
+                                       '#.00', locale='en_US'),
+                '12345678901234567890.12')
 
     def test_scientific_notation(self):
         fmt = numbers.format_scientific(0.1, '#E0', locale='en_US')
@@ -135,8 +137,8 @@ class FormatDecimalTestCase(unittest.TestCase):
         fmt = numbers.format_scientific(0.012345, '#.##E00 m/s', locale='en_US')
         self.assertEqual(fmt, '1.23E-02 m/s')
         if have_decimal:
-            fmt = numbers.format_scientific(Decimal('12345'), '#.##E+00 m/s', 
-            locale='en_US')
+            fmt = numbers.format_scientific(Decimal('12345'), '#.##E+00 m/s',
+                                            locale='en_US')
             self.assertEqual(fmt, '1.23E+04 m/s')
         # 0 (see ticket #99)
         fmt = numbers.format_scientific(0, '#E0', locale='en_US')
@@ -148,6 +150,7 @@ def suite():
     suite.addTest(doctest.DocTestSuite(numbers))
     suite.addTest(unittest.makeSuite(FormatDecimalTestCase))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

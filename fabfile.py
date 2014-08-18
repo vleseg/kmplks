@@ -7,6 +7,7 @@
 
 from fabric.api import local
 
+
 def lang(mode="extract"):
     """
         REQUIREMENTS:
@@ -24,19 +25,33 @@ def lang(mode="extract"):
     if mode == "compile":
         local("pybabel compile -f -d ./locale")
     else:
-        local("pybabel extract -F ./locale/babel.cfg -o ./locale/messages.pot ./ --sort-output --no-location --omit-header")
-        local("pybabel update -l cs_CZ -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l de_DE -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l en_US -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l es_ES -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l fr_FR -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l id_ID -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l it_IT -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l nl_NL -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l pt_BR -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l ru_RU -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l vi_VN -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
-        local("pybabel update -l zh_CN -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel extract -F ./locale/babel.cfg -o ./locale/messages.pot ./ --sort-output --no-location --omit-header")
+        local(
+            "pybabel update -l cs_CZ -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l de_DE -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l en_US -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l es_ES -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l fr_FR -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l id_ID -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l it_IT -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l nl_NL -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l pt_BR -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l ru_RU -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l vi_VN -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+        local(
+            "pybabel update -l zh_CN -d ./locale -i ./locale/messages.pot --previous --ignore-obsolete")
+
 
 def start(mode="normal"):
     """
@@ -48,9 +63,11 @@ def start(mode="normal"):
     """
 
     if mode == "clear" or mode == "clean":
-        local("dev_appserver.py ./ --host 0.0.0.0 --port 8002 --clear_datastore=yes")
+        local(
+            "dev_appserver.py ./ --host 0.0.0.0 --port 8002 --clear_datastore=yes")
     else:
         local("dev_appserver.py ./ --host 0.0.0.0 --port 8002")
+
 
 def deploy():
     """
@@ -59,6 +76,7 @@ def deploy():
     """
 
     local("appcfg.py --oauth2 update .")
+
 
 def test(os="mac"):
     """
@@ -77,6 +95,6 @@ def test(os="mac"):
     """
     path = {
         "mac": "/usr/local/google_appengine",
-       }[os]
+    }[os]
 
     local("theme=default python testrunner.py {0} ./".format(path))

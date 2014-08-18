@@ -31,12 +31,11 @@ from babel.util import LOCALTZ
 
 
 class CompileCatalogTestCase(unittest.TestCase):
-
     def setUp(self):
         self.olddir = os.getcwd()
         self.datadir = os.path.join(os.path.dirname(__file__), 'data')
         os.chdir(self.datadir)
-        _global_log.threshold = 5 # shut up distutils logging
+        _global_log.threshold = 5  # shut up distutils logging
 
         self.dist = Distribution(dict(
             name='TestProject',
@@ -61,12 +60,11 @@ class CompileCatalogTestCase(unittest.TestCase):
 
 
 class ExtractMessagesTestCase(unittest.TestCase):
-
     def setUp(self):
         self.olddir = os.getcwd()
         self.datadir = os.path.join(os.path.dirname(__file__), 'data')
         os.chdir(self.datadir)
-        _global_log.threshold = 5 # shut up distutils logging
+        _global_log.threshold = 5  # shut up distutils logging
 
         self.dist = Distribution(dict(
             name='TestProject',
@@ -110,49 +108,49 @@ class ExtractMessagesTestCase(unittest.TestCase):
         assert os.path.isfile(pot_file)
 
         self.assertEqual(
-r"""# Translations template for TestProject.
-# Copyright (C) %(year)s FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: %(date)s\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Translations template for TestProject.
+            # Copyright (C) %(year)s FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: %(date)s\n"
+            "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: LANGUAGE <LL@li.org>\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. TRANSLATOR: This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. TRANSLATOR: This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-#: project/ignored/this_wont_normally_be_here.py:11
-msgid "FooBar"
-msgid_plural "FooBars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/ignored/this_wont_normally_be_here.py:11
+            msgid "FooBar"
+            msgid_plural "FooBars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'year': time.strftime('%Y'),
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-        open(pot_file, 'U').read())
+            open(pot_file, 'U').read())
 
     def test_extraction_with_mapping_file(self):
         self.cmd.copyright_holder = 'FooBar, Inc.'
@@ -168,49 +166,49 @@ msgstr[1] ""
         assert os.path.isfile(pot_file)
 
         self.assertEqual(
-r"""# Translations template for TestProject.
-# Copyright (C) %(year)s FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: %(date)s\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Translations template for TestProject.
+            # Copyright (C) %(year)s FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: %(date)s\n"
+            "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: LANGUAGE <LL@li.org>\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. TRANSLATOR: This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. TRANSLATOR: This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'year': time.strftime('%Y'),
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-        open(pot_file, 'U').read())
+            open(pot_file, 'U').read())
 
     def test_extraction_with_mapping_dict(self):
         self.dist.message_extractors = {
             'project': [
-                ('**/ignored/**.*', 'ignore',   None),
-                ('**.py',           'python',   None),
+                ('**/ignored/**.*', 'ignore', None),
+                ('**.py', 'python', None),
             ]
         }
         self.cmd.copyright_holder = 'FooBar, Inc.'
@@ -225,52 +223,51 @@ msgstr[1] ""
         assert os.path.isfile(pot_file)
 
         self.assertEqual(
-r"""# Translations template for TestProject.
-# Copyright (C) %(year)s FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: %(date)s\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Translations template for TestProject.
+            # Copyright (C) %(year)s FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: %(date)s\n"
+            "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: LANGUAGE <LL@li.org>\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. TRANSLATOR: This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. TRANSLATOR: This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'year': time.strftime('%Y'),
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-        open(pot_file, 'U').read())
+            open(pot_file, 'U').read())
 
 
 class InitCatalogTestCase(unittest.TestCase):
-
     def setUp(self):
         self.olddir = os.getcwd()
         self.datadir = os.path.join(os.path.dirname(__file__), 'data')
         os.chdir(self.datadir)
-        _global_log.threshold = 5 # shut up distutils logging
+        _global_log.threshold = 5  # shut up distutils logging
 
         self.dist = Distribution(dict(
             name='TestProject',
@@ -311,42 +308,42 @@ class InitCatalogTestCase(unittest.TestCase):
         assert os.path.isfile(po_file)
 
         self.assertEqual(
-r"""# English (United States) translations for TestProject.
-# Copyright (C) 2007 FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
-#
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: 2007-04-01 15:30+0200\n"
-"PO-Revision-Date: %(date)s\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: en_US <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# English (United States) translations for TestProject.
+            # Copyright (C) 2007 FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+            #
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: 2007-04-01 15:30+0200\n"
+            "PO-Revision-Date: %(date)s\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: en_US <LL@li.org>\n"
+            "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(po_file, 'U').read())
+            open(po_file, 'U').read())
 
     def test_keeps_catalog_non_fuzzy(self):
         self.cmd.input_file = 'project/i18n/messages_non_fuzzy.pot'
@@ -361,42 +358,42 @@ msgstr[1] ""
         assert os.path.isfile(po_file)
 
         self.assertEqual(
-r"""# English (United States) translations for TestProject.
-# Copyright (C) 2007 FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
-#
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: 2007-04-01 15:30+0200\n"
-"PO-Revision-Date: %(date)s\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: en_US <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# English (United States) translations for TestProject.
+            # Copyright (C) 2007 FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+            #
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: 2007-04-01 15:30+0200\n"
+            "PO-Revision-Date: %(date)s\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: en_US <LL@li.org>\n"
+            "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(po_file, 'U').read())
+            open(po_file, 'U').read())
 
     def test_correct_init_more_than_2_plurals(self):
         self.cmd.input_file = 'project/i18n/messages.pot'
@@ -411,44 +408,44 @@ msgstr[1] ""
         assert os.path.isfile(po_file)
 
         self.assertEqual(
-r"""# Latvian (Latvia) translations for TestProject.
-# Copyright (C) 2007 FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
-#
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: 2007-04-01 15:30+0200\n"
-"PO-Revision-Date: %(date)s\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: lv_LV <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%%10==1 && n%%100!=11 ? 0 : n != 0 ? 1 :"
-" 2)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Latvian (Latvia) translations for TestProject.
+            # Copyright (C) 2007 FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+            #
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: 2007-04-01 15:30+0200\n"
+            "PO-Revision-Date: %(date)s\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: lv_LV <LL@li.org>\n"
+            "Plural-Forms: nplurals=3; plural=(n%%10==1 && n%%100!=11 ? 0 : n != 0 ? 1 :"
+            " 2)\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
+            msgstr[2] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(po_file, 'U').read())
+            open(po_file, 'U').read())
 
     def test_correct_init_singular_plural_forms(self):
         self.cmd.input_file = 'project/i18n/messages.pot'
@@ -463,45 +460,44 @@ msgstr[2] ""
         assert os.path.isfile(po_file)
 
         self.assertEqual(
-r"""# Japanese (Japan) translations for TestProject.
-# Copyright (C) 2007 FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
-#
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: 2007-04-01 15:30+0200\n"
-"PO-Revision-Date: %(date)s\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja_JP <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Japanese (Japan) translations for TestProject.
+            # Copyright (C) 2007 FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+            #
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: 2007-04-01 15:30+0200\n"
+            "PO-Revision-Date: %(date)s\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: ja_JP <LL@li.org>\n"
+            "Plural-Forms: nplurals=1; plural=0\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='ja_JP')},
-       open(po_file, 'U').read())
+            open(po_file, 'U').read())
 
 
 class CommandLineInterfaceTestCase(unittest.TestCase):
-
     def setUp(self):
         self.datadir = os.path.join(os.path.dirname(__file__), 'data')
         self.orig_working_dir = os.getcwd()
@@ -512,7 +508,7 @@ class CommandLineInterfaceTestCase(unittest.TestCase):
         sys.stdout = StringIO()
         sys.stderr = StringIO()
         os.chdir(self.datadir)
-        
+
         # Logging handlers will be reused if possible (#227). This breaks the 
         # implicit assumption that our newly created StringIO for sys.stderr 
         # contains the console output. Removing the old handler ensures that a
@@ -527,7 +523,7 @@ class CommandLineInterfaceTestCase(unittest.TestCase):
         sys.argv = self.orig_argv
         sys.stdout = self.orig_stdout
         sys.stderr = self.orig_stderr
-        for dirname in ['lv_LV', 'ja_JP']: 
+        for dirname in ['lv_LV', 'ja_JP']:
             locale_dir = os.path.join(self.datadir, 'project', 'i18n', dirname)
             if os.path.isdir(locale_dir):
                 shutil.rmtree(locale_dir)
@@ -563,7 +559,7 @@ pybabel: error: no valid command or option passed. try the -h/--help option for 
         first_output = sys.stderr.getvalue()
         self._run_init_catalog()
         second_output = sys.stderr.getvalue()[len(first_output):]
-        
+
         # in case the log message is not duplicated we should get the same 
         # output as before
         self.assertEqual(first_output, second_output)
@@ -572,7 +568,7 @@ pybabel: error: no valid command or option passed. try the -h/--help option for 
         custom_stream = StringIO()
         log = logging.getLogger('babel')
         log.addHandler(logging.StreamHandler(custom_stream))
-        
+
         self._run_init_catalog()
         self.assertNotEqual(id(sys.stderr), id(custom_stream))
         self.assertEqual('', sys.stderr.getvalue())
@@ -604,257 +600,268 @@ commands:
     def test_extract_with_default_mapping(self):
         pot_file = os.path.join(self.datadir, 'project', 'i18n', 'temp.pot')
         self.cli.run(sys.argv + ['extract',
-            '--copyright-holder', 'FooBar, Inc.',
-            '--project', 'TestProject', '--version', '0.1',
-            '--msgid-bugs-address', 'bugs.address@email.tld',
-            '-c', 'TRANSLATOR', '-c', 'TRANSLATORS:',
-            '-o', pot_file, 'project'])
+                                 '--copyright-holder', 'FooBar, Inc.',
+                                 '--project', 'TestProject', '--version', '0.1',
+                                 '--msgid-bugs-address',
+                                 'bugs.address@email.tld',
+                                 '-c', 'TRANSLATOR', '-c', 'TRANSLATORS:',
+                                 '-o', pot_file, 'project'])
         assert os.path.isfile(pot_file)
         self.assertEqual(
-r"""# Translations template for TestProject.
-# Copyright (C) %(year)s FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: %(date)s\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Translations template for TestProject.
+            # Copyright (C) %(year)s FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: %(date)s\n"
+            "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: LANGUAGE <LL@li.org>\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. TRANSLATOR: This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. TRANSLATOR: This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-#: project/ignored/this_wont_normally_be_here.py:11
-msgid "FooBar"
-msgid_plural "FooBars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/ignored/this_wont_normally_be_here.py:11
+            msgid "FooBar"
+            msgid_plural "FooBars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'year': time.strftime('%Y'),
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(pot_file, 'U').read())
+            open(pot_file, 'U').read())
 
     def test_extract_with_mapping_file(self):
         pot_file = os.path.join(self.datadir, 'project', 'i18n', 'temp.pot')
         self.cli.run(sys.argv + ['extract',
-            '--copyright-holder', 'FooBar, Inc.',
-            '--project', 'TestProject', '--version', '0.1',
-            '--msgid-bugs-address', 'bugs.address@email.tld',
-            '--mapping', os.path.join(self.datadir, 'mapping.cfg'),
-            '-c', 'TRANSLATOR', '-c', 'TRANSLATORS:',
-            '-o', pot_file, 'project'])
+                                 '--copyright-holder', 'FooBar, Inc.',
+                                 '--project', 'TestProject', '--version', '0.1',
+                                 '--msgid-bugs-address',
+                                 'bugs.address@email.tld',
+                                 '--mapping',
+                                 os.path.join(self.datadir, 'mapping.cfg'),
+                                 '-c', 'TRANSLATOR', '-c', 'TRANSLATORS:',
+                                 '-o', pot_file, 'project'])
         assert os.path.isfile(pot_file)
         self.assertEqual(
-r"""# Translations template for TestProject.
-# Copyright (C) %(year)s FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: %(date)s\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Translations template for TestProject.
+            # Copyright (C) %(year)s FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, %(year)s.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: %(date)s\n"
+            "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: LANGUAGE <LL@li.org>\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. TRANSLATOR: This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. TRANSLATOR: This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'year': time.strftime('%Y'),
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(pot_file, 'U').read())
+            open(pot_file, 'U').read())
 
     def test_init_with_output_dir(self):
         po_file = os.path.join(self.datadir, 'project', 'i18n', 'en_US',
                                'LC_MESSAGES', 'messages.po')
         self.cli.run(sys.argv + ['init',
-            '--locale', 'en_US',
-            '-d', os.path.join(self.datadir, 'project', 'i18n'),
-            '-i', os.path.join(self.datadir, 'project', 'i18n', 'messages.pot')])
+                                 '--locale', 'en_US',
+                                 '-d',
+                                 os.path.join(self.datadir, 'project', 'i18n'),
+                                 '-i',
+                                 os.path.join(self.datadir, 'project', 'i18n',
+                                              'messages.pot')])
         assert os.path.isfile(po_file)
         self.assertEqual(
-r"""# English (United States) translations for TestProject.
-# Copyright (C) 2007 FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: 2007-04-01 15:30+0200\n"
-"PO-Revision-Date: %(date)s\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: en_US <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# English (United States) translations for TestProject.
+            # Copyright (C) 2007 FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: 2007-04-01 15:30+0200\n"
+            "PO-Revision-Date: %(date)s\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: en_US <LL@li.org>\n"
+            "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(po_file, 'U').read())
-            
+            open(po_file, 'U').read())
+
     def test_init_singular_plural_forms(self):
         po_file = os.path.join(self.datadir, 'project', 'i18n', 'ja_JP',
                                'LC_MESSAGES', 'messages.po')
         self.cli.run(sys.argv + ['init',
-            '--locale', 'ja_JP',
-            '-d', os.path.join(self.datadir, 'project', 'i18n'),
-            '-i', os.path.join(self.datadir, 'project', 'i18n',
-                               'messages.pot')])
+                                 '--locale', 'ja_JP',
+                                 '-d',
+                                 os.path.join(self.datadir, 'project', 'i18n'),
+                                 '-i',
+                                 os.path.join(self.datadir, 'project', 'i18n',
+                                              'messages.pot')])
         assert os.path.isfile(po_file)
         self.assertEqual(
-r"""# Japanese (Japan) translations for TestProject.
-# Copyright (C) 2007 FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: 2007-04-01 15:30+0200\n"
-"PO-Revision-Date: %(date)s\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja_JP <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Japanese (Japan) translations for TestProject.
+            # Copyright (C) 2007 FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: 2007-04-01 15:30+0200\n"
+            "PO-Revision-Date: %(date)s\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: ja_JP <LL@li.org>\n"
+            "Plural-Forms: nplurals=1; plural=0\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(po_file, 'U').read())
-            
+            open(po_file, 'U').read())
+
     def test_init_more_than_2_plural_forms(self):
         po_file = os.path.join(self.datadir, 'project', 'i18n', 'lv_LV',
                                'LC_MESSAGES', 'messages.po')
         self.cli.run(sys.argv + ['init',
-            '--locale', 'lv_LV',
-            '-d', os.path.join(self.datadir, 'project', 'i18n'),
-            '-i', os.path.join(self.datadir, 'project', 'i18n',
-                               'messages.pot')])
+                                 '--locale', 'lv_LV',
+                                 '-d',
+                                 os.path.join(self.datadir, 'project', 'i18n'),
+                                 '-i',
+                                 os.path.join(self.datadir, 'project', 'i18n',
+                                              'messages.pot')])
         assert os.path.isfile(po_file)
         self.assertEqual(
-r"""# Latvian (Latvia) translations for TestProject.
-# Copyright (C) 2007 FooBar, Inc.
-# This file is distributed under the same license as the TestProject
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: TestProject 0.1\n"
-"Report-Msgid-Bugs-To: bugs.address@email.tld\n"
-"POT-Creation-Date: 2007-04-01 15:30+0200\n"
-"PO-Revision-Date: %(date)s\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: lv_LV <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%%10==1 && n%%100!=11 ? 0 : n != 0 ? 1 :"
-" 2)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel %(version)s\n"
+            r"""# Latvian (Latvia) translations for TestProject.
+            # Copyright (C) 2007 FooBar, Inc.
+            # This file is distributed under the same license as the TestProject
+            # project.
+            # FIRST AUTHOR <EMAIL@ADDRESS>, 2007.
+            #
+            #, fuzzy
+            msgid ""
+            msgstr ""
+            "Project-Id-Version: TestProject 0.1\n"
+            "Report-Msgid-Bugs-To: bugs.address@email.tld\n"
+            "POT-Creation-Date: 2007-04-01 15:30+0200\n"
+            "PO-Revision-Date: %(date)s\n"
+            "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+            "Language-Team: lv_LV <LL@li.org>\n"
+            "Plural-Forms: nplurals=3; plural=(n%%10==1 && n%%100!=11 ? 0 : n != 0 ? 1 :"
+            " 2)\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Transfer-Encoding: 8bit\n"
+            "Generated-By: Babel %(version)s\n"
 
-#. This will be a translator coment,
-#. that will include several lines
-#: project/file1.py:8
-msgid "bar"
-msgstr ""
+            #. This will be a translator coment,
+            #. that will include several lines
+            #: project/file1.py:8
+            msgid "bar"
+            msgstr ""
 
-#: project/file2.py:9
-msgid "foobar"
-msgid_plural "foobars"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+            #: project/file2.py:9
+            msgid "foobar"
+            msgid_plural "foobars"
+            msgstr[0] ""
+            msgstr[1] ""
+            msgstr[2] ""
 
-""" % {'version': VERSION,
+            """ % {'version': VERSION,
        'date': format_datetime(datetime.now(LOCALTZ), 'yyyy-MM-dd HH:mmZ',
                                tzinfo=LOCALTZ, locale='en')},
-       open(po_file, 'U').read())
+            open(po_file, 'U').read())
 
     def test_compile_catalog(self):
         po_file = os.path.join(self.datadir, 'project', 'i18n', 'de_DE',
                                'LC_MESSAGES', 'messages.po')
         mo_file = po_file.replace('.po', '.mo')
         self.cli.run(sys.argv + ['compile',
-            '--locale', 'de_DE',
-            '-d', os.path.join(self.datadir, 'project', 'i18n')])
+                                 '--locale', 'de_DE',
+                                 '-d',
+                                 os.path.join(self.datadir, 'project', 'i18n')])
         assert not os.path.isfile(mo_file), 'Expected no file at %r' % mo_file
         self.assertEqual("""\
 catalog %r is marked as fuzzy, skipping
@@ -866,8 +873,9 @@ catalog %r is marked as fuzzy, skipping
         mo_file = po_file.replace('.po', '.mo')
         try:
             self.cli.run(sys.argv + ['compile',
-                '--locale', 'de_DE', '--use-fuzzy',
-                '-d', os.path.join(self.datadir, 'project', 'i18n')])
+                                     '--locale', 'de_DE', '--use-fuzzy',
+                                     '-d', os.path.join(self.datadir, 'project',
+                                                        'i18n')])
             assert os.path.isfile(mo_file)
             self.assertEqual("""\
 compiling catalog %r to %r
@@ -882,8 +890,9 @@ compiling catalog %r to %r
         mo_file = po_file.replace('.po', '.mo')
         try:
             self.cli.run(sys.argv + ['compile',
-                '--locale', 'ru_RU', '--use-fuzzy',
-                '-d', os.path.join(self.datadir, 'project', 'i18n')])
+                                     '--locale', 'ru_RU', '--use-fuzzy',
+                                     '-d', os.path.join(self.datadir, 'project',
+                                                        'i18n')])
             assert os.path.isfile(mo_file)
             self.assertEqual("""\
 compiling catalog %r to %r
@@ -901,6 +910,7 @@ def suite():
     suite.addTest(unittest.makeSuite(InitCatalogTestCase))
     suite.addTest(unittest.makeSuite(CommandLineInterfaceTestCase))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

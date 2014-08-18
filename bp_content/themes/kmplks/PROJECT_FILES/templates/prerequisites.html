@@ -11,16 +11,16 @@
         <table>
             <tbody>
             {% for p in prerequisites %}
-            <tr>
-                <td>
-                    <input type="checkbox" name="prerequisite"
-                           value="{{ p.id }}" id="{{ p.id }}"/>
-                </td>
-                <td>
-                    <label for="{{ p.id }}">{{ p.text }}</label>
-                </td>
-            </tr>
-            {% endfor  %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="prerequisite"
+                               value="{{ p.id }}" id="{{ p.id }}"/>
+                    </td>
+                    <td>
+                        <label for="{{ p.id }}">{{ p.text }}</label>
+                    </td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
         <p>{{ navigation('/', '/prerequsistes') }}</p>

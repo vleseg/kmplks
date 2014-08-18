@@ -18,11 +18,13 @@ import pickle
 
 from babel import localedata
 
+
 __all__ = ['UnknownLocaleError', 'Locale', 'default_locale', 'negotiate_locale',
            'parse_locale']
 __docformat__ = 'restructuredtext en'
 
 _global_data = None
+
 
 def get_global(key):
     """Return the dictionary for the given key in the global data.
@@ -53,13 +55,13 @@ def get_global(key):
 
 
 LOCALE_ALIASES = {
-    'ar': 'ar_SY', 'bg': 'bg_BG', 'bs': 'bs_BA', 'ca': 'ca_ES', 'cs': 'cs_CZ', 
-    'da': 'da_DK', 'de': 'de_DE', 'el': 'el_GR', 'en': 'en_US', 'es': 'es_ES', 
-    'et': 'et_EE', 'fa': 'fa_IR', 'fi': 'fi_FI', 'fr': 'fr_FR', 'gl': 'gl_ES', 
-    'he': 'he_IL', 'hu': 'hu_HU', 'id': 'id_ID', 'is': 'is_IS', 'it': 'it_IT', 
-    'ja': 'ja_JP', 'km': 'km_KH', 'ko': 'ko_KR', 'lt': 'lt_LT', 'lv': 'lv_LV', 
-    'mk': 'mk_MK', 'nl': 'nl_NL', 'nn': 'nn_NO', 'no': 'nb_NO', 'pl': 'pl_PL', 
-    'pt': 'pt_PT', 'ro': 'ro_RO', 'ru': 'ru_RU', 'sk': 'sk_SK', 'sl': 'sl_SI', 
+    'ar': 'ar_SY', 'bg': 'bg_BG', 'bs': 'bs_BA', 'ca': 'ca_ES', 'cs': 'cs_CZ',
+    'da': 'da_DK', 'de': 'de_DE', 'el': 'el_GR', 'en': 'en_US', 'es': 'es_ES',
+    'et': 'et_EE', 'fa': 'fa_IR', 'fi': 'fi_FI', 'fr': 'fr_FR', 'gl': 'gl_ES',
+    'he': 'he_IL', 'hu': 'hu_HU', 'id': 'id_ID', 'is': 'is_IS', 'it': 'it_IT',
+    'ja': 'ja_JP', 'km': 'km_KH', 'ko': 'ko_KR', 'lt': 'lt_LT', 'lv': 'lv_LV',
+    'mk': 'mk_MK', 'nl': 'nl_NL', 'nn': 'nn_NO', 'no': 'nb_NO', 'pl': 'pl_PL',
+    'pt': 'pt_PT', 'ro': 'ro_RO', 'ru': 'ru_RU', 'sk': 'sk_SK', 'sl': 'sl_SI',
     'sv': 'sv_SE', 'th': 'th_TH', 'tr': 'tr_TR', 'uk': 'uk_UA'
 }
 
@@ -153,6 +155,7 @@ class Locale(object):
         :see: `default_locale`
         """
         return cls(default_locale(category, aliases=aliases))
+
     default = classmethod(default)
 
     def negotiate(cls, preferred, available, sep='_', aliases=LOCALE_ALIASES):
@@ -183,6 +186,7 @@ class Locale(object):
                                       aliases=aliases)
         if identifier:
             return Locale.parse(identifier, sep=sep)
+
     negotiate = classmethod(negotiate)
 
     def parse(cls, identifier, sep='_'):
@@ -211,6 +215,7 @@ class Locale(object):
         if isinstance(identifier, basestring):
             return cls(*parse_locale(identifier, sep=sep))
         return identifier
+
     parse = classmethod(parse)
 
     def __eq__(self, other):
@@ -230,6 +235,7 @@ class Locale(object):
         if self.__data is None:
             self.__data = localedata.LocaleDataDict(localedata.load(str(self)))
         return self.__data
+
     _data = property(_data)
 
     def get_display_name(self, locale=None):
@@ -276,6 +282,7 @@ class Locale(object):
 
     def english_name(self):
         return self.get_display_name(Locale('en'))
+
     english_name = property(english_name, doc="""\
         The english display name of the locale.
         
@@ -287,10 +294,11 @@ class Locale(object):
         :type: `unicode`
         """)
 
-    #{ General Locale Display Names
+    # { General Locale Display Names
 
     def languages(self):
         return self._data['languages']
+
     languages = property(languages, doc="""\
         Mapping of language codes to translated language names.
         
@@ -303,6 +311,7 @@ class Locale(object):
 
     def scripts(self):
         return self._data['scripts']
+
     scripts = property(scripts, doc="""\
         Mapping of script codes to translated script names.
         
@@ -315,6 +324,7 @@ class Locale(object):
 
     def territories(self):
         return self._data['territories']
+
     territories = property(territories, doc="""\
         Mapping of script codes to translated script names.
         
@@ -327,6 +337,7 @@ class Locale(object):
 
     def variants(self):
         return self._data['variants']
+
     variants = property(variants, doc="""\
         Mapping of script codes to translated script names.
         
@@ -340,6 +351,7 @@ class Locale(object):
 
     def currencies(self):
         return self._data['currency_names']
+
     currencies = property(currencies, doc="""\
         Mapping of currency codes to translated currency names.
         
@@ -353,6 +365,7 @@ class Locale(object):
 
     def currency_symbols(self):
         return self._data['currency_symbols']
+
     currency_symbols = property(currency_symbols, doc="""\
         Mapping of currency codes to symbols.
         
@@ -366,6 +379,7 @@ class Locale(object):
 
     def number_symbols(self):
         return self._data['number_symbols']
+
     number_symbols = property(number_symbols, doc="""\
         Symbols used in number formatting.
         
@@ -377,6 +391,7 @@ class Locale(object):
 
     def decimal_formats(self):
         return self._data['decimal_formats']
+
     decimal_formats = property(decimal_formats, doc="""\
         Locale patterns for decimal number formatting.
         
@@ -388,6 +403,7 @@ class Locale(object):
 
     def currency_formats(self):
         return self._data['currency_formats']
+
     currency_formats = property(currency_formats, doc=r"""\
         Locale patterns for currency number formatting.
         
@@ -399,6 +415,7 @@ class Locale(object):
 
     def percent_formats(self):
         return self._data['percent_formats']
+
     percent_formats = property(percent_formats, doc="""\
         Locale patterns for percent number formatting.
         
@@ -410,6 +427,7 @@ class Locale(object):
 
     def scientific_formats(self):
         return self._data['scientific_formats']
+
     scientific_formats = property(scientific_formats, doc="""\
         Locale patterns for scientific number formatting.
         
@@ -423,6 +441,7 @@ class Locale(object):
 
     def periods(self):
         return self._data['periods']
+
     periods = property(periods, doc="""\
         Locale display names for day periods (AM/PM).
         
@@ -434,6 +453,7 @@ class Locale(object):
 
     def days(self):
         return self._data['days']
+
     days = property(days, doc="""\
         Locale display names for weekdays.
         
@@ -445,6 +465,7 @@ class Locale(object):
 
     def months(self):
         return self._data['months']
+
     months = property(months, doc="""\
         Locale display names for months.
         
@@ -456,6 +477,7 @@ class Locale(object):
 
     def quarters(self):
         return self._data['quarters']
+
     quarters = property(quarters, doc="""\
         Locale display names for quarters.
         
@@ -467,6 +489,7 @@ class Locale(object):
 
     def eras(self):
         return self._data['eras']
+
     eras = property(eras, doc="""\
         Locale display names for eras.
         
@@ -480,6 +503,7 @@ class Locale(object):
 
     def time_zones(self):
         return self._data['time_zones']
+
     time_zones = property(time_zones, doc="""\
         Locale display names for time zones.
         
@@ -493,6 +517,7 @@ class Locale(object):
 
     def meta_zones(self):
         return self._data['meta_zones']
+
     meta_zones = property(meta_zones, doc="""\
         Locale display names for meta time zones.
         
@@ -508,6 +533,7 @@ class Locale(object):
 
     def zone_formats(self):
         return self._data['zone_formats']
+
     zone_formats = property(zone_formats, doc=r"""\
         Patterns related to the formatting of time zones.
         
@@ -522,6 +548,7 @@ class Locale(object):
 
     def first_week_day(self):
         return self._data['week_data']['first_day']
+
     first_week_day = property(first_week_day, doc="""\
         The first day of a week, with 0 being Monday.
         
@@ -535,6 +562,7 @@ class Locale(object):
 
     def weekend_start(self):
         return self._data['week_data']['weekend_start']
+
     weekend_start = property(weekend_start, doc="""\
         The day the weekend starts, with 0 being Monday.
         
@@ -546,6 +574,7 @@ class Locale(object):
 
     def weekend_end(self):
         return self._data['week_data']['weekend_end']
+
     weekend_end = property(weekend_end, doc="""\
         The day the weekend ends, with 0 being Monday.
         
@@ -557,6 +586,7 @@ class Locale(object):
 
     def min_week_days(self):
         return self._data['week_data']['min_days']
+
     min_week_days = property(min_week_days, doc="""\
         The minimum number of days in a week so that the week is counted as the
         first week of a year or month.
@@ -569,6 +599,7 @@ class Locale(object):
 
     def date_formats(self):
         return self._data['date_formats']
+
     date_formats = property(date_formats, doc="""\
         Locale patterns for date formatting.
         
@@ -582,6 +613,7 @@ class Locale(object):
 
     def time_formats(self):
         return self._data['time_formats']
+
     time_formats = property(time_formats, doc="""\
         Locale patterns for time formatting.
         
@@ -595,6 +627,7 @@ class Locale(object):
 
     def datetime_formats(self):
         return self._data['datetime_formats']
+
     datetime_formats = property(datetime_formats, doc="""\
         Locale patterns for datetime formatting.
         
@@ -646,6 +679,7 @@ def default_locale(category=None, aliases=LOCALE_ALIASES):
                 return '_'.join(filter(None, parse_locale(locale)))
             except ValueError:
                 pass
+
 
 def negotiate_locale(preferred, available, sep='_', aliases=LOCALE_ALIASES):
     """Find the best match between available and requested locale strings.
@@ -711,6 +745,7 @@ def negotiate_locale(preferred, available, sep='_', aliases=LOCALE_ALIASES):
         if len(parts) > 1 and parts[0].lower() in available:
             return parts[0]
     return None
+
 
 def parse_locale(identifier, sep='_'):
     """Parse a locale identifier into a tuple of the form::
@@ -781,7 +816,7 @@ def parse_locale(identifier, sep='_'):
 
     if parts:
         if len(parts[0]) == 4 and parts[0][0].isdigit() or \
-                len(parts[0]) >= 5 and parts[0][0].isalpha():
+                                len(parts[0]) >= 5 and parts[0][0].isalpha():
             variant = parts.pop()
 
     if parts:

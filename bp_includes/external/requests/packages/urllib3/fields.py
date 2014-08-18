@@ -65,6 +65,7 @@ class RequestField(object):
     :param headers:
         An optional dict-like object of headers to initially use for the field.
     """
+
     def __init__(self, name, data, filename=None, headers=None):
         self._name = name
         self._filename = filename
@@ -158,7 +159,8 @@ class RequestField(object):
         lines.append('\r\n')
         return '\r\n'.join(lines)
 
-    def make_multipart(self, content_disposition=None, content_type=None, content_location=None):
+    def make_multipart(self, content_disposition=None, content_type=None,
+                       content_location=None):
         """
         Makes this request field into a multipart request field.
 
@@ -172,6 +174,10 @@ class RequestField(object):
 
         """
         self.headers['Content-Disposition'] = content_disposition or 'form-data'
-        self.headers['Content-Disposition'] += '; '.join(['', self._render_parts((('name', self._name), ('filename', self._filename)))])
+        self.headers['Content-Disposition'] += '; '.join(['',
+                                                          self._render_parts((
+                                                          ('name', self._name),
+                                                          ('filename',
+                                                           self._filename)))])
         self.headers['Content-Type'] = content_type
         self.headers['Content-Location'] = content_location

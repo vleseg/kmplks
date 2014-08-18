@@ -14,23 +14,23 @@ from datetime import datetime
 
 from .compat import cookielib, OrderedDict, urljoin, urlparse, builtin_str
 from .cookies import (
-    cookiejar_from_dict, extract_cookies_to_jar, RequestsCookieJar, merge_cookies)
+    cookiejar_from_dict, extract_cookies_to_jar, RequestsCookieJar,
+    merge_cookies)
 from .models import Request, PreparedRequest
 from .hooks import default_hooks, dispatch_hook
 from .utils import to_key_val_list, default_headers
 from .exceptions import TooManyRedirects, InvalidSchema
 from .structures import CaseInsensitiveDict
-
 from .adapters import HTTPAdapter
-
 from .utils import requote_uri, get_environ_proxies, get_netrc_auth
-
 from .status_codes import codes
+
+
 REDIRECT_STATI = (
-    codes.moved, # 301
-    codes.found, # 302
-    codes.other, # 303
-    codes.temporary_moved, # 307
+    codes.moved,  # 301
+    codes.found,  # 302
+    codes.other,  # 303
+    codes.temporary_moved,  # 307
 )
 DEFAULT_REDIRECT_LIMIT = 30
 
@@ -50,8 +50,8 @@ def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
 
     # Bypass if not a dictionary (e.g. verify)
     if not (
-            isinstance(session_setting, Mapping) and
-            isinstance(request_setting, Mapping)
+                isinstance(session_setting, Mapping) and
+                isinstance(request_setting, Mapping)
     ):
         return request_setting
 
@@ -90,13 +90,15 @@ class SessionRedirectMixin(object):
         i = 0
 
         # ((resp.status_code is codes.see_other))
-        while ('location' in resp.headers and resp.status_code in REDIRECT_STATI):
+        while (
+                'location' in resp.headers and resp.status_code in REDIRECT_STATI):
             prepared_request = req.copy()
 
             resp.content  # Consume socket so it can be released
 
             if i >= self.max_redirects:
-                raise TooManyRedirects('Exceeded %s redirects.' % self.max_redirects)
+                raise TooManyRedirects(
+                    'Exceeded %s redirects.' % self.max_redirects)
 
             # Release the connection back into the pool.
             resp.close()
@@ -125,7 +127,7 @@ class SessionRedirectMixin(object):
 
             # http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.4
             if (resp.status_code == codes.see_other and
-                    method != 'HEAD'):
+                        method != 'HEAD'):
                 method = 'GET'
 
             # Do what the browsers do, despite standards...
@@ -194,7 +196,7 @@ class Session(SessionRedirectMixin):
 
     def __init__(self):
 
-        #: A case-insensitive dictionary of headers to be sent on each
+        # : A case-insensitive dictionary of headers to be sent on each
         #: :class:`Request <Request>` sent from this
         #: :class:`Session <Session>`.
         self.headers = default_headers()
@@ -280,7 +282,8 @@ class Session(SessionRedirectMixin):
             url=request.url,
             files=request.files,
             data=request.data,
-            headers=merge_setting(request.headers, self.headers, dict_class=CaseInsensitiveDict),
+            headers=merge_setting(request.headers, self.headers,
+                                  dict_class=CaseInsensitiveDict),
             params=merge_setting(request.params, self.params),
             auth=merge_setting(auth, self.auth),
             cookies=merged_cookies,
@@ -289,19 +292,19 @@ class Session(SessionRedirectMixin):
         return p
 
     def request(self, method, url,
-        params=None,
-        data=None,
-        headers=None,
-        cookies=None,
-        files=None,
-        auth=None,
-        timeout=None,
-        allow_redirects=True,
-        proxies=None,
-        hooks=None,
-        stream=None,
-        verify=None,
-        cert=None):
+                params=None,
+                data=None,
+                headers=None,
+                cookies=None,
+                files=None,
+                auth=None,
+                timeout=None,
+                allow_redirects=True,
+                proxies=None,
+                hooks=None,
+                stream=None,
+                verify=None,
+                cert=None):
         """Constructs a :class:`Request <Request>`, prepares it and sends it.
         Returns :class:`Response <Response>` object.
 
@@ -336,15 +339,15 @@ class Session(SessionRedirectMixin):
 
         # Create the Request.
         req = Request(
-            method = method.upper(),
-            url = url,
-            headers = headers,
-            files = files,
-            data = data or {},
-            params = params or {},
-            auth = auth,
-            cookies = cookies,
-            hooks = hooks,
+            method=method.upper(),
+            url=url,
+            headers=headers,
+            files=files,
+            data=data or {},
+            params=params or {},
+            auth=auth,
+            cookies=cookies,
+            hooks=hooks,
         )
         prep = self.prepare_request(req)
 
@@ -442,7 +445,7 @@ class Session(SessionRedirectMixin):
         :param \*\*kwargs: Optional arguments that ``request`` takes.
         """
 
-        return self.request('PATCH', url,  data=data, **kwargs)
+        return self.request('PATCH', url, data=data, **kwargs)
 
     def delete(self, url, **kwargs):
         """Sends a DELETE request. Returns :class:`Response` object.
@@ -540,7 +543,8 @@ class Session(SessionRedirectMixin):
             self.adapters[key] = self.adapters.pop(key)
 
     def __getstate__(self):
-        return dict((attr, getattr(self, attr, None)) for attr in self.__attrs__)
+        return dict(
+            (attr, getattr(self, attr, None)) for attr in self.__attrs__)
 
     def __setstate__(self, state):
         for attr, value in state.items():

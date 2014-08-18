@@ -29,7 +29,8 @@ class DetectorsHub(dict):
         return iter(self._known_types)
 
     def registerDetectors(self):
-        detectors = [v() for v in globals().values() if DetectorBase in getattr(v, '__mro__', [])]
+        detectors = [v() for v in globals().values() if
+                     DetectorBase in getattr(v, '__mro__', [])]
         for d in detectors:
             if d.can_register:
                 self.register(d)
@@ -81,7 +82,8 @@ class DetectorBase(object):
         => version string /None
         """
         version_markers = self.version_markers if \
-            isinstance(self.version_markers[0], (list, tuple)) else [self.version_markers]
+            isinstance(self.version_markers[0], (list, tuple)) else [
+            self.version_markers]
         version_part = agent.split(self.look_for, 1)[-1]
         for start, end in version_markers:
             if version_part.startswith(start) and end in version_part:
@@ -186,7 +188,8 @@ class Trident(Browser):
     }
 
     def getVersion(self, agent):
-        return self.trident_to_ie_versions.get(super(Trident, self).getVersion(agent))
+        return self.trident_to_ie_versions.get(
+            super(Trident, self).getVersion(agent))
 
 
 class MSIE(Browser):
@@ -224,7 +227,8 @@ class Safari(Browser):
         if "Safari/" in agent:
             return agent.split('Safari/')[-1].split(' ')[0].strip()
         else:
-            return agent.split('Safari ')[-1].split(' ')[0].strip()  # Mobile Safari
+            return agent.split('Safari ')[-1].split(' ')[
+                0].strip()  # Mobile Safari
 
 
 class Linux(OS):
@@ -293,15 +297,15 @@ class Windows(OS):
     look_for = 'Windows'
     platform = 'Windows'
     win_versions = {
-                    "NT 6.3": "8.1",
-                    "NT 6.2": "8",
-                    "NT 6.1": "7",
-                    "NT 6.0": "Vista",
-                    "NT 5.2": "Server 2003 / XP x64",
-                    "NT 5.1": "XP",
-                    "NT 5.01": "2000 SP1",
-                    "NT 5.0": "2000",
-                    "98; Win 9x 4.90": "Me"
+        "NT 6.3": "8.1",
+        "NT 6.2": "8",
+        "NT 6.1": "7",
+        "NT 6.0": "Vista",
+        "NT 5.2": "Server 2003 / XP x64",
+        "NT 5.1": "XP",
+        "NT 5.01": "2000 SP1",
+        "NT 5.0": "2000",
+        "98; Win 9x 4.90": "Me"
     }
 
     def getVersion(self, agent):
@@ -349,7 +353,8 @@ class ChromeOS(OS):
         version_markers = self.version_markers
         if self.look_for + '+' in agent:
             version_markers = ['+', '+']
-        return agent.split(self.look_for + version_markers[0])[-1].split(version_markers[1])[1].strip()[:-1]
+        return agent.split(self.look_for + version_markers[0])[-1].split(
+            version_markers[1])[1].strip()[:-1]
 
 
 class Android(Dist):
@@ -431,10 +436,14 @@ def simple_detect(agent):
         os_list.append(result['os']['name'])
 
     os = os_list and " ".join(os_list) or "Unknown OS"
-    os_version = os_list and (result.get('flavor') and result['flavor'].get('version')) or \
-        (result.get('dist') and result['dist'].get('version')) or (result.get('os') and result['os'].get('version')) or ""
-    browser = 'browser' in result and result['browser'].get('name') or 'Unknown Browser'
-    browser_version = 'browser' in result and result['browser'].get('version') or ""
+    os_version = os_list and (
+    result.get('flavor') and result['flavor'].get('version')) or \
+                 (result.get('dist') and result['dist'].get('version')) or (
+                 result.get('os') and result['os'].get('version')) or ""
+    browser = 'browser' in result and result['browser'].get(
+        'name') or 'Unknown Browser'
+    browser_version = 'browser' in result and result['browser'].get(
+        'version') or ""
     if browser_version:
         browser = " ".join((browser, browser_version))
     if os_version:

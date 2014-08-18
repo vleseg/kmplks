@@ -12,10 +12,11 @@ Options:
 
 '''
 import unittest
-from mock import Mock
+
 from google.appengine.ext import testbed
 import webapp2
 
+from mock import Mock
 from bp_includes import config as boilerplate_config
 from bp_includes.lib import i18n
 
@@ -47,7 +48,8 @@ class I18nTest(unittest.TestCase):
         self.testbed.init_taskqueue_stub()
         self.testbed.init_mail_stub()
         self.mail_stub = self.testbed.get_stub(testbed.MAIL_SERVICE_NAME)
-        self.taskqueue_stub = self.testbed.get_stub(testbed.TASKQUEUE_SERVICE_NAME)
+        self.taskqueue_stub = self.testbed.get_stub(
+            testbed.TASKQUEUE_SERVICE_NAME)
         self.testbed.init_user_stub()
 
     def tearDown(self):

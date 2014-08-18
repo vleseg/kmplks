@@ -1,4 +1,4 @@
-######################## BEGIN LICENSE BLOCK ########################
+# ####################### BEGIN LICENSE BLOCK ########################
 # The Original Code is Mozilla Universal charset detector code.
 #
 # The Initial Developer of the Original Code is
@@ -26,14 +26,16 @@
 # 02110-1301  USA
 ######################### END LICENSE BLOCK #########################
 
-from . import constants
 import sys
 import codecs
+import re
+
+from . import constants
 from .latin1prober import Latin1Prober  # windows-1252
 from .mbcsgroupprober import MBCSGroupProber  # multi-byte character sets
 from .sbcsgroupprober import SBCSGroupProber  # single-byte character sets
 from .escprober import EscCharSetProber  # ISO-2122, etc.
-import re
+
 
 MINIMUM_THRESHOLD = 0.20
 ePureAscii = 0
@@ -108,7 +110,7 @@ class UniversalDetector:
             if self._highBitDetector.search(aBuf):
                 self._mInputState = eHighbyte
             elif ((self._mInputState == ePureAscii) and
-                    self._escDetector.search(self._mLastChar + aBuf)):
+                      self._escDetector.search(self._mLastChar + aBuf)):
                 self._mInputState = eEscAscii
 
         self._mLastChar = aBuf[-1:]
@@ -117,8 +119,9 @@ class UniversalDetector:
             if not self._mEscCharSetProber:
                 self._mEscCharSetProber = EscCharSetProber()
             if self._mEscCharSetProber.feed(aBuf) == constants.eFoundIt:
-                self.result = {'encoding': self._mEscCharSetProber.get_charset_name(),
-                               'confidence': self._mEscCharSetProber.get_confidence()}
+                self.result = {
+                'encoding': self._mEscCharSetProber.get_charset_name(),
+                'confidence': self._mEscCharSetProber.get_confidence()}
                 self.done = True
         elif self._mInputState == eHighbyte:
             if not self._mCharSetProbers:

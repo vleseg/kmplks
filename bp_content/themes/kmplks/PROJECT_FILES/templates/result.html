@@ -38,19 +38,19 @@
             <tr>
                 <td>{{ d.name }}</td>
                 <td>
-                {% if d.description is list %}
-                    {% for e in d.description %}
-                        <div class="multidescr-srv-plank">
-                            Для услуги <span class="multidescr-srv-name">
+                    {% if d.description is list %}
+                        {% for e in d.description %}
+                            <div class="multidescr-srv-plank">
+                                Для услуги <span class="multidescr-srv-name">
                             {{ e.service.name }}</span>:
-                        </div>
-                        <div class="multidescr-srv-body">
-                            {{ assemble_description(e) }}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    {{ assemble_description(d.description) }}
-                {% endif %}
+                            </div>
+                            <div class="multidescr-srv-body">
+                                {{ assemble_description(e) }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {{ assemble_description(d.description) }}
+                    {% endif %}
                 </td>
                 <td class="quantity-col">{{ d.n_originals }}</td>
                 <td class="quantity-col">{{ d.n_copies }}</td>

@@ -1,4 +1,4 @@
-######################## BEGIN LICENSE BLOCK ########################
+# ####################### BEGIN LICENSE BLOCK ########################
 # Contributor(s):
 #   Ian Cordasco - port to Python
 #

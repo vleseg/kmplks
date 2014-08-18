@@ -107,7 +107,7 @@ def patch(url, data=None, **kwargs):
     :param \*\*kwargs: Optional arguments that ``request`` takes.
     """
 
-    return request('patch', url,  data=data, **kwargs)
+    return request('patch', url, data=data, **kwargs)
 
 
 def delete(url, **kwargs):

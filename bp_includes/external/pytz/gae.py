@@ -25,9 +25,11 @@
 """
 import os
 import logging
-import pytz
 import zipfile
 from cStringIO import StringIO
+
+import pytz
+
 
 # Fake memcache for when we're not running under the SDK, likely a script.
 class memcache(object):
@@ -39,6 +41,7 @@ class memcache(object):
     def get(*args, **kwargs):
         return None
 
+
 try:
     # Don't use memcache outside of Google App Engine or with GAE's dev server.
     if not os.environ.get('SERVER_SOFTWARE', '').startswith('Development'):
@@ -48,7 +51,7 @@ except ImportError:
 
 zoneinfo = None
 zoneinfo_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-    'zoneinfo.zip'))
+                                             'zoneinfo.zip'))
 
 
 def get_zoneinfo():
@@ -62,6 +65,7 @@ def get_zoneinfo():
 
 class TimezoneLoader(object):
     """A loader that that reads timezones using ZipFile."""
+
     def __init__(self):
         self.available = {}
 

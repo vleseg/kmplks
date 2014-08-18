@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta, tzinfo
 from bisect import bisect_right
+
 try:
     set
 except NameError:
@@ -12,6 +13,8 @@ import pytz
 __all__ = []
 
 _timedelta_cache = {}
+
+
 def memorized_timedelta(seconds):
     '''Create only one instance of each distinct timedelta'''
     try:
@@ -21,8 +24,11 @@ def memorized_timedelta(seconds):
         _timedelta_cache[seconds] = delta
         return delta
 
+
 _epoch = datetime.utcfromtimestamp(0)
 _datetime_cache = {0: _epoch}
+
+
 def memorized_datetime(seconds):
     '''Create only one instance of each distinct datetime'''
     try:
@@ -34,21 +40,26 @@ def memorized_datetime(seconds):
         _datetime_cache[seconds] = dt
         return dt
 
+
 _ttinfo_cache = {}
+
+
 def memorized_ttinfo(*args):
     '''Create only one instance of each distinct tuple'''
     try:
         return _ttinfo_cache[args]
     except KeyError:
         ttinfo = (
-                memorized_timedelta(args[0]),
-                memorized_timedelta(args[1]),
-                args[2]
-                )
+            memorized_timedelta(args[0]),
+            memorized_timedelta(args[1]),
+            args[2]
+        )
         _ttinfo_cache[args] = ttinfo
         return ttinfo
 
+
 _notime = memorized_timedelta(0)
+
 
 def _to_seconds(td):
     '''Convert a timedelta to seconds'''
@@ -71,19 +82,20 @@ class StaticTzInfo(BaseTzInfo):
     These timezones are rare, as most locations have changed their
     offset at some point in their history
     '''
+
     def fromutc(self, dt):
         '''See datetime.tzinfo.fromutc'''
         return (dt + self._utcoffset).replace(tzinfo=self)
 
-    def utcoffset(self,dt):
+    def utcoffset(self, dt):
         '''See datetime.tzinfo.utcoffset'''
         return self._utcoffset
 
-    def dst(self,dt):
+    def dst(self, dt):
         '''See datetime.tzinfo.dst'''
         return _notime
 
-    def tzname(self,dt):
+    def tzname(self, dt):
         '''See datetime.tzinfo.tzname'''
         return self._tzname
 
@@ -116,14 +128,14 @@ class DstTzInfo(BaseTzInfo):
     timezone definition.
     '''
     # Overridden in subclass
-    _utc_transition_times = None # Sorted list of DST transition times in UTC
-    _transition_info = None # [(utcoffset, dstoffset, tzname)] corresponding
-                            # to _utc_transition_times entries
+    _utc_transition_times = None  # Sorted list of DST transition times in UTC
+    _transition_info = None  # [(utcoffset, dstoffset, tzname)] corresponding
+    # to _utc_transition_times entries
     zone = None
 
     # Set in __init__
     _tzinfos = None
-    _dst = None # DST offset
+    _dst = None  # DST offset
 
     def __init__(self, _inf=None, _tzinfos=None):
         if _inf:
@@ -299,8 +311,8 @@ class DstTzInfo(BaseTzInfo):
         # is_dst
         filtered_possible_loc_dt = [
             p for p in possible_loc_dt
-                if bool(p.tzinfo._dst) == is_dst
-            ]
+            if bool(p.tzinfo._dst) == is_dst
+        ]
 
         # Hopefully we only have one possibility left. Return it.
         if len(filtered_possible_loc_dt) == 1:
@@ -317,11 +329,12 @@ class DstTzInfo(BaseTzInfo):
         # but that is just getting silly.
         #
         # Choose the earliest (by UTC) applicable timezone.
-        def mycmp(a,b):
+        def mycmp(a, b):
             return cmp(
-                    a.replace(tzinfo=None) - a.tzinfo._utcoffset,
-                    b.replace(tzinfo=None) - b.tzinfo._utcoffset,
-                    )
+                a.replace(tzinfo=None) - a.tzinfo._utcoffset,
+                b.replace(tzinfo=None) - b.tzinfo._utcoffset,
+            )
+
         filtered_possible_loc_dt.sort(mycmp)
         return filtered_possible_loc_dt[0]
 
@@ -344,22 +357,22 @@ class DstTzInfo(BaseTzInfo):
             dst = 'STD'
         if self._utcoffset > _notime:
             return '<DstTzInfo %r %s+%s %s>' % (
-                    self.zone, self._tzname, self._utcoffset, dst
-                )
+                self.zone, self._tzname, self._utcoffset, dst
+            )
         else:
             return '<DstTzInfo %r %s%s %s>' % (
-                    self.zone, self._tzname, self._utcoffset, dst
-                )
+                self.zone, self._tzname, self._utcoffset, dst
+            )
 
     def __reduce__(self):
         # Special pickle to zone remains a singleton and to cope with
         # database changes.
         return pytz._p, (
-                self.zone,
-                _to_seconds(self._utcoffset),
-                _to_seconds(self._dst),
-                self._tzname
-                )
+            self.zone,
+            _to_seconds(self._utcoffset),
+            _to_seconds(self._dst),
+            self._tzname
+        )
 
 
 class InvalidTimeError(Exception):
@@ -423,7 +436,7 @@ def unpickler(zone, utcoffset=None, dstoffset=None, tzname=None):
     # match reality when this information is discovered.
     for localized_tz in tz._tzinfos.values():
         if (localized_tz._utcoffset == utcoffset
-                and localized_tz._dst == dstoffset):
+            and localized_tz._dst == dstoffset):
             return localized_tz
 
     # This (utcoffset, dstoffset) information has been removed from the

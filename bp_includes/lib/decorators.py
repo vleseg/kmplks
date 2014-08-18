@@ -41,6 +41,7 @@ def user_required(handler):
             self.redirect(login_url)
 
         return handler(self, *args, **kwargs)
+
     return check_login
 
 
@@ -55,10 +56,12 @@ def admin_required(handler):
         """
             If handler has no login_url specified invoke a 403 error
         """
-        if not users.is_current_user_admin() and config.get('environment') == "production":
+        if not users.is_current_user_admin() and config.get(
+                'environment') == "production":
             self.response.write(
                 '<div style="padding-top: 200px; height:178px; width: 500px; color: white; margin: 0 auto; font-size: 52px; text-align: center; background: url(\'http://3.bp.blogspot.com/_d_q1e2dFExM/TNWbWrJJ7xI/AAAAAAAAAjU/JnjBiTSA1xg/s1600/Bank+Vault.jpg\')">Forbidden Access <a style=\'color: white;\' href=\'%s\'>Login</a></div>' %
-                users.create_login_url(self.request.path_url + self.request.query_string))
+                users.create_login_url(
+                    self.request.path_url + self.request.query_string))
             return
         else:
             return handler(self, *args, **kwargs)
@@ -77,8 +80,8 @@ def cron_method(handler):
          Allow run in localhost calling the url
         """
         if self.request.headers.get('X-AppEngine-Cron') is None \
-            and config.get('environment') == "production" \
-            and not users.is_current_user_admin():
+                and config.get('environment') == "production" \
+                and not users.is_current_user_admin():
             return self.error(403)
         else:
             return handler(self, *args, **kwargs)
@@ -97,8 +100,8 @@ def taskqueue_method(handler):
          Allow run in localhost calling the url
         """
         if self.request.headers.get('X-AppEngine-TaskName') is None \
-            and config.get('environment') == "production" \
-            and not users.is_current_user_admin():
+                and config.get('environment') == "production" \
+                and not users.is_current_user_admin():
             return self.error(403)
         else:
             return handler(self, *args, **kwargs)

@@ -5,9 +5,10 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 from collections import MutableMapping
+
 try:
     from threading import RLock
-except ImportError: # Platform-specific: No threads available
+except ImportError:  # Platform-specific: No threads available
     class RLock:
         def __enter__(self):
             pass
@@ -15,15 +16,12 @@ except ImportError: # Platform-specific: No threads available
         def __exit__(self, exc_type, exc_value, traceback):
             pass
 
-
-try: # Python 2.7+
+try:  # Python 2.7+
     from collections import OrderedDict
 except ImportError:
     from .packages.ordered_dict import OrderedDict
 
-
 __all__ = ['RecentlyUsedContainer']
-
 
 _Null = object()
 
@@ -85,7 +83,8 @@ class RecentlyUsedContainer(MutableMapping):
             return len(self._container)
 
     def __iter__(self):
-        raise NotImplementedError('Iteration over this class is unlikely to be threadsafe.')
+        raise NotImplementedError(
+            'Iteration over this class is unlikely to be threadsafe.')
 
     def clear(self):
         with self.lock:

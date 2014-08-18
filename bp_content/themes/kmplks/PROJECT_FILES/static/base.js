@@ -52,7 +52,7 @@ function manageDependencies(serviceId) {
             // checked too.
             else {
                 var parents = dependencyGraph[childId].parents;
-                if (reduce(parents, true, function(current, parentId) {
+                if (reduce(parents, true, function (current, parentId) {
                     return current && wasChecked(parentId);
                 }))
                     enableDisableCheckbox(childId, true)
@@ -81,9 +81,9 @@ function bindCheckboxes() {
 }
 
 if (toBeChecked)
-    $(document).ready(function() {
+    $(document).ready(function () {
         for (var i = 0; i < toBeChecked.length; i++)
-        toggleCheckbox(toBeChecked[i], true);
+            toggleCheckbox(toBeChecked[i], true);
     });
 
 if (dependencyGraph)
@@ -92,11 +92,11 @@ if (dependencyGraph)
 /* Here be triggers that rely upon document styling (certain classes
  * absent/present.
  */
-$(document).ready(function() {
+$(document).ready(function () {
     var multidescrSrvPlanks = $('.multidescr-srv-plank');
 
     if (multidescrSrvPlanks.length)  // if spoilers are present on page
-        multidescrSrvPlanks.on('click', function() {
+        multidescrSrvPlanks.on('click', function () {
             $(this).next().toggle(100)
         })
 });
