@@ -168,8 +168,7 @@ class Document(BaseModel):
 
         Result of compilation heavily depends on the number of dts_items,
         values of their 'description' properties and values of their
-        'override_description' properties. For thorough description of a
-        process see compile_description.rst.
+        'override_description' properties.
 
         :type dts_items: list[DocumentToService]
         :returns: Either a dictionary with keys 'from_doc' and 'from_dts' or a
@@ -274,8 +273,7 @@ class DocumentToService(BaseModel):
     Qualifying standards for a document may change from service to service.
     These changes are reflected by this model's attributes.
 
-    description: Modification of a value of Document.description. See
-        compile_description.rst for more information.
+    description: Modification of a value of Document.description.
     n_originals, n_copies: Number of originals (copies) actually required from
         a citizen applying for a specific service (optional; if not defined,
         value of Document.n_originals / Document.n_copies is used). If
@@ -285,8 +283,7 @@ class DocumentToService(BaseModel):
         document in a specific service (optional; if not defined, value of
         Document.o_supply_type is used).
     override_description: Designation of whether Document.description must be
-        overridden or appended. See compile_description.rst for more
-        information.
+        overridden or appended.
 
     document: A document, that is being linked to a service.
     service: A service, that is being linked to a document.
