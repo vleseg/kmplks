@@ -3,6 +3,7 @@ from wtforms.ext.i18n.utils import get_translations
 
 translations_cache = {}
 
+
 class Form(form.Form):
     """
     Base form for a simple localized WTForms form.

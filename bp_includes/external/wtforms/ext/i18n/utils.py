@@ -1,5 +1,6 @@
 import os
 
+
 def messages_path():
     """
     Determine the path to the 'messages' directory as best possible.
@@ -18,6 +19,7 @@ def get_builtin_gnu_translations(languages=None):
         gettext will try to use locale information from the environment.
     """
     import gettext
+
     return gettext.translation('wtforms', messages_path(), languages)
 
 
@@ -39,6 +41,7 @@ class DefaultTranslations(object):
     A WTForms translations object to wrap translations objects which use
     ugettext/ungettext.
     """
+
     def __init__(self, translations):
         self.translations = translations
 

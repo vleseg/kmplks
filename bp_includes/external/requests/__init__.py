@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#   __
+# __
 #  /__)  _  _     _   _ _/   _
 # / (   (- (/ (/ (- _)  /  _)
 #          /
@@ -51,6 +51,7 @@ __copyright__ = 'Copyright 2013 Kenneth Reitz'
 # Attempt to enable urllib3's SNI support, if possible
 try:
     from .packages.urllib3.contrib import pyopenssl
+
     pyopenssl.inject_into_urllib3()
 except ImportError:
     pass
@@ -67,6 +68,7 @@ from .exceptions import (
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
+
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:

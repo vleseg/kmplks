@@ -5,7 +5,7 @@
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 
-## Base Exceptions
+# # Base Exceptions
 
 class HTTPError(Exception):
     "Base exception used by this module."
@@ -14,6 +14,7 @@ class HTTPError(Exception):
 
 class PoolError(HTTPError):
     "Base exception for errors caused within a pool."
+
     def __init__(self, pool, message):
         self.pool = pool
         HTTPError.__init__(self, "%s: %s" % (pool, message))
@@ -25,6 +26,7 @@ class PoolError(HTTPError):
 
 class RequestError(PoolError):
     "Base exception for PoolErrors that have associated URLs."
+
     def __init__(self, pool, url, message):
         self.url = url
         PoolError.__init__(self, pool, message)

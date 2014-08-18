@@ -6,7 +6,7 @@
 # not use this file except in compliance with the License. You may obtain
 # a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -46,6 +46,7 @@ import socket
 
 # Find a JSON parser
 import json
+
 _parse_json = json.loads
 
 # Find a query string parser
@@ -84,6 +85,7 @@ class GraphAPI(object):
     for the active user from the cookie saved by the SDK.
 
     """
+
     def __init__(self, access_token=None, timeout=None):
         self.access_token = access_token
         self.timeout = timeout
@@ -181,7 +183,7 @@ class GraphAPI(object):
         # Raise an error if we got one, but don't not if Facebook just
         # gave us a Bool value
         if (response and isinstance(response, dict) and
-            response.get("error")):
+                response.get("error")):
             raise GraphAPIError(response)
 
         conn.close()
@@ -199,9 +201,9 @@ class GraphAPI(object):
         #it would have been nice to reuse self.request;
         #but multipart is messy in urllib
         post_args = {
-                  'access_token': self.access_token,
-                  'source': image,
-                  'message': message
+            'access_token': self.access_token,
+            'source': image,
+            'message': message
         }
         post_args.update(kwargs)
         content_type, body = self._encode_multipart_form(post_args)
@@ -215,13 +217,13 @@ class GraphAPI(object):
         #except urllib2.HTTPError as e:
         except urllib2.HTTPError, e:
             data = e.read()  # Facebook sends OAuth errors as 400, and urllib2
-                             # throws an exception, we want a GraphAPIError
+            # throws an exception, we want a GraphAPIError
         try:
             response = _parse_json(data)
             # Raise an error if we got one, but don't not if Facebook just
             # gave us a Bool value
             if (response and isinstance(response, dict) and
-                response.get("error")):
+                    response.get("error")):
                 raise GraphAPIError(response)
         except ValueError:
             response = data
@@ -286,7 +288,8 @@ class GraphAPI(object):
         post_data = None if post_args is None else urllib.urlencode(post_args)
         try:
             file = urllib2.urlopen("https://graph.facebook.com/" + path + "?" +
-                    urllib.urlencode(args), post_data, timeout=self.timeout)
+                                   urllib.urlencode(args), post_data,
+                                   timeout=self.timeout)
         except urllib2.HTTPError, e:
             response = _parse_json(e.read())
             raise GraphAPIError(response)
@@ -295,7 +298,7 @@ class GraphAPI(object):
             if self.timeout:
                 socket.setdefaulttimeout(self.timeout)
             file = urllib2.urlopen("https://graph.facebook.com/" + path + "?" +
-                                    urllib.urlencode(args), post_data)
+                                   urllib.urlencode(args), post_data)
         try:
             fileInfo = file.info()
             if fileInfo.maintype == 'text':
@@ -342,14 +345,14 @@ class GraphAPI(object):
         post_data = None if post_args is None else urllib.urlencode(post_args)
         try:
             file = urllib.urlopen("https://api.facebook.com/method/" + path +
-                    "?" + urllib.urlencode(args),
-                    post_data, timeout=self.timeout)
+                                  "?" + urllib.urlencode(args),
+                                  post_data, timeout=self.timeout)
         except TypeError:
             # Timeout support for Python <2.6
             if self.timeout:
                 socket.setdefaulttimeout(self.timeout)
             file = urllib.urlopen("https://api.facebook.com/method/" + path +
-                    "?" + urllib.urlencode(args), post_data)
+                                  "?" + urllib.urlencode(args), post_data)
 
         try:
             response = _parse_json(file.read())
@@ -388,15 +391,15 @@ class GraphAPI(object):
 
         try:
             file = urllib2.urlopen("https://api.facebook.com/method/" +
-                               fql_method + "?" + urllib.urlencode(args),
-                               post_data, timeout=self.timeout)
+                                   fql_method + "?" + urllib.urlencode(args),
+                                   post_data, timeout=self.timeout)
         except TypeError:
             # Timeout support for Python <2.6
             if self.timeout:
                 socket.setdefaulttimeout(self.timeout)
             file = urllib2.urlopen("https://api.facebook.com/method/" +
-                           fql_method + "?" + urllib.urlencode(args),
-                           post_data)
+                                   fql_method + "?" + urllib.urlencode(args),
+                                   post_data)
 
         try:
             content = file.read()
@@ -425,7 +428,8 @@ class GraphAPI(object):
             "fb_exchange_token": self.access_token,
         }
         response = urllib.urlopen("https://graph.facebook.com/oauth/"
-                            "access_token?" + urllib.urlencode(args)).read()
+                                  "access_token?" + urllib.urlencode(
+            args)).read()
         query_str = parse_qs(response)
         if "access_token" in query_str:
             result = {"access_token": query_str["access_token"][0]}
@@ -488,7 +492,7 @@ def get_user_from_cookie(cookies, app_id, app_secret):
     parsed_request = parse_signed_request(cookie, app_secret)
     try:
         result = get_access_token_from_code(parsed_request["code"], "",
-                                          app_id, app_secret)
+                                            app_id, app_secret)
     except GraphAPIError:
         return None
     result["uid"] = parsed_request["user_id"]
@@ -593,7 +597,7 @@ def get_app_access_token(app_id, app_secret):
             'client_secret': app_secret}
 
     file = urllib2.urlopen("https://graph.facebook.com/oauth/access_token?" +
-                              urllib.urlencode(args))
+                           urllib.urlencode(args))
 
     try:
         result = file.read().split("=")[1]

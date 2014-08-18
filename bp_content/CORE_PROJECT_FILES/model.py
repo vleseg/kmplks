@@ -16,6 +16,7 @@ class BaseModel(ndb.Model):
     """
     Base class for models in Kompleks app. Inherit new models from it.
     """
+
     def urlsafe(self):
         return self.key.urlsafe()
 
@@ -177,6 +178,7 @@ class Document(BaseModel):
         :rtype: dict[str, str | NoneType] |
                 list[dict[str, str | str | NoneType]]
         """
+
         def _compile_single(_dts, _result):
             if _dts.description is None:
                 _result['from_doc'] = self.description

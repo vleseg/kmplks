@@ -23,7 +23,6 @@ from babel.util import FixedOffsetTimezone, LOCALTZ
 
 
 class ReadPoTestCase(unittest.TestCase):
-
     def test_preserve_locale(self):
         buf = StringIO(r'''msgid "foo"
 msgstr "Voh"''')
@@ -191,7 +190,6 @@ msgstr[1] "Vohs [text]"''')
 
 
 class WritePoTestCase(unittest.TestCase):
-
     def test_join_locations(self):
         catalog = Catalog()
         catalog.add(u'foo', locations=[('main.py', 1)])
@@ -223,7 +221,7 @@ not be removed
         catalog.add(text, locations=[('main.py', 1)])
         buf = StringIO()
         pofile.write_po(buf, catalog, no_location=True, omit_header=True,
-                         width=42)
+                        width=42)
         self.assertEqual(r'''msgid ""
 "Here's some text where       \n"
 "white space and line breaks matter, and"
@@ -241,14 +239,14 @@ includesareallylongwordthatmightbutshouldnt throw us into an infinite loop
         catalog.add(text, locations=[('main.py', 1)])
         buf = StringIO()
         pofile.write_po(buf, catalog, no_location=True, omit_header=True,
-                         width=32)
+                        width=32)
         self.assertEqual(r'''msgid ""
 "Here's some text that\n"
 "includesareallylongwordthatmightbutshouldnt"
 " throw us into an infinite "
 "loop\n"
 msgstr ""''', buf.getvalue().strip())
-        
+
     def test_wrap_long_lines_in_header(self):
         """
         Verify that long lines in the header comment are wrapped correctly.
@@ -280,7 +278,7 @@ msgstr ""''', buf.getvalue().strip())
 #: doupy/templates/job-offers/helpers.html:22
 msgid "foo"
 msgstr ""''', buf.getvalue().strip())
-        
+
     def test_no_wrap_and_width_behaviour_on_comments(self):
         catalog = Catalog()
         catalog.add("Pretty dam long message id, which must really be big "
@@ -435,7 +433,8 @@ msgid "foo"
 msgid_plural "foos"
 msgstr[0] "Voh"
 msgstr[1] "Voeh"''' in value
-        assert value.find('msgid ""') < value.find('msgid "bar"') < value.find('msgid "foo"')
+        assert value.find('msgid ""') < value.find('msgid "bar"') < value.find(
+            'msgid "foo"')
 
     def test_silent_location_fallback(self):
         buf = StringIO('''\
@@ -450,6 +449,7 @@ msgstr ""''')
         self.assertEqual(catalog['missing line number'].locations, [])
         self.assertEqual(catalog['broken line number'].locations, [])
 
+
 def suite():
     suite = unittest.TestSuite()
     is_py23 = sys.version_info[0:2] == (2, 3)
@@ -458,6 +458,7 @@ def suite():
     suite.addTest(unittest.makeSuite(ReadPoTestCase))
     suite.addTest(unittest.makeSuite(WritePoTestCase))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

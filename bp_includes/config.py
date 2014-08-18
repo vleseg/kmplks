@@ -10,15 +10,19 @@ import os
 config = {
 
     # webapp2 sessions
-    'webapp2_extras.sessions': {'secret_key': '4fqAju4WUIquDXUILz7GrtVQX0NequGBKACFD7gn8dvitRXtfHa4fPofwmDpM7YO'},
+    'webapp2_extras.sessions': {
+    'secret_key': '4fqAju4WUIquDXUILz7GrtVQX0NequGBKACFD7gn8dvitRXtfHa4fPofwmDpM7YO'},
 
     # webapp2 authentication
     'webapp2_extras.auth': {'user_model': 'bp_includes.models.User',
                             'cookie_name': 'session_name'},
 
     # jinja2 templates
-    'webapp2_extras.jinja2': {'template_path': ['bp_admin/templates', 'bp_content/themes/%s/templates' % os.environ['theme']],
-                              'environment_args': {'extensions': ['jinja2.ext.i18n']}},
+    'webapp2_extras.jinja2': {'template_path': ['bp_admin/templates',
+                                                'bp_content/themes/%s/templates' %
+                                                os.environ['theme']],
+                              'environment_args': {
+                              'extensions': ['jinja2.ext.i18n']}},
 
     # application name
     'app_name': "GAE Boilerplate",
@@ -50,7 +54,7 @@ config = {
     # 'twitter_consumer_key': 'TWITTER_CONSUMER_KEY',
     # 'twitter_consumer_secret': 'TWITTER_CONSUMER_SECRET',
 
-    #Facebook Login
+    # Facebook Login
     # get your own consumer key and consumer secret by registering at https://developers.facebook.com/apps
     #Very Important: set the site_url= your domain in the application settings in the facebook app settings page
     # callback url must be: http://[YOUR DOMAIN]/login/facebook/complete
@@ -113,4 +117,4 @@ config = {
 
     # ----> ADD MORE CONFIGURATION OPTIONS HERE <----
 
-} # end config
+}  # end config

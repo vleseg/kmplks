@@ -1,4 +1,4 @@
-######################## BEGIN LICENSE BLOCK ########################
+# ####################### BEGIN LICENSE BLOCK ########################
 # The Original Code is mozilla.org code.
 #
 # The Initial Developer of the Original Code is
@@ -79,7 +79,7 @@ class EUCJPProber(MultiByteCharSetProber):
 
         if self.get_state() == constants.eDetecting:
             if (self._mContextAnalyzer.got_enough_data() and
-               (self.get_confidence() > constants.SHORTCUT_THRESHOLD)):
+                    (self.get_confidence() > constants.SHORTCUT_THRESHOLD)):
                 self._mState = constants.eFoundIt
 
         return self.get_state()

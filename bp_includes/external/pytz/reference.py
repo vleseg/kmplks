@@ -15,7 +15,7 @@ class FixedOffset(tzinfo):
     """Fixed offset in minutes east from UTC."""
 
     def __init__(self, offset, name):
-        self.__offset = timedelta(minutes = offset)
+        self.__offset = timedelta(minutes=offset)
         self.__name = name
 
     def utcoffset(self, dt):
@@ -31,16 +31,16 @@ class FixedOffset(tzinfo):
 
 import time as _time
 
-STDOFFSET = timedelta(seconds = -_time.timezone)
+STDOFFSET = timedelta(seconds=-_time.timezone)
 if _time.daylight:
-    DSTOFFSET = timedelta(seconds = -_time.altzone)
+    DSTOFFSET = timedelta(seconds=-_time.altzone)
 else:
     DSTOFFSET = STDOFFSET
 
 DSTDIFF = DSTOFFSET - STDOFFSET
 
-class LocalTimezone(tzinfo):
 
+class LocalTimezone(tzinfo):
     def utcoffset(self, dt):
         if self._isdst(dt):
             return DSTOFFSET
@@ -64,6 +64,7 @@ class LocalTimezone(tzinfo):
         tt = _time.localtime(stamp)
         return tt.tm_isdst > 0
 
+
 Local = LocalTimezone()
 
 # A complete implementation of current DST rules for major US time zones.
@@ -80,8 +81,8 @@ DSTSTART = datetime(1, 4, 1, 2)
 # which is the first Sunday on or after Oct 25.
 DSTEND = datetime(1, 10, 25, 1)
 
-class USTimeZone(tzinfo):
 
+class USTimeZone(tzinfo):
     def __init__(self, hours, reprname, stdname, dstname):
         self.stdoffset = timedelta(hours=hours)
         self.reprname = reprname
@@ -120,8 +121,9 @@ class USTimeZone(tzinfo):
         else:
             return ZERO
 
-Eastern  = USTimeZone(-5, "Eastern",  "EST", "EDT")
-Central  = USTimeZone(-6, "Central",  "CST", "CDT")
+
+Eastern = USTimeZone(-5, "Eastern", "EST", "EDT")
+Central = USTimeZone(-6, "Central", "CST", "CDT")
 Mountain = USTimeZone(-7, "Mountain", "MST", "MDT")
-Pacific  = USTimeZone(-8, "Pacific",  "PST", "PDT")
+Pacific = USTimeZone(-8, "Pacific", "PST", "PDT")
 

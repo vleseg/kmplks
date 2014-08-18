@@ -48,7 +48,8 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         self.app = webapp2.WSGIApplication(config=webapp2_config)
         routes_boilerplate.add_routes(self.app)
         routes_theme.add_routes(self.app)
-        self.testapp = webtest.TestApp(self.app, extra_environ={'REMOTE_ADDR' : '127.0.0.1'})
+        self.testapp = webtest.TestApp(self.app, extra_environ={
+        'REMOTE_ADDR': '127.0.0.1'})
 
         # activate GAE stubs
         self.testbed = testbed.Testbed()
@@ -59,11 +60,13 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         self.testbed.init_taskqueue_stub()
         self.testbed.init_mail_stub()
         self.mail_stub = self.testbed.get_stub(testbed.MAIL_SERVICE_NAME)
-        self.taskqueue_stub = self.testbed.get_stub(testbed.TASKQUEUE_SERVICE_NAME)
+        self.taskqueue_stub = self.testbed.get_stub(
+            testbed.TASKQUEUE_SERVICE_NAME)
         self.testbed.init_user_stub()
 
-        self.headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) Version/6.0 Safari/536.25',
-                        'Accept-Language' : 'en_US'}
+        self.headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) Version/6.0 Safari/536.25',
+        'Accept-Language': 'en_US'}
 
         # fix configuration if this is still a raw boilerplate code - required by test with mails
         if not utils.is_email_valid(self.app.config.get('contact_sender')):
@@ -79,12 +82,14 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
 
     def test_contact(self):
         form = self.get_form('/contact/', 'form_contact',
-                            expect_fields=['exception', 'name', 'email', 'message'])
+                             expect_fields=['exception', 'name', 'email',
+                                            'message'])
         form['name'] = 'Anton'
         form['email'] = 'anton@example.com'
         form['message'] = 'Hi there...'
         self.submit(form)
-        message = self.get_sent_messages(to=self.app.config.get('contact_recipient'))[0]
+        message = \
+        self.get_sent_messages(to=self.app.config.get('contact_recipient'))[0]
         self.assertEqual(message.sender, self.app.config.get('contact_sender'))
         self.assertIn('Hi there...', message.html.payload)
 
@@ -97,13 +102,13 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         self.submit(form, expect_error=True, error_field='name')
         form['name'].value = 'Antonioni'
         self.submit(form, expect_error=False)
-        message = self.get_sent_messages(to=self.app.config.get('contact_recipient'))[0]
+        message = \
+        self.get_sent_messages(to=self.app.config.get('contact_recipient'))[0]
         self.assertIn('help', message.html.payload)
 
 
 class ModelTest(unittest.TestCase):
     def setUp(self):
-
         # activate GAE stubs
         self.testbed = testbed.Testbed()
         self.testbed.activate()
@@ -121,8 +126,10 @@ class ModelTest(unittest.TestCase):
 
         token = models.User.create_signup_token(user.get_id())
         self.assertTrue(models.User.validate_signup_token(user.get_id(), token))
-        self.assertFalse(models.User.validate_resend_token(user.get_id(), token))
-        self.assertFalse(models.User.validate_signup_token(user2.get_id(), token))
+        self.assertFalse(
+            models.User.validate_resend_token(user.get_id(), token))
+        self.assertFalse(
+            models.User.validate_signup_token(user2.get_id(), token))
 
 
 if __name__ == "__main__":

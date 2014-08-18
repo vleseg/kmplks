@@ -40,7 +40,7 @@ config = {
     'twitter_consumer_key': 'rrgGr00w3HRJYzmxNLMgzQ',
     'twitter_consumer_secret': '5IdJDvSRdbkETeFjFeIxS7IoERWn8nGk5NfGSGG9ynk',
 
-    #Facebook Login
+    # Facebook Login
     # get your own consumer key and consumer secret by registering at https://developers.facebook.com/apps
     #Very Important: set the site_url= your domain in the application settings in the facebook app settings page
     # callback url must be: http://[YOUR DOMAIN]/login/facebook/complete
@@ -64,10 +64,11 @@ config = {
     'captcha_private_key': "6Ldi0u4SAAAAAPzk1gaFDRQgry7XW4VBvNCqCHuJ",
 
     # webapp2 sessions
-    'webapp2_extras.sessions': { 'secret_key': 'coto#W1|(|=_>}m9BZEB#drBG| tN@0{@7+)gB:w:+9u3}nlrf8U?' },
+    'webapp2_extras.sessions': {
+    'secret_key': 'coto#W1|(|=_>}m9BZEB#drBG| tN@0{@7+)gB:w:+9u3}nlrf8U?'},
 
     # webapp2 authentication
-    'webapp2_extras.auth': { 'cookie_name': 'gae_session' },
+    'webapp2_extras.auth': {'cookie_name': 'gae_session'},
 
     # ----> ADD MORE CONFIGURATION OPTIONS HERE <----
 

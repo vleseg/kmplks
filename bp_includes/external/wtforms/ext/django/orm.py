@@ -47,11 +47,12 @@ class ModelConverterBase(object):
 
 class ModelConverter(ModelConverterBase):
     DEFAULT_SIMPLE_CONVERSIONS = {
-        f.IntegerField: ['AutoField', 'IntegerField', 'SmallIntegerField', 'PositiveIntegerField', 'PositiveSmallIntegerField'],
+        f.IntegerField: ['AutoField', 'IntegerField', 'SmallIntegerField',
+                         'PositiveIntegerField', 'PositiveSmallIntegerField'],
         f.DecimalField: ['DecimalField', 'FloatField'],
         f.FileField: ['FileField', 'FilePathField', 'ImageField'],
         f.DateTimeField: ['DateTimeField'],
-        f.DateField : ['DateField'],
+        f.DateField: ['DateField'],
         f.BooleanField: ['BooleanField'],
         f.TextField: ['CharField', 'PhoneNumberField', 'SlugField'],
         f.TextAreaField: ['TextField', 'XMLField'],
@@ -73,6 +74,7 @@ class ModelConverter(ModelConverterBase):
     def make_simple_converter(self, field_type):
         def _converter(model, field, kwargs):
             return field_type(**kwargs)
+
         return _converter
 
     def conv_ForeignKey(self, model, field, kwargs):
@@ -84,6 +86,7 @@ class ModelConverter(ModelConverterBase):
                 return obj.time()
             except AttributeError:
                 return obj
+
         kwargs['filters'].append(time_only)
         return f.DateTimeField(format='%H:%M:%S', **kwargs)
 
@@ -119,7 +122,8 @@ class ModelConverter(ModelConverterBase):
         return f.SelectField(choices=choices, coerce=coerce_nullbool, **kwargs)
 
 
-def model_fields(model, only=None, exclude=None, field_args=None, converter=None):
+def model_fields(model, only=None, exclude=None, field_args=None,
+                 converter=None):
     """
     Generate a dictionary of fields for a given Django model.
 
@@ -143,7 +147,8 @@ def model_fields(model, only=None, exclude=None, field_args=None, converter=None
     return field_dict
 
 
-def model_form(model, base_class=Form, only=None, exclude=None, field_args=None, converter=None):
+def model_form(model, base_class=Form, only=None, exclude=None, field_args=None,
+               converter=None):
     """
     Create a wtforms Form for a given Django model class::
 

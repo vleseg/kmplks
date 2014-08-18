@@ -1,4 +1,4 @@
-######################## BEGIN LICENSE BLOCK ########################
+# ####################### BEGIN LICENSE BLOCK ########################
 # The Original Code is Mozilla Communicator client code.
 # 
 # The Initial Developer of the Original Code is
@@ -52,7 +52,7 @@ class CharSetGroupProber(CharSetProber):
             self.get_confidence()
             if not self._mBestGuessProber:
                 return None
-#                self._mBestGuessProber = self._mProbers[0]
+            #                self._mBestGuessProber = self._mProbers[0]
         return self._mBestGuessProber.get_charset_name()
 
     def feed(self, aBuf):
@@ -101,6 +101,7 @@ class CharSetGroupProber(CharSetProber):
         if not self._mBestGuessProber:
             return 0.0
         return bestConf
+
 #        else:
 #            self._mBestGuessProber = self._mProbers[0]
 #            return self._mBestGuessProber.get_confidence()

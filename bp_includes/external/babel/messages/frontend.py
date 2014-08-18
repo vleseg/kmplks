@@ -34,7 +34,7 @@ from babel import Locale, localedata
 from babel.core import UnknownLocaleError
 from babel.messages.catalog import Catalog
 from babel.messages.extract import extract_from_dir, DEFAULT_KEYWORDS, \
-                                   DEFAULT_MAPPING
+    DEFAULT_MAPPING
 from babel.messages.mofile import write_mo
 from babel.messages.pofile import read_po, write_po
 from babel.messages.plurals import PLURALS
@@ -147,7 +147,7 @@ class compile_catalog(Command):
                 translated = 0
                 for message in list(catalog)[1:]:
                     if message.string:
-                        translated +=1
+                        translated += 1
                 percentage = 0
                 if len(catalog):
                     percentage = translated * 100 // len(catalog)
@@ -277,8 +277,8 @@ class extract_messages(Command):
                                        "are mutually exclusive")
 
         if not self.input_dirs:
-            self.input_dirs = dict.fromkeys([k.split('.',1)[0]
-                for k in self.distribution.packages
+            self.input_dirs = dict.fromkeys([k.split('.', 1)[0]
+                                             for k in self.distribution.packages
             ]).keys()
 
         if self.add_comments:
@@ -310,7 +310,7 @@ class extract_messages(Command):
                                              comment_tags=self._add_comments,
                                              callback=callback,
                                              strip_comment_tags=
-                                                self.strip_comments)
+                                             self.strip_comments)
                 for filename, lineno, message, comments in extracted:
                     filepath = os.path.normpath(os.path.join(dirname, filename))
                     catalog.add(message, None, [(filepath, lineno)],
@@ -600,8 +600,8 @@ class CommandLineInterface(object):
     commands = {
         'compile': 'compile message catalogs to MO files',
         'extract': 'extract messages from source files and generate a POT file',
-        'init':    'create new message catalogs from a POT file',
-        'update':  'update existing message catalogs from a POT file'
+        'init': 'create new message catalogs from a POT file',
+        'update': 'update existing message catalogs from a POT file'
     }
 
     def run(self, argv=sys.argv):
@@ -725,7 +725,8 @@ class CommandLineInterface(object):
             else:
                 for locale in os.listdir(options.directory):
                     po_file = os.path.join(options.directory, locale,
-                                           'LC_MESSAGES', options.domain + '.po')
+                                           'LC_MESSAGES',
+                                           options.domain + '.po')
                     if os.path.exists(po_file):
                         po_files.append((locale, po_file))
                         mo_files.append(os.path.join(options.directory, locale,
@@ -757,7 +758,7 @@ class CommandLineInterface(object):
                 translated = 0
                 for message in list(catalog)[1:]:
                     if message.string:
-                        translated +=1
+                        translated += 1
                 percentage = 0
                 if len(catalog):
                     percentage = translated * 100 // len(catalog)
@@ -813,7 +814,7 @@ class CommandLineInterface(object):
                           help='path to the output POT file')
         parser.add_option('-w', '--width', dest='width', type='int',
                           help="set output line width (default 76)")
-        parser.add_option('--no-wrap', dest='no_wrap', action = 'store_true',
+        parser.add_option('--no-wrap', dest='no_wrap', action='store_true',
                           help='do not break long message lines, longer than '
                                'the output line width, into several lines')
         parser.add_option('--sort-output', dest='sort_output',
@@ -842,7 +843,7 @@ class CommandLineInterface(object):
 
         parser.set_defaults(charset='utf-8', keywords=[],
                             no_default_keywords=False, no_location=False,
-                            omit_header = False, width=None, no_wrap=False,
+                            omit_header=False, width=None, no_wrap=False,
                             sort_output=False, sort_by_file=False,
                             comment_tags=[], strip_comment_tags=False)
         options, args = parser.parse_args(argv)
@@ -908,7 +909,7 @@ class CommandLineInterface(object):
                                              keywords, options.comment_tags,
                                              callback=callback,
                                              strip_comment_tags=
-                                                options.strip_comment_tags)
+                                             options.strip_comment_tags)
                 for filename, lineno, message, comments in extracted:
                     filepath = os.path.normpath(os.path.join(dirname, filename))
                     catalog.add(message, None, [(filepath, lineno)],
@@ -1106,6 +1107,7 @@ class CommandLineInterface(object):
 def main():
     return CommandLineInterface().run(sys.argv)
 
+
 def parse_mapping(fileobj, filename=None):
     """Parse an extraction method mapping from a file-like object.
 
@@ -1162,7 +1164,7 @@ def parse_mapping(fileobj, filename=None):
     options_map = {}
 
     parser = RawConfigParser()
-    parser._sections = odict(parser._sections) # We need ordered sections
+    parser._sections = odict(parser._sections)  # We need ordered sections
     parser.readfp(fileobj, filename)
     for section in parser.sections():
         if section == 'extractors':
@@ -1179,6 +1181,7 @@ def parse_mapping(fileobj, filename=None):
             method_map[idx] = (pattern, method)
 
     return (method_map, options_map)
+
 
 def parse_keywords(strings=[]):
     """Parse keywords specifications from the given list of strings.

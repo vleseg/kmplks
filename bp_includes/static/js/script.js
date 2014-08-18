@@ -7,31 +7,33 @@
  *  Insert parameters to the URL recognizing if it had parameters before.
  *  It will reload the page, it's likely better to store this until finished
  */
-function insertParamToURL(key, value)
-{
-    key = escape(key); value = escape(value);
+function insertParamToURL(key, value) {
+    key = escape(key);
+    value = escape(value);
 
     var kvp = document.location.search.substr(1).split('&');
 
-    var i=kvp.length; var x;
-    while(i--) {
+    var i = kvp.length;
+    var x;
+    while (i--) {
         x = kvp[i].split('=');
 
-        if (x[0]==key)
-        {
+        if (x[0] == key) {
             x[1] = value;
             kvp[i] = x.join('=');
             break;
         }
     }
 
-    if(i<0) {kvp[kvp.length] = [key,value].join('=');}
+    if (i < 0) {
+        kvp[kvp.length] = [key, value].join('=');
+    }
 
     document.location.search = kvp.join('&');
 }
 
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     /***** Get kind of device ****/
     var ua = navigator.userAgent;
@@ -52,13 +54,15 @@ $(document).ready(function() {
     processScroll();
 
     $nav.on('click', function () {
-        if (!isFixed) setTimeout(function () {  $win.scrollTop($win.scrollTop() - 47); }, 10);
+        if (!isFixed) setTimeout(function () {
+            $win.scrollTop($win.scrollTop() - 47);
+        }, 10);
     });
 
     $win.on('scroll', processScroll);
 
     function processScroll() {
-        if(checker.ios) {
+        if (checker.ios) {
             return;
         }
         var i, scrollTop = $win.scrollTop();
@@ -76,11 +80,11 @@ $(document).ready(function() {
     /* Detects orientationchange event */
     // otherwise fall back to the resize event.
     // Fixing this bug: http://webdesignerwall.com/tutorials/iphone-safari-viewport-scaling-bug
-    if (checker.mobile && checker.ios){
+    if (checker.mobile && checker.ios) {
         var supportsOrientationChange = "onorientationchange" in window,
             orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";
 
-        window.addEventListener(orientationEvent, function() {
+        window.addEventListener(orientationEvent, function () {
             $("body").css("width", "100%");
             //alert('HOLY ROTATING SCREENS BATMAN:' + window.orientation + " " + screen.width);
         }, false);
@@ -96,13 +100,13 @@ $(document).ready(function() {
     }
 
     /* Change CSS definitión for collapse button */
-    $('body').on('click.collapse.data-api', '[data-toggle=collapse]', function ( e ) {
+    $('body').on('click.collapse.data-api', '[data-toggle=collapse]', function (e) {
         var $this = $(this), href
             , target = $this.attr('data-target')
                 || e.preventDefault()
                 || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') //strip for ie7
             , option = $(target).data('collapse') ? 'toggle' : $this.data()
-        if(!$(target).hasClass("in")){
+        if (!$(target).hasClass("in")) {
             $this.find("span").addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-up");
         }
         else {

@@ -17,6 +17,7 @@ import codecs
 from datetime import timedelta, tzinfo
 import os
 import re
+
 try:
     set = set
 except NameError:
@@ -24,6 +25,7 @@ except NameError:
 import textwrap
 import time
 from itertools import izip, imap
+
 missing = object()
 
 __all__ = ['distinct', 'pathmatch', 'relpath', 'wraptext', 'odict', 'UTC',
@@ -55,6 +57,8 @@ def distinct(iterable):
 # Regexp to match python magic encoding line
 PYTHON_MAGIC_COMMENT_re = re.compile(
     r'[ \t\f]* \# .* coding[=:][ \t]*([-\w.]+)', re.VERBOSE)
+
+
 def parse_encoding(fp):
     """Deduce the encoding of a source file from magic comment.
 
@@ -78,6 +82,7 @@ def parse_encoding(fp):
         if not m:
             try:
                 import parser
+
                 parser.suite(line1)
             except (ImportError, SyntaxError):
                 # Either it's a real syntax error, in which case the source is
@@ -101,6 +106,7 @@ def parse_encoding(fp):
             return None
     finally:
         fp.seek(pos)
+
 
 def pathmatch(pattern, filename):
     """Extended pathname pattern matching.
@@ -133,12 +139,12 @@ def pathmatch(pattern, filename):
     :rtype: `bool`
     """
     symbols = {
-        '?':   '[^/]',
-        '?/':  '[^/]/',
-        '*':   '[^/]+',
-        '*/':  '[^/]+/',
+        '?': '[^/]',
+        '?/': '[^/]/',
+        '*': '[^/]+',
+        '*/': '[^/]+/',
         '**/': '(?:.+/)*?',
-        '**':  '(?:.+/)*?[^/]+',
+        '**': '(?:.+/)*?[^/]+',
     }
     buf = []
     for idx, part in enumerate(re.split('([?*]+/?)', pattern)):
@@ -152,8 +158,8 @@ def pathmatch(pattern, filename):
 
 class TextWrapper(textwrap.TextWrapper):
     wordsep_re = re.compile(
-        r'(\s+|'                                  # any whitespace
-        r'(?<=[\w\!\"\'\&\.\,\?])-{2,}(?=\w))'    # em-dash
+        r'(\s+|'  # any whitespace
+        r'(?<=[\w\!\"\'\&\.\,\?])-{2,}(?=\w))'  # em-dash
     )
 
 
@@ -181,6 +187,7 @@ class odict(dict):
     
     :see: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/107747
     """
+
     def __init__(self, data=None):
         dict.__init__(self, data or {})
         self._keys = dict.keys(self)
@@ -196,6 +203,7 @@ class odict(dict):
 
     def __iter__(self):
         return iter(self._keys)
+
     iterkeys = __iter__
 
     def clear(self):
@@ -228,7 +236,7 @@ class odict(dict):
         self._keys.remove(key)
         return dict.popitem(key)
 
-    def setdefault(self, key, failobj = None):
+    def setdefault(self, key, failobj=None):
         dict.setdefault(self, key, failobj)
         if key not in self._keys:
             self._keys.append(key)
@@ -275,10 +283,12 @@ except ImportError:
     def itemgetter(name):
         def _getitem(obj):
             return obj[name]
+
         return _getitem
 
 try:
     ''.rsplit
+
     def rsplit(a_string, sep=None, maxsplit=None):
         return a_string.rsplit(sep, maxsplit)
 except AttributeError:
@@ -328,9 +338,9 @@ except ImportError:
     :type: `tzinfo`
     """
 
-STDOFFSET = timedelta(seconds = -time.timezone)
+STDOFFSET = timedelta(seconds=-time.timezone)
 if time.daylight:
-    DSTOFFSET = timedelta(seconds = -time.altzone)
+    DSTOFFSET = timedelta(seconds=-time.altzone)
 else:
     DSTOFFSET = STDOFFSET
 
@@ -338,7 +348,6 @@ DSTDIFF = DSTOFFSET - STDOFFSET
 
 
 class LocalTimezone(tzinfo):
-
     def utcoffset(self, dt):
         if self._isdst(dt):
             return DSTOFFSET

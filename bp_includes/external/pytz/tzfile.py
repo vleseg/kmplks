@@ -14,15 +14,15 @@ from pytz.tzinfo import memorized_datetime, memorized_timedelta
 def build_tzinfo(zone, fp):
     head_fmt = '>4s c 15x 6l'
     head_size = calcsize(head_fmt)
-    (magic, format, ttisgmtcnt, ttisstdcnt,leapcnt, timecnt,
-        typecnt, charcnt) =  unpack(head_fmt, fp.read(head_size))
+    (magic, format, ttisgmtcnt, ttisstdcnt, leapcnt, timecnt,
+     typecnt, charcnt) = unpack(head_fmt, fp.read(head_size))
 
     # Make sure it is a tzfile(5) file
     assert magic == 'TZif'
 
     # Read out the transition times, localtime indices and ttinfo structures.
     data_fmt = '>%(timecnt)dl %(timecnt)dB %(ttinfo)s %(charcnt)ds' % dict(
-        timecnt=timecnt, ttinfo='lBB'*typecnt, charcnt=charcnt)
+        timecnt=timecnt, ttinfo='lBB' * typecnt, charcnt=charcnt)
     data_size = calcsize(data_fmt)
     data = unpack(data_fmt, fp.read(data_size))
 
@@ -41,14 +41,14 @@ def build_tzinfo(zone, fp):
     i = 0
     while i < len(ttinfo_raw):
         # have we looked up this timezone name yet?
-        tzname_offset = ttinfo_raw[i+2]
+        tzname_offset = ttinfo_raw[i + 2]
         if tzname_offset not in tznames:
             nul = tznames_raw.find('\0', tzname_offset)
             if nul < 0:
                 nul = len(tznames_raw)
             tznames[tzname_offset] = tznames_raw[tzname_offset:nul]
         ttinfo.append((ttinfo_raw[i],
-                       bool(ttinfo_raw[i+1]),
+                       bool(ttinfo_raw[i + 1]),
                        tznames[tzname_offset]))
         i += 3
 
@@ -78,19 +78,19 @@ def build_tzinfo(zone, fp):
             if not inf[1]:
                 dst = 0
             else:
-                for j in range(i-1, -1, -1):
+                for j in range(i - 1, -1, -1):
                     prev_inf = ttinfo[lindexes[j]]
                     if not prev_inf[1]:
                         break
-                dst = inf[0] - prev_inf[0] # dst offset
+                dst = inf[0] - prev_inf[0]  # dst offset
 
-                if dst <= 0: # Bad dst? Look further.
-                    for j in range(i+1, len(transitions)):
+                if dst <= 0:  # Bad dst? Look further.
+                    for j in range(i + 1, len(transitions)):
                         stdinf = ttinfo[lindexes[j]]
                         if not stdinf[1]:
                             dst = inf[0] - stdinf[0]
                             if dst > 0:
-                                break # Found a useful std time.
+                                break  # Found a useful std time.
 
             tzname = inf[2]
 
@@ -109,14 +109,16 @@ def build_tzinfo(zone, fp):
 
     return cls()
 
+
 if __name__ == '__main__':
     import os.path
     from pprint import pprint
+
     base = os.path.join(os.path.dirname(__file__), 'zoneinfo')
     tz = build_tzinfo('Australia/Melbourne',
-                      open(os.path.join(base,'Australia','Melbourne'), 'rb'))
+                      open(os.path.join(base, 'Australia', 'Melbourne'), 'rb'))
     tz = build_tzinfo('US/Eastern',
-                      open(os.path.join(base,'US','Eastern'), 'rb'))
+                      open(os.path.join(base, 'US', 'Eastern'), 'rb'))
     pprint(tz._utc_transition_times)
-    #print tz.asPython(4)
+    # print tz.asPython(4)
     #print tz.transitions_mapping

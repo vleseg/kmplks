@@ -44,7 +44,8 @@ def hashing(plaintext, salt="", sha="512"):
         # plaintext.
         iv = phrase_digest[:16]
         encryptor = AES.new(app.config.get('aes_key'), mode, iv)
-        ciphertext = [encryptor.encrypt(chunk) for chunk in chunks(phrase_digest, 16)]
+        ciphertext = [encryptor.encrypt(chunk) for chunk in
+                      chunks(phrase_digest, 16)]
         return ''.join(ciphertext)
     except Exception, e:
         logging.error("CRYPTO is not running: {}".format(e))
@@ -98,7 +99,8 @@ def write_cookie(cls, COOKIE_NAME, COOKIE_VALUE, path, expires=7200):
 
     cls.response.headers.add_header(
         'Set-Cookie',
-        COOKIE_NAME + '=' + COOKIE_VALUE + '; expires=' + str(time_expire) + '; path=' + path + '; HttpOnly')
+        COOKIE_NAME + '=' + COOKIE_VALUE + '; expires=' + str(
+            time_expire) + '; path=' + path + '; HttpOnly')
     return
 
 
@@ -125,7 +127,7 @@ def get_date_time(format="%Y-%m-%d %H:%M:%S", UTC_OFFSET=3):
     now = local_datetime - timedelta(hours=UTC_OFFSET)
     if format != "datetimeProperty":
         now = now.strftime(format)
-        #    now = datetime.fromtimestamp(1321925140.78)
+        # now = datetime.fromtimestamp(1321925140.78)
     return now
 
 

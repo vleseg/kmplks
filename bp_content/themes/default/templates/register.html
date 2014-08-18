@@ -1,12 +1,13 @@
 {% extends base_layout %}
 
 {% block header_title %}
-        {% trans %}Sign Up{% endtrans %}
+    {% trans %}Sign Up{% endtrans %}
 {% endblock %}
 
 {% block content %}
 
-    <form id="form_register" action="{{ url|safe }}" method="post" class="well form-horizontal">
+    <form id="form_register" action="{{ url|safe }}" method="post"
+          class="well form-horizontal">
         <fieldset>
             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             {{ macros.field(form.username, label=_("Username"), placeholder=_("Enter your")+" "+_("Username"), class="input-xlarge focused required form-control") }}
@@ -18,7 +19,8 @@
             {{ macros.field(form.country, label=_("Country")) }}
             {{ macros.field(form.tz, label=_("Timezone")) }}
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">{% trans %}Sign Up{% endtrans %}</button>
+                <button type="submit" class="btn btn-primary">{% trans %}Sign
+                    Up{% endtrans %}</button>
             </div>
         </fieldset>
     </form>
@@ -26,32 +28,32 @@
 {% endblock %}
 
 {% block mediaJS %}
-<script>
-    $().ready(function() {
-        $("#form_register").validate({
-            submitHandler: function(form) {
+    <script>
+        $().ready(function () {
+            $("#form_register").validate({
+                submitHandler: function (form) {
                     form.submit();
-            },
-            rules: {
-                password: 'required',
-                c_password: {
-                    required: true,
-                    equalTo: '#password'
+                },
+                rules: {
+                    password: 'required',
+                    c_password: {
+                        required: true,
+                        equalTo: '#password'
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    element.parent().parent().addClass("error");
+                    error.addClass("help-inline").appendTo(element.parent());
                 }
-            },
-            errorPlacement: function(error, element) {
-                element.parent().parent().addClass("error");
-                error.addClass("help-inline").appendTo( element.parent() );
-            }
-        });
+            });
 
-        $("#password").passStrength({
-            shortPassText: '{% trans %}Short Password{% endtrans %}',
-            badPassText: '{% trans %}Insecure Password{% endtrans %}',
-            goodPassText: '{% trans %}Good Password{% endtrans %}',
-            strongPassText: '{% trans %}Secure Password{% endtrans %}'
+            $("#password").passStrength({
+                shortPassText: '{% trans %}Short Password{% endtrans %}',
+                badPassText: '{% trans %}Insecure Password{% endtrans %}',
+                goodPassText: '{% trans %}Good Password{% endtrans %}',
+                strongPassText: '{% trans %}Secure Password{% endtrans %}'
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}
 

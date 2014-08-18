@@ -1,4 +1,4 @@
-######################## BEGIN LICENSE BLOCK ########################
+# ####################### BEGIN LICENSE BLOCK ########################
 # The Original Code is Mozilla Universal charset detector code.
 #
 # The Initial Developer of the Original Code is
@@ -278,6 +278,6 @@ class HebrewProber(CharSetProber):
     def get_state(self):
         # Remain active as long as any of the model probers are active.
         if (self._mLogicalProber.get_state() == eNotMe) and \
-           (self._mVisualProber.get_state() == eNotMe):
+                (self._mVisualProber.get_state() == eNotMe):
             return eNotMe
         return eDetecting

@@ -1,4 +1,4 @@
-######################## BEGIN LICENSE BLOCK ########################
+# ####################### BEGIN LICENSE BLOCK ########################
 # The Original Code is mozilla.org code.
 #
 # The Initial Developer of the Original Code is
@@ -29,6 +29,7 @@ from .mbcharsetprober import MultiByteCharSetProber
 from .codingstatemachine import CodingStateMachine
 from .chardistribution import GB2312DistributionAnalysis
 from .mbcssm import GB2312SMModel
+
 
 class GB2312Prober(MultiByteCharSetProber):
     def __init__(self):

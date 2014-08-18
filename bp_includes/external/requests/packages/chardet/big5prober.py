@@ -1,4 +1,4 @@
-######################## BEGIN LICENSE BLOCK ########################
+# ####################### BEGIN LICENSE BLOCK ########################
 # The Original Code is Mozilla Communicator client code.
 #
 # The Initial Developer of the Original Code is

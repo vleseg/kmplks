@@ -13,6 +13,7 @@ class TextField(StringField):
     Legacy alias for StringField
     """
 
+
 class TextAreaField(TextField):
     """
     This field represents an HTML ``<textarea>`` and can be used to take
