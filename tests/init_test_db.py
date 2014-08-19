@@ -136,4 +136,4 @@ def init_test_db(from_console=False):
                         value_to_store = raw_value
                     entity_init_kwargs[property_name] = value_to_store
 
-                put_new_entity(entity_class, entity_init_kwargs)
+                put_new_entity(entity_class, entity_init_kwargs, from_console)

@@ -42,6 +42,7 @@ td.quantity-col {
     border-top: 1px solid #a7c5e1;
     background-color: rgba(191, 227, 255, 0.25);
     margin-top: 0.6em;
+    cursor: pointer;
 }
 .multidescr-srv-body {
     border: 1px solid #a7c5e1;

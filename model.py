@@ -1,5 +1,6 @@
 # coding=utf-8
 # TODO: update UML schema and description in Evernote correspondingly
+import logging
 # Third-party imports
 from google.appengine.ext import ndb
 
@@ -168,8 +169,7 @@ class Document(BaseModel):
 
         Result of compilation heavily depends on the number of dts_items,
         values of their 'description' properties and values of their
-        'override_description' properties. For thorough description of a
-        process see compile_description.rst.
+        'override_description' properties.
 
         :type dts_items: list[DocumentToService]
         :returns: Either a dictionary with keys 'from_doc' and 'from_dts' or a
@@ -233,7 +233,8 @@ class Document(BaseModel):
                 # ...or from Document if former was not defined.
                 total += current_n if current_n else getattr(self, attr_name)
         else:  # count_method == 'per_ogv'
-            unique_ogv_names = set(dts.service.ogv.name for dts in dts_items)
+            unique_ogv_names = set(dts.service.get().ogv.get().name
+                                   for dts in dts_items)
             total = getattr(self, attr_name) * len(unique_ogv_names)
 
         return total
@@ -274,8 +275,7 @@ class DocumentToService(BaseModel):
     Qualifying standards for a document may change from service to service.
     These changes are reflected by this model's attributes.
 
-    description: Modification of a value of Document.description. See
-        compile_description.rst for more information.
+    description: Modification of a value of Document.description.
     n_originals, n_copies: Number of originals (copies) actually required from
         a citizen applying for a specific service (optional; if not defined,
         value of Document.n_originals / Document.n_copies is used). If
@@ -285,8 +285,7 @@ class DocumentToService(BaseModel):
         document in a specific service (optional; if not defined, value of
         Document.o_supply_type is used).
     override_description: Designation of whether Document.description must be
-        overridden or appended. See compile_description.rst for more
-        information.
+        overridden or appended.
 
     document: A document, that is being linked to a service.
     service: A service, that is being linked to a document.
