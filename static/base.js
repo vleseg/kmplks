@@ -1,93 +1,90 @@
 var toBeChecked;
 var dependencyGraph;
 
-function reduce(seq, start, func) {
-    var result = start;
-    for (var i = 0; i < seq.length; i++)
-        result = func(result, seq[i]);
-
-    return result
+function toggleCheckbox($checkbox, isChecked) {
+    $checkbox.prop('checked', isChecked);
 }
 
-function wasChecked(checkboxId) {
-    /* Checks if a checkbox with id=checkboxId is checked. */
-    var selector = 'input[type=checkbox]#' + checkboxId;
-    return $(selector).is(':checked')
-}
-
-function toggleCheckbox(checkboxId, isChecked) {
-    var selector = 'input[type=checkbox]#' + checkboxId;
-    $(selector).prop('checked', isChecked)
-}
-
-function enableDisableCheckbox(checkboxId, isEnabled) {
-    var selector = 'input[type=checkbox]#' + checkboxId;
-    $(selector).prop('disabled', !isEnabled);
+function enableDisableCheckbox($checkbox, isEnabled) {
+    $checkbox.prop('disabled', !isEnabled);
     if (!isEnabled)
-        $(selector).closest('tr').addClass('disabled');
+        $checkbox.closest('tr').addClass('disabled');
     else
-        $(selector).closest('tr').removeClass('disabled')
+        $checkbox.closest('tr').removeClass('disabled')
 }
 
-function manageDependencies(serviceId) {
+// FIXME: doesn't work for some reason
+function manageDependencies(serviceId, isChecked) {
     /* Disable/enable checkboxes for services, when their dependencies are
      * checked or unchecked.
      */
-    function walk(currentServiceId) {
-        var parentIsChecked = $('input[type=checkbox]#' + currentServiceId)
-            .is(':checked');
-        var children = dependencyGraph[currentServiceId].children;
+    function walk(currentId, isChecked) {
+        dependencyGraph[currentId].checked = isChecked;
+        var children = dependencyGraph[currentId].children;
 
-        for (var i = 0; i < children.length; i++) {
-            var childId = children[i];
-            // If checkbox bound to the currentServiceId is unchecked, all its
+        $.each(dependencyGraph[currentId].children, function(i, childId) {
+            // If checkbox bound to the currentId is unchecked, all its
             // descendants must be unchecked and disabled.
-            if (!parentIsChecked) {
-                toggleCheckbox(childId, false);
-                enableDisableCheckbox(childId, false);
-                walk(childId)
+            if (!isChecked) {
+                dependencyGraph[childId].checked = false;
+                dependencyGraph[childId].enabled = false;
+                walk(childId, false);
             }
             // If checkbox bound to the serviceId is checked, all its children
             // must be enabled, but only if their other parents (if any) are
             // checked too.
             else {
-                var parents = dependencyGraph[childId].parents;
-                if (reduce(parents, true, function(current, parentId) {
-                    return current && wasChecked(parentId);
-                }))
-                    enableDisableCheckbox(childId, true)
+                var mustEnableChild = true;
+                $.each(dependencyGraph[childId].parents, function(parentId) {
+                    mustEnableChild = mustEnableChild &&
+                        dependencyGraph[parentId].checked
+                });
+                if (mustEnableChild)
+                    dependencyGraph[childId].enabled = true
             }
-        }
+        });
     }
 
+    // Calculate.
     if (arguments.length == 0)   // on page load
         for (var id in dependencyGraph) {
             if (dependencyGraph.hasOwnProperty(id))
-                walk(id);
+                walk(id, isChecked);
         }
     else {
-        walk(serviceId)
+        walk(serviceId, isChecked)
     }
+    var daysTotal = {'days': 0, 'workDays': 0};
+    $.each(dependencyGraph, function(key, value) {
+        if (value.checked) {
+            daysTotal.days += value.days;
+            daysTotal.workDays += value.workDays
+        }
+    });
+
+    // Render.
+    $('input[type=checkbox]').each(function() {
+        enableDisableCheckbox($(this), dependencyGraph[this.id].enabled);
+        toggleCheckbox($(this), dependencyGraph[this.id].checked);
+    });
+    $('#days-total').text(daysTotal['days']);
+    $('#work-days-total').text(daysTotal['workDays'])
 }
 
 function bindCheckboxes() {
 ///    Bind checkboxes on a page to the dependency management routine.
-    $('input[type=checkbox]').on("change", function (event) {
-        manageDependencies(event.target.id);
+    $('input[type=checkbox]').on("click", function () {
+        t = $(this);
+        manageDependencies(t.prop('id'), t.is(':checked'));
     });
     // Run for the first time to disable checkboxes bound to services with
     // unsatisfied dependencies.
     manageDependencies()
 }
 
-if (toBeChecked)
-    $(document).ready(function() {
-        for (var i = 0; i < toBeChecked.length; i++)
-        toggleCheckbox(toBeChecked[i], true);
-    });
-
-if (dependencyGraph)
+if (dependencyGraph) {
     $(document).ready(bindCheckboxes);
+}
 
 /* Here be triggers that rely upon document styling (certain classes
  * absent/present.

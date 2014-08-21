@@ -176,6 +176,10 @@ class BaseHandler(webapp2.RequestHandler):
 
         for s, sid in zip(services, service_ids):
             relations = service_graph[sid]
+            relations['days'] = s.max_days
+            relations['workDays'] = s.max_work_days
+            relations['enabled'] = True
+            relations['checked'] = False
 
             for parent_key in s.dependencies:
                 if parent_key in service_keys:
@@ -327,9 +331,10 @@ class ServiceChoiceHandler(BaseHandler):
         d = self.get_session_data([
             'kompleks_id', 'contained_ids', 'related_ids',
             'prereqs_satisfied'])
+        # If this page is being visited not for the first time in current
+        # session, # retrieve services, that were checked and submitted the
+        # last time.
         service_ids = self.get_session_data('service_ids', obligatory=False)
-
-        logging.info(self.session)
 
         contained_ids = set(d['contained_ids']) - set(d['prereqs_satisfied'])
         contained_services = from_urlsafe(contained_ids, multi=True)
@@ -342,8 +347,8 @@ class ServiceChoiceHandler(BaseHandler):
         self.context["related_services"] = map(self.prepare, related_services)
 
         # If our last choice of services was saved in session -- restore it.
-        self.context['service_ids'] = json.dumps(
-            service_ids if service_ids else [])
+        if service_ids:
+            self.context['service_ids'] = json.dumps(service_ids)
         self.context["dependency_graph"] = json.dumps(
             self.construct_service_graph(
                 contained_services + related_services))

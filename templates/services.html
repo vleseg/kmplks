@@ -5,7 +5,7 @@
         <th>Услуга</th>
         <th>ОГВ</th>
         <th>Сроки</th>
-        <th>Примечание</th>
+        <th>Условия</th>
     </tr>
 {% endmacro %}
 {% macro service_row(service) %}
@@ -21,46 +21,62 @@
                 </a>
             </label>
         </td>
-        <td>{{ service.ogv.short_name }}</td>
-        <td>{{ service.max_days }} к. д. +{{ service.max_work_days }} р. д.
+        <td>{{ service.ogv }}</td>
+        <td  class="cell-with-terms">
+        {% if service.terms_description %}
+            <span title="{{ service.terms_description }}">
+                {{ service.max_days }} к. д. +{{ service.max_work_days }} р. д.
+            </span>
+        {% else %}
+            {{ service.max_days }} к. д. +{{ service.max_work_days }} р. д.
+        {% endif %}
         </td>
         <td>
-            {% if service.terms_description %}
-                {{ service.terms_description }}
-            {% endif %}
+            {{ service.description }}
         </td>
     </tr>
 {% endmacro %}
 {% block title %}Выбор услуг{% endblock %}
 {% block js %}
-    var toBeChecked = {{ service_ids|safe }};
+{#    Disabled, since it provokes strange errors.   #}
+{#                                                  #}
+{#    var toBeChecked = {{ service_ids|safe }};     #}
     var dependencyGraph = {{ dependency_graph|safe }};
 {% endblock %}
 {% block head %}{{ kompleks.name }} — Услуги{% endblock %}
 {% block content %}
-    <form method="post">
-        <p>Выберите нужные услуги:</p>
-        <table>
-            <thead>{{ table_head() }}</thead>
-            <tbody>
-            {% for service in contained_services %}
-                {{ service_row(service) }}
-            {% endfor %}
-            </tbody>
-        </table>
-        {% if related_services %}
-            <p>Эти услуги не входят в комплекс, но подходят по жизненной
-                ситуации:
-            </p>
+    <div id="form-container">
+        <form method="post">
+            <p>Выберите нужные услуги:</p>
             <table>
                 <thead>{{ table_head() }}</thead>
                 <tbody>
-                {% for service in related_services %}
+                {% for service in contained_services %}
                     {{ service_row(service) }}
                 {% endfor %}
                 </tbody>
             </table>
-        {% endif %}
-        <p>{{ navigation('/prerequisites', '/services') }}</p>
-    </form>
+            {% if related_services %}
+                <p>Эти услуги не входят в комплекс, но подходят по жизненной
+                    ситуации:
+                </p>
+                <table>
+                    <thead>{{ table_head() }}</thead>
+                    <tbody>
+                    {% for service in related_services %}
+                        {{ service_row(service) }}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+            <p>{{ navigation('/prerequisites', '/services') }}</p>
+        </form>
+    </div>
+    <div id="terms-counter">
+        <div id="terms-counter-head">Общий срок:</div>
+        <div id="terms-counter-body">
+            <p><span id="days-total">0</span> к. д.</p>
+            <p><span id="work-days-total">0</span> р. д.</p>
+        </div>
+    </div>
 {% endblock %}

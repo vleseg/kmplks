@@ -9,6 +9,10 @@ h1 {
     font-weight: lighter;
     border: 1px solid #a7c5e1;
 }
+span[title] {
+    border-bottom: 2px dotted #8a2121;
+    cursor: help;
+}
 table {
     width: 100%;
     border-collapse: collapse;
@@ -37,12 +41,49 @@ td.quantity-col {
 .disabled a {
     color: #adc0cc;
 }
+.disabled span[title] {
+    border-bottom-color: #ccadad;
+}
+
+/* Service page specific styles */
+td.cell-with-terms {
+    white-space: nowrap;
+}
+#form-container, #terms-counter {
+    display: inline-block;
+}
+#form-container {
+    width: 90%;
+}
+#terms-counter {
+    vertical-align: top;
+    text-align: center;
+    margin-left: 10px;
+    margin-top: 3.5em;
+    font-size: 1.2em;
+}
+#terms-counter-head {
+    background-color: rgba(191, 227, 255, 0.25);
+    padding: 5px;
+}
+#terms-counter-body {
+    border: 1px solid #73ADE1;
+    font-weight: bolder;
+}
+
+/* Result page specific styles */
 .multidescr-srv-plank {
     border-bottom: 1px solid #a7c5e1;
     border-top: 1px solid #a7c5e1;
     background-color: rgba(191, 227, 255, 0.25);
     margin-top: 0.6em;
     cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .multidescr-srv-body {
     border: 1px solid #a7c5e1;
