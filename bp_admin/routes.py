@@ -7,8 +7,8 @@ import crontasks
 
 
 _routes = [
-    RedirectRoute('/admin/', users.AdminUserGeoChartHandler,
-                  name='admin-users-geochart', strict_slash=True),
+    RedirectRoute('/admin/', users.AdminUserListHandler,
+                  name='admin-users-list', strict_slash=True),
     RedirectRoute('/admin/users/', users.AdminUserListHandler,
                   name='admin-users-list', strict_slash=True),
     RedirectRoute('/admin/users/<user_id>/', users.AdminUserEditHandler,

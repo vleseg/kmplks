@@ -22,8 +22,8 @@
         {% for email in emails %}
             <tr>
                 <td>
-                    <a class="icon" href="
-                            {{ uri_for('admin-logs-email-view', email_id=email.get_id()) }}"><i
+                    <a class="icon"
+                       href="{{ uri_for('admin-logs-email-view', email_id=email.get_id()) }}"><i
                             class="glyphicon-eye-open glyphicon"></i> view</a>
                 </td>
                 {% for attr, when in list_columns %}

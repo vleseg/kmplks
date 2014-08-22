@@ -5,6 +5,8 @@ from collections import OrderedDict
 from bp_includes.lib.basehandler import BaseHandler
 from bp_includes.models import LogEmail
 
+PAGE_SIZE = 50
+
 
 class AdminLogsEmailsHandler(BaseHandler):
     def get(self):
@@ -21,7 +23,6 @@ class AdminLogsEmailsHandler(BaseHandler):
         else:
             qry = LogEmail.query()
 
-        PAGE_SIZE = 50
         if forward:
             emails, next_cursor, more = qry.order(LogEmail.key).fetch_page(
                 PAGE_SIZE, start_cursor=cursor)

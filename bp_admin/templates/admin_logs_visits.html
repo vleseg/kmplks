@@ -26,15 +26,14 @@
             <tr>
                 {% if not q %}
                     <td>
-                        <a class="icon" href="
-                                {{ uri_for('admin-logs-visits', q=visit.user.id()) }}"><i
+                        <a class="icon"
+                           href="{{ uri_for('admin-logs-visits', q=visit.user.id()) }}"><i
                                 class="glyphicon-filter glyphicon"></i></a>
                     </td>
                 {% endif %}
                 <td>
-                    <a class="icon" href="
-                            {{ uri_for('admin-user-edit', user_id=visit.user.id()) }}">
-                        {{ visit.user.id() }}</a>
+                    <a class="icon"
+                       href="{{ uri_for('admin-user-edit', user_id=visit.user.id()) }}">{{ visit.user.id() }}</a>
                 </td>
                 {% for attr, timestamp in list_columns %}
                     <td>

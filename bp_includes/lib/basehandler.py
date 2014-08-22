@@ -20,13 +20,14 @@ class ViewClass:
     """
         ViewClass to insert variables into the template.
 
-        ViewClass is used in BaseHandler to promote variables automatically that can be used
-        in jinja2 templates.
+        ViewClass is used in BaseHandler to promote variables automatically
+        that can be used in jinja2 templates.
         Use case in a BaseHandler Class:
             self.view.var1 = "hello"
             self.view.array = [1, 2, 3]
             self.view.dict = dict(a="abc", b="bcd")
-        Can be accessed in the template by just using the variables liek {{var1}} or {{dict.b}}
+        Can be accessed in the template by just using the variables like
+        {{var1}} or {{dict.b}}
     """
     pass
 
@@ -54,8 +55,8 @@ class BaseHandler(webapp2.RequestHandler):
 
         try:
             # csrf protection
-            if self.request.method == "POST" and not self.request.path.startswith(
-                    '/taskqueue'):
+            if (self.request.method == "POST" and
+                    not self.request.path.startswith('/taskqueue')):
                 token = self.session.get('_csrf_token')
                 if not token or (token != self.request.get('_csrf_token') and
                                          token != self.request.headers.get(
@@ -72,7 +73,8 @@ class BaseHandler(webapp2.RequestHandler):
     def user_model(self):
         """Returns the implementation of the user model.
 
-        Keep consistency when config['webapp2_extras.auth']['user_model'] is set.
+        Keep consistency when config['webapp2_extras.auth']['user_model'] is
+        set.
         """
         return self.auth.store.user_model
 
@@ -140,7 +142,8 @@ class BaseHandler(webapp2.RequestHandler):
                 else:
                     return str(user_info.username)
             except AttributeError, e:
-                # avoid AttributeError when the session was delete from the server
+                # avoid AttributeError when the session was delete from the
+                # server
                 logging.error(e)
                 self.auth.unset_session()
                 self.redirect_to('home')
@@ -153,38 +156,24 @@ class BaseHandler(webapp2.RequestHandler):
                 user_info = self.user_model.get_by_id(long(self.user_id))
                 return user_info.email
             except AttributeError, e:
-                # avoid AttributeError when the session was delete from the server
+                # avoid AttributeError when the session was delete from the
+                # server
                 logging.error(e)
                 self.auth.unset_session()
                 self.redirect_to('home')
         return None
 
     @webapp2.cached_property
-    def provider_uris(self):
-        login_urls = {}
-        continue_url = self.request.get('continue_url')
-        for provider in self.provider_info:
-            if continue_url:
-                login_url = self.uri_for("social-login", provider_name=provider,
-                                         continue_url=continue_url)
-            else:
-                login_url = self.uri_for("social-login", provider_name=provider)
-            login_urls[provider] = login_url
-        return login_urls
-
-    @webapp2.cached_property
-    def provider_info(self):
-        return models.SocialUser.PROVIDERS_INFO
-
-    @webapp2.cached_property
     def path_for_language(self):
         """
-        Get the current path + query_string without language parameter (hl=something)
+        Get the current path + query_string without language parameter
+        (hl=something)
         Useful to put it on a template to concatenate with '&hl=NEW_LOCALE'
         Example: .../?hl=en_US
         """
-        path_lang = re.sub(r'(^hl=(\w{5})\&*)|(\&hl=(\w{5})\&*?)', '',
-                           str(self.request.query_string))
+        path_lang = re.sub(
+            r'(^hl=(\w{5})\&*)|(\&hl=(\w{5})\&*?)', '',
+            str(self.request.query_string))
 
         return self.request.path + "?" if path_lang == "" else str(
             self.request.path) + "?" + path_lang
@@ -192,8 +181,10 @@ class BaseHandler(webapp2.RequestHandler):
     @property
     def locales(self):
         """
-        returns a dict of locale codes to locale display names in both the current locale and the localized locale
-        example: if the current locale is es_ES then locales['en_US'] = 'Ingles (Estados Unidos) - English (United States)'
+        returns a dict of locale codes to locale display names in both the
+        current locale and the localized locale
+        example: if the current locale is es_ES then
+        locales['en_US'] = 'Ingles (Estados Unidos) - English (United States)'
         """
         if not self.app.config.get('locales'):
             return None
@@ -203,8 +194,9 @@ class BaseHandler(webapp2.RequestHandler):
             language = current_locale.languages[l.split('_')[0]]
             territory = current_locale.territories[l.split('_')[1]]
             localized_locale_name = Locale.parse(l).display_name.capitalize()
-            locales[
-                l] = language.capitalize() + " (" + territory.capitalize() + ") - " + localized_locale_name
+            locales[l] = (
+                language.capitalize() + " (" + territory.capitalize() +
+                ") - " + localized_locale_name)
         return locales
 
     @webapp2.cached_property
@@ -248,22 +240,23 @@ class BaseHandler(webapp2.RequestHandler):
 
     @webapp2.cached_property
     def jinja2(self):
-        return jinja2.get_jinja2(factory=jinja_bootstrap.jinja2_factory,
-                                 app=self.app)
+        return jinja2.get_jinja2(
+            factory=jinja_bootstrap.jinja2_factory, app=self.app)
 
     @webapp2.cached_property
     def get_base_layout(self):
         """
-        Get the current base layout template for jinja2 templating. Uses the variable base_layout set in config
-        or if there is a base_layout defined, use the base_layout.
+        Get the current base layout template for jinja2 templating. Uses the
+        variable base_layout set in config or if there is a base_layout defined,
+        use the base_layout.
         """
-        return self.base_layout if hasattr(self,
-                                           'base_layout') else self.app.config.get(
-            'base_layout')
+        return self.base_layout if hasattr(
+            self, 'base_layout') else self.app.config.get('base_layout')
 
     def set_base_layout(self, layout):
         """
-        Set the base_layout variable, thereby overwriting the default layout template name in config.py.
+        Set the base_layout variable, thereby overwriting the default layout
+        template name in config.py.
         """
         self.base_layout = layout
 
@@ -300,12 +293,11 @@ class BaseHandler(webapp2.RequestHandler):
             'path_for_language': self.path_for_language,
             'is_mobile': self.is_mobile,
             'locale_iso': locale_iso,  # babel locale object
-            'locale_language': language.capitalize() + " (" + territory.capitalize() + ")",
-            # babel locale object
+            'locale_language':
+                language.capitalize() + " (" + territory.capitalize() +
+                ")",  # babel locale object
             'locale_language_id': language_id,  # babel locale object
             'locales': self.locales,
-            'provider_uris': self.provider_uris,
-            'provider_info': self.provider_info,
             'enable_federated_login': self.app.config.get(
                 'enable_federated_login'),
             'base_layout': self.get_base_layout

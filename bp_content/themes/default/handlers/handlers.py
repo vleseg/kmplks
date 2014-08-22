@@ -24,7 +24,14 @@ from bp_includes.lib.basehandler import BaseHandler
 from bp_includes.lib.decorators import user_required
 from bp_includes.lib import captcha, utils
 import bp_includes.models as models_boilerplate
-import forms as forms
+import forms
+
+RECAPTCHA_API_ERROR = """<div class="alert alert-danger"><strong>Error</strong>:
+You have to <a href="http://www.google.com/recaptcha/whyrecaptcha"
+target="_blank">sign up for API keys</a> in order to use reCAPTCHA.
+</div><input type="hidden" name="recaptcha_challenge_field"
+value="manual_challenge" /><input type="hidden" name="recaptcha_response_field"
+value="manual_challenge" />"""
 
 
 class ContactHandler(BaseHandler):
@@ -78,15 +85,11 @@ class ContactHandler(BaseHandler):
                 public_key=self.app.config.get('captcha_public_key'),
                 use_ssl=(self.request.scheme == 'https'),
                 error=None)
-            if self.app.config.get(
-                    'captcha_public_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE" or \
-                            self.app.config.get(
-                                    'captcha_private_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE":
-                chtml = '<div class="alert alert-danger"><strong>Error</strong>: You have to ' \
-                        '<a href="http://www.google.com/recaptcha/whyrecaptcha" target="_blank">sign up ' \
-                        'for API keys</a> in order to use reCAPTCHA.</div>' \
-                        '<input type="hidden" name="recaptcha_challenge_field" value="manual_challenge" />' \
-                        '<input type="hidden" name="recaptcha_response_field" value="manual_challenge" />'
+            if (self.app.config.get('captcha_public_key') ==
+                    "PUT_YOUR_RECAPTCHA_PUBLIC_KEY_HERE" or
+                self.app.config.get('captcha_private_key') ==
+                    "PUT_YOUR_RECAPTCHA_PRIVATE_KEY_HERE"):
+                chtml = RECAPTCHA_API_ERROR
             template_val = {
                 "captchahtml": chtml,
                 "exception": exception,
@@ -96,7 +99,8 @@ class ContactHandler(BaseHandler):
             }
             if not cResponse.is_valid and response is None:
                 _message = _(
-                    "Please insert the Captcha in order to finish the process of sending the message")
+                    "Please insert the Captcha in order to finish the process "
+                    "of sending the message")
                 self.add_message(_message, 'warning')
             elif not cResponse.is_valid:
                 _message = _('Wrong image verification code. Please try again.')
@@ -206,15 +210,11 @@ class DeleteAccountHandler(BaseHandler):
             public_key=self.app.config.get('captcha_public_key'),
             use_ssl=(self.request.scheme == 'https'),
             error=None)
-        if self.app.config.get(
-                'captcha_public_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE" or \
-                        self.app.config.get(
-                                'captcha_private_key') == "PUT_YOUR_RECAPCHA_PUBLIC_KEY_HERE":
-            chtml = '<div class="alert alert-danger"><strong>Error</strong>: You have to ' \
-                    '<a href="http://www.google.com/recaptcha/whyrecaptcha" target="_blank">sign up ' \
-                    'for API keys</a> in order to use reCAPTCHA.</div>' \
-                    '<input type="hidden" name="recaptcha_challenge_field" value="manual_challenge" />' \
-                    '<input type="hidden" name="recaptcha_response_field" value="manual_challenge" />'
+        if (self.app.config.get('captcha_public_key') ==
+                "PUT_YOUR_RECAPTCHA_PUBLIC_KEY_HERE" or
+            self.app.config.get('captcha_private_key') ==
+                "PUT_YOUR_RECAPTCHA_PRIVATE_KEY_HERE"):
+            chtml = RECAPTCHA_API_ERROR
         params = {
             'captchahtml': chtml,
         }
@@ -225,13 +225,13 @@ class DeleteAccountHandler(BaseHandler):
         response = self.request.POST.get('recaptcha_response_field')
         remote_ip = self.request.remote_addr
 
-        cResponse = captcha.submit(
+        c_response = captcha.submit(
             challenge,
             response,
             self.app.config.get('captcha_private_key'),
             remote_ip)
 
-        if cResponse.is_valid:
+        if c_response.is_valid:
             # captcha was valid... carry on..nothing to see here
             pass
         else:
@@ -253,11 +253,6 @@ class DeleteAccountHandler(BaseHandler):
                 # authenticate user by its password
                 user = self.user_model.get_by_auth_password(auth_id, password)
                 if user:
-                    # Delete Social Login
-                    for social in models_boilerplate.SocialUser.get_by_user(
-                            user_info.key):
-                        social.key.delete()
-
                     user_info.key.delete()
 
                     ndb.Key("Unique",

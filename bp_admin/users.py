@@ -8,19 +8,6 @@ from bp_includes import forms
 from bp_includes.lib.basehandler import BaseHandler
 
 
-class AdminUserGeoChartHandler(BaseHandler):
-    def get(self):
-        users = self.user_model.query().fetch(projection=['country'])
-        users_by_country = Counter()
-        for user in users:
-            if user.country:
-                users_by_country[user.country] += 1
-        params = {
-            "data": users_by_country.items()
-        }
-        return self.render_template('admin_users_geochart.html', **params)
-
-
 class EditProfileForm(forms.EditProfileForm):
     activated = fields.BooleanField('Activated')
 

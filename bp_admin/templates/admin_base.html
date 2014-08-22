@@ -41,17 +41,13 @@
                     <span class="glyphicon-chevron-down glyphicon"></span>
                 </button>
                 <a class="navbar-brand"
-                   href="{{ uri_for('admin-users-geochart') }}">{{ app_name }}
+                   href="{{ uri_for('admin-users-list') }}">{{ app_name }}
                     Admin</a>
             </div>
             <div>
 
                 <div class="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li {% if path == uri_for('admin-users-geochart') %}class="active"{% endif %}>
-                            <a href="{{ uri_for('admin-users-geochart') }}">
-                                {% trans %}Users Geolocation{% endtrans %}</a>
-                        </li>
                         <li {% if path == uri_for('admin-users-list') %}class="active"{% endif %}>
                             <a href="{{ uri_for('admin-users-list') }}">
                                 {% trans %}User List{% endtrans %}</a></li>

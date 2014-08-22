@@ -22,8 +22,8 @@
         {% for user in users %}
             <tr>
                 <td>
-                    <a class="icon" href="
-                            {{ uri_for('admin-user-edit', user_id=user.get_id()) }}"><i
+                    <a class="icon"
+                       href="{{ uri_for('admin-user-edit', user_id=user.get_id()) }}"><i
                             class="glyphicon-pencil glyphicon"></i></a>
                 </td>
                 {% for attr, name in list_columns %}

@@ -30,7 +30,8 @@ from bp_includes.lib import captcha
 from bp_includes.lib import i18n
 from bp_includes.lib import test_helpers
 
-# setting HTTP_HOST in extra_environ parameter for TestApp is not enough for taskqueue stub
+# setting HTTP_HOST in extra_environ parameter for TestApp is not enough for
+# taskqueue stub
 os.environ['HTTP_HOST'] = 'localhost'
 
 # globals
@@ -50,8 +51,8 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         self.app = webapp2.WSGIApplication(config=webapp2_config)
         routes_boilerplate.add_routes(self.app)
         routes_theme.add_routes(self.app)
-        self.testapp = webtest.TestApp(self.app, extra_environ={
-        'REMOTE_ADDR': '127.0.0.1'})
+        self.testapp = webtest.TestApp(
+            self.app, extra_environ={'REMOTE_ADDR': '127.0.0.1'})
 
         # activate GAE stubs
         self.testbed = testbed.Testbed()
@@ -67,10 +68,12 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         self.testbed.init_user_stub()
 
         self.headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) Version/6.0 Safari/536.25',
-        'Accept-Language': 'en_US'}
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) '
+                          'Version/6.0 Safari/536.25',
+            'Accept-Language': 'en_US'}
 
-        # fix configuration if this is still a raw boilerplate code - required by test with mails
+        # fix configuration if this is still a raw boilerplate code - required
+        # by test with mails
         if not utils.is_email_valid(self.app.config.get('contact_sender')):
             self.app.config['contact_sender'] = "noreply-testapp@example.com"
         if not utils.is_email_valid(self.app.config.get('contact_recipient')):
@@ -84,13 +87,12 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
 
     def test_homepage(self):
         response = self.get('/')
-        self.assertIn(
-            'Congratulations on your Google App Engine Boilerplate powered page.',
-            response)
+        self.assertIn('Congratulations on your Google App Engine Boilerplate '
+                      'powered page.', response)
 
     def test_homepage_has_no_calls_create_login_url(self):
-        with patch(
-                'google.appengine.api.users.create_login_url') as create_login_url:
+        patch_lib = 'google.appengine.api.users.create_login_url'
+        with patch(patch_lib) as create_login_url:
             self.get('/')
         self.assertEqual(0, create_login_url.call_count)
 
@@ -128,108 +130,6 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
                     error_message='Please check your email to activate it')
         self.assert_user_not_logged_in()
 
-    def _login_openid(self, provider, uid, email=None):
-        openid_user = Mock()
-        openid_user.federated_identity.return_value = uid
-        openid_user.email.return_value = email
-        with patch('google.appengine.api.users.get_current_user',
-                   return_value=openid_user):
-            response = self.get('/social_login/{}/complete'.format(provider),
-                                status=302)
-            response = response.follow(status=200, headers=self.headers)
-        return response
-
-    def test_login_openid_add_association(self):
-        response = self._login_openid('google',
-                                      'http://www.google.com/accounts/123')
-        self.assert_success_message_in_response(response,
-                                                'Welcome!  You have been registered as a new user')
-        self.assert_user_logged_in()
-
-    def test_login_openid_with_email_add_association(self):
-        response = self._login_openid('google',
-                                      'http://www.google.com/accounts/123',
-                                      'testuser@example.com')
-        self.assert_success_message_in_response(response,
-                                                'Welcome!  You have been registered as a new user')
-        self.assert_user_logged_in()
-        user = models.User.query().get()
-        self.assertEqual('testuser@example.com', user.email)
-
-    def test_login_openid(self):
-        user = self.register_activate_testuser()
-        models.SocialUser(user=user.key, provider='google',
-                          uid='http://www.google.com/accounts/123').put()
-        self._login_openid('google', uid='http://www.google.com/accounts/123')
-        self.assert_user_logged_in(user_id=user.get_id())
-
-    def test_login_twitter_no_association(self):
-        response = self._test_login_twitter()
-        self.assert_success_message_in_response(response,
-                                                "Welcome!  You have been registered as a new user")
-        self.assert_user_logged_in()
-
-    def test_login_twitter_add_association(self):
-        self.register_activate_login_testuser()
-        response = self._test_login_twitter()
-        self.assert_success_message_in_response(response,
-                                                'Twitter association added.')
-
-    def test_login_twitter(self):
-        user = self.register_activate_testuser()
-        models.SocialUser(user=user.key, provider='twitter',
-                          uid='7588892').put()
-        self._test_login_twitter()
-        self.assert_user_logged_in()
-
-    def _test_login_twitter(self):
-        oauth_token = 'NPcudxy0yU5T3tBzho7iCotZ3cnetKwcTIRlX0iwRl0'
-        oauth_token_secret = 'veNRnAWe6inFuo8o2u8SLLZLjolYDmDP7SzL0YfYI'
-        oauth_callback_confirmed = 'true'
-        oauth_verifier = 'uw7NjWHT6OJ1MpJOXsHfNxoAhPKpgI8BlYDhxEjIBY'
-        user_id = '7588892'
-        access_token = '{}-kagSNqWge8gB1WwE3plnFsJHAZVfxWD7Vb57p0b4'.format(
-            user_id)
-        oauth_token_secret2 = 'PbKfYqSryyeKDWz4ebtY3o5ogNLG11WJuZBc9fQrQo'
-        screen_name = 'testuser'
-
-        class Response:
-            def __init__(self, content):
-                self.content = content
-
-            def readlines(self):
-                return self.content.split('\n')
-
-        urlopen = Mock(side_effect=[Response(
-            'oauth_token={}&oauth_token_secret={}&oauth_callback_confirmed=true'.
-            format(oauth_token, oauth_token_secret, oauth_callback_confirmed)),
-                                    Response(
-                                        'oauth_token={}&oauth_token_secret={}&user_id={}&screen_name={}'.
-                                        format(access_token,
-                                               oauth_token_secret2, user_id,
-                                               screen_name)),
-                                    Response('{"id":%s}' % user_id)])
-        with patch('urllib2.urlopen', urlopen):
-            response = self.get('/social_login/twitter', status=302)
-            self.assertTrue(response.headers['Location'].startswith(
-                'http://api.twitter.com/oauth/authenticate?'))
-
-            self.assertEquals(urlopen.call_count, 1)
-            self.assertTrue(urlopen.call_args_list[0][0][0].
-                            startswith(
-                'https://api.twitter.com/oauth/request_token?'))
-
-            response = self.get(
-                '/social_login/twitter/complete?oauth_token={}&oauth_verifier={}'.
-                format(oauth_token, oauth_verifier), status=302)
-            self.assertEquals(urlopen.call_count, 2)
-            self.assertTrue(urlopen.call_args_list[1][0][0].
-                            startswith(
-                'https://api.twitter.com/oauth/access_token?'))
-
-            response = response.follow(status=200, headers=self.headers)
-            return response
-
     def test_resend_activation_mail(self):
         self.register_testuser()
 
@@ -238,29 +138,32 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         form['username'] = 'testuser'
         form['password'] = '123456'
         # account is not activated
-        response = self.submit(form, expect_error=True,
-                               error_message='Please check your email to activate it')
+        response = self.submit(
+            form, expect_error=True,
+            error_message='Please check your email to activate it')
         self.assert_user_not_logged_in()
         # "lose" activation mail
         self.get_sent_messages(to='testuser@example.com')[0]
 
         # resend the activation mail
-        response2 = response.click(description='click here').follow(status=200,
-                                                                    headers=self.headers)
-        self.assert_success_message_in_response(response2,
-                                                "The verification email has been resent to testuser@example.com.")
+        response2 = response.click(
+            description='click here').follow(status=200, headers=self.headers)
+        self.assert_success_message_in_response(
+            response2, "The verification email has been resent to "
+                       "testuser@example.com.")
 
         # click again should fail
-        response = response.click(description='click here').follow(status=200,
-                                                                   headers=self.headers)
+        response = response.click(
+            description='click here').follow(status=200, headers=self.headers)
         self.assert_error_message_in_response(response, 'The link is invalid.')
 
         message = self.get_sent_messages(to='testuser@example.com')[0]
         url = self.get_url_from_message(message, 'activation')
         response = self.get(url, status=302).follow(status=200,
                                                     headers=self.headers)
-        self.assert_success_message_in_response(response,
-                                                message='Congratulations, Your account testuser has been successfully activated.')
+        self.assert_success_message_in_response(
+            response, message='Congratulations, Your account testuser has '
+                              'been successfully activated.')
 
     def test_request_with_no_user_agent_header(self):
         self.get('/', headers={'Accept-Language': 'en_US'})
@@ -314,8 +217,9 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         self.submit(form, expect_error=True,
                     error_message='Incorrect password!')
         form['password'] = '123456'
-        self.submit(form,
-                    success_message='Please check your new email for confirmation')
+        self.submit(
+            form, success_message='Please check your new email for '
+                                  'confirmation')
 
         message_old_address = self.get_sent_messages(to='testuser@example.com',
                                                      reset_mail_stub=False)[0]
@@ -351,16 +255,21 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
                         error_message='Wrong image verification code.')
         with patch('bp_includes.lib.captcha.submit',
                    return_value=captcha.RecaptchaResponse(is_valid=True)):
-            response1 = self.submit(form,
-                                    warning_message="you will receive an email from us with instructions for resetting your password.")
+            response1 = self.submit(
+                form, warning_message="you will receive an email from us with "
+                                      "instructions for resetting your "
+                                      "password.")
             form['email_or_username'] = 'user_does_not_exists'
-            response2 = self.submit(form,
-                                    warning_message="you will receive an email from us with instructions for resetting your password.")
+            response2 = self.submit(
+                form, warning_message="you will receive an email from us with "
+                                      "instructions for resetting your "
+                                      "password.")
             page1 = response1.body, response1.request.url
             page2 = response2.body.replace('user_does_not_exists',
                                            'testuser'), response2.request.url
-            self.assertEqual(page1, page2,
-                             "for security reasons application should respond with the same page here")
+            self.assertEqual(
+                page1, page2, "for security reasons application should respond "
+                              "with the same page here")
 
         message = self.get_sent_messages(to='testuser@example.com')[0]
         self.assertEqual(message.sender, self.app.config.get('contact_sender'))
@@ -415,21 +324,23 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         form['username'] = 'Reguser'
         form['email'] = 'reguser@example.com'
         form['password'] = form['c_password'] = '456456'
-        self.submit(form,
-                    success_message='You were successfully registered. Please check your email to activate your account')
+        self.submit(
+            form, success_message='You were successfully registered. Please '
+                                  'check your email to activate your account')
 
         message = self.get_sent_messages(to='reguser@example.com')[0]
         url = self.get_url_from_message(message, 'activation')
 
         # try to activate account with invalid token
-        response = self.get(url + 'qwe', status=302).follow(status=200,
-                                                            headers=self.headers)
+        response = self.get(
+            url + 'qwe', status=302).follow(status=200, headers=self.headers)
         self.assert_error_message_in_response(response, 'The link is invalid.')
 
         response = self.get(url, status=302).follow(status=200,
                                                     headers=self.headers)
-        self.assert_success_message_in_response(response,
-                                                message='Congratulations, Your account reguser has been successfully activated.')
+        self.assert_success_message_in_response(
+            response, message='Congratulations, Your account reguser has been '
+                              'successfully activated.')
 
         # activation token has already been used
         response = self.get(url, status=302).follow(status=200,
@@ -458,7 +369,8 @@ class ModelTest(unittest.TestCase):
         user2.put()
 
         token = models.User.create_signup_token(user.get_id())
-        self.assertTrue(models.User.validate_signup_token(user.get_id(), token))
+        self.assertTrue(
+            models.User.validate_signup_token(user.get_id(), token))
         self.assertFalse(
             models.User.validate_resend_token(user.get_id(), token))
         self.assertFalse(

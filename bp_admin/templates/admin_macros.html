@@ -44,7 +44,7 @@
     {% endcall %}
 {% endmacro %}
 
-{% macro render_pager() - %}
+{% macro render_pager() -%}
     <ul class="pager">
         {% if prev_cursor %}
             <li><a href="{{ pager_url('prev', prev_cursor) }}">Previous</a></li>

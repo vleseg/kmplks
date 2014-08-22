@@ -6,6 +6,8 @@ from bp_includes.lib.basehandler import BaseHandler
 from bp_includes.models import LogVisit
 from bp_includes.models import User
 
+PAGE_SIZE = 50
+
 
 class AdminLogsVisitsHandler(BaseHandler):
     def get(self):
@@ -24,7 +26,6 @@ class AdminLogsVisitsHandler(BaseHandler):
         else:
             qry = LogVisit.query()
 
-        PAGE_SIZE = 50
         if forward:
             visits, next_cursor, more = qry.order(LogVisit.key).fetch_page(
                 PAGE_SIZE, start_cursor=cursor)

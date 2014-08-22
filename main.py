@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,16 +19,16 @@ __website__ = 'www.beecoss.com'
 import os
 import sys
 # Third party libraries path must be fixed before importing webapp2
-sys.path.insert(0, os.path.join(os.path.dirname(__file__),
-                                'bp_includes/external'))
+sys.path.insert(0,
+                os.path.join(os.path.dirname(__file__), 'bp_includes/external'))
 
 import webapp2
 
 from bp_includes.lib.error_handler import handle_error
 from bp_includes import config as config_boilerplate
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__),
-                                'bp_content/themes/', os.environ['theme']))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'bp_content/themes/',
+                                os.environ['theme']))
 # Import Config Importing
 import config as config_theme
 
