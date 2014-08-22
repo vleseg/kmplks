@@ -13,7 +13,42 @@ function enableDisableCheckbox($checkbox, isEnabled) {
         $checkbox.closest('tr').removeClass('disabled')
 }
 
-// FIXME: doesn't work for some reason
+// FIXME: find out, why doesn't it work
+function generateActivePaths() {
+    function recursiveHelper(currentNode, currentPath) {
+        if (currentNode.enabled) {
+            currentPath.push(currentNode);
+            if (currentPath.children.length > 0)
+                $.each(currentPath.children, function(i, child) {
+                    recursiveHelper(child, currentPath)
+                });
+            else
+                activePaths.push(currentPath)
+        }
+    }
+    var activePaths = [];
+    var parentNodes = [];
+    $.each(dependencyGraph, function(key, value) {
+        if (value.parents.length == 0)
+            parentNodes.push(key)
+    });
+    $.each(parentNodes, function(i, node) {
+        recursiveHelper(node, [])
+    });
+
+    return activePaths
+}
+
+function calculateNewTotal(path) {
+    var total = {'days': 0, 'workDays': 0};
+    $.each(path, function (i, node) {
+        total.days += node.days;
+        total.workDays += node.workDays
+    });
+
+    return total
+}
+
 function manageDependencies(serviceId, isChecked) {
     /* Disable/enable checkboxes for services, when their dependencies are
      * checked or unchecked.
@@ -35,7 +70,7 @@ function manageDependencies(serviceId, isChecked) {
             // checked too.
             else {
                 var mustEnableChild = true;
-                $.each(dependencyGraph[childId].parents, function(parentId) {
+                $.each(dependencyGraph[childId].parents, function(i, parentId) {
                     mustEnableChild = mustEnableChild &&
                         dependencyGraph[parentId].checked
                 });
@@ -49,17 +84,17 @@ function manageDependencies(serviceId, isChecked) {
     if (arguments.length == 0)   // on page load
         for (var id in dependencyGraph) {
             if (dependencyGraph.hasOwnProperty(id))
-                walk(id, isChecked);
+                walk(id, false);
         }
     else {
         walk(serviceId, isChecked)
     }
-    var daysTotal = {'days': 0, 'workDays': 0};
-    $.each(dependencyGraph, function(key, value) {
-        if (value.checked) {
-            daysTotal.days += value.days;
-            daysTotal.workDays += value.workDays
-        }
+    var totalDays = {'days': 0, 'workDays': 0};
+    $.each(generateActivePaths(), function(i, path) {
+        var newTotal = calculateNewTotal(path);
+        if (newTotal.days + newTotal.workDays >
+                totalDays.days + totalDays.workDays)
+            totalDays = newTotal
     });
 
     // Render.
@@ -67,23 +102,26 @@ function manageDependencies(serviceId, isChecked) {
         enableDisableCheckbox($(this), dependencyGraph[this.id].enabled);
         toggleCheckbox($(this), dependencyGraph[this.id].checked);
     });
-    $('#days-total').text(daysTotal['days']);
-    $('#work-days-total').text(daysTotal['workDays'])
+    $('#days-total').text(totalDays['days']);
+    $('#work-days-total').text(totalDays['workDays'])
 }
 
 function bindCheckboxes() {
 ///    Bind checkboxes on a page to the dependency management routine.
     $('input[type=checkbox]').on("click", function () {
-        t = $(this);
-        manageDependencies(t.prop('id'), t.is(':checked'));
+        var id = $(this).prop('id');
+        // Current state of 'checked' must be reversed for this i.
+        manageDependencies(id, !dependencyGraph[id].checked);
     });
-    // Run for the first time to disable checkboxes bound to services with
-    // unsatisfied dependencies.
-    manageDependencies()
 }
 
 if (dependencyGraph) {
-    $(document).ready(bindCheckboxes);
+    $(document).ready(function() {
+        bindCheckboxes();
+        // Run for the first time to disable checkboxes bound to services with
+        // unsatisfied dependencies.
+        manageDependencies()
+    });
 }
 
 /* Here be triggers that rely upon document styling (certain classes
