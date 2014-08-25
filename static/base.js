@@ -13,40 +13,44 @@ function enableDisableCheckbox($checkbox, isEnabled) {
         $checkbox.closest('tr').removeClass('disabled')
 }
 
-// FIXME: find out, why doesn't it work
-function generateActivePaths() {
-    function recursiveHelper(currentNode, currentPath) {
-        if (currentNode.enabled) {
-            currentPath.push(currentNode);
-            if (currentPath.children.length > 0)
-                $.each(currentPath.children, function(i, child) {
-                    recursiveHelper(child, currentPath)
-                });
-            else
-                activePaths.push(currentPath)
-        }
-    }
-    var activePaths = [];
-    var parentNodes = [];
+function getParentNodes() {
+    var result = [];
     $.each(dependencyGraph, function(key, value) {
-        if (value.parents.length == 0)
-            parentNodes.push(key)
+        if (value.parents.length === 0)
+            result.push(value)
     });
-    $.each(parentNodes, function(i, node) {
-        recursiveHelper(node, [])
-    });
-
-    return activePaths
+    return result
 }
 
-function calculateNewTotal(path) {
-    var total = {'days': 0, 'workDays': 0};
-    $.each(path, function (i, node) {
-        total.days += node.days;
-        total.workDays += node.workDays
-    });
+function calculateNewTotal(node) {
+    function addUpTotals(a, b) {
+        return {'days': a.days + b.days, 'workDays': a.workDays + b.workDays}
+    }
 
-    return total
+    function getMaxTotal(arr) {
+        var result = 0;
+        $.each(arr, function (i, e) {
+            e = recursiveHelper(dependencyGraph[e]);
+            if (e.days + e.workDays > result)
+                result = e.days + e.workDays
+        });
+        return result
+    }
+
+    function recursiveHelper(node) {
+        var currentTotal = {'days': 0, 'workDays': 0};
+        if (node.checked) {
+            currentTotal.days = node.days;
+            currentTotal.workDays = node.workDays;
+        }
+
+        if (node.checked && node.children.length > 0)
+            return addUpTotals(currentTotal, getMaxTotal(node.children));
+        else
+            return currentTotal
+    }
+
+    return recursiveHelper(node)
 }
 
 function manageDependencies(serviceId, isChecked) {
@@ -90,8 +94,8 @@ function manageDependencies(serviceId, isChecked) {
         walk(serviceId, isChecked)
     }
     var totalDays = {'days': 0, 'workDays': 0};
-    $.each(generateActivePaths(), function(i, path) {
-        var newTotal = calculateNewTotal(path);
+    $.each(getParentNodes(), function(i, node) {
+        var newTotal = calculateNewTotal(node);
         if (newTotal.days + newTotal.workDays >
                 totalDays.days + totalDays.workDays)
             totalDays = newTotal
