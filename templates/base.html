@@ -2,11 +2,13 @@
 <html>
 {# Reusable template chunks #}
 {% macro navigation(back, with_submit=true) %}
-    <input type="button" name="back" value="Назад"
-           onclick="window.location.href = '{{ back }}'"/>
-    {% if with_submit %}
-        <input type="submit" name="submit" value="Далее"/>
-    {% endif %}
+    <div class="clear navigation">
+        <input type="button" name="back" value="Назад"
+               onclick="window.location.href = '{{ back }}'"/>
+        {% if with_submit %}
+            <input type="submit" name="submit" value="Далее"/>
+        {% endif %}
+    </div>
 {% endmacro %}
 <head>
     <title>{% block title %}{% endblock %} — Kompleks</title>

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+    {% extends "base.html" %}
 {% macro table_head() %}
     <tr>
         <th>&nbsp;</th>
@@ -69,7 +69,7 @@
                     </tbody>
                 </table>
             {% endif %}
-            <p>{{ navigation('/prerequisites', '/services') }}</p>
+
         </form>
     </div>
     <div id="terms-counter">
@@ -79,4 +79,5 @@
             <p><span id="work-days-total">0</span> р. д.</p>
         </div>
     </div>
+    {{ navigation('/prerequisites', '/services') }}
 {% endblock %}

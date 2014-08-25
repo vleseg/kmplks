@@ -1,6 +1,56 @@
 var toBeChecked;
 var dependencyGraph;
 
+// Functools
+function reduce(iterable, start, callback) {
+    $.each(iterable, function (key, value) {
+        start = callback(start, value)
+    });
+
+    return start
+}
+
+function filter(iterable, callback) {
+    var result;
+
+    if ($.isArray(iterable)) {
+        result = [];
+        $.each(iterable, function (i, value) {
+            if (callback(value))
+                result.push(value)
+        })
+    }
+    else {
+        result = {};
+        $.each(iterable, function (key, value) {
+            if (callback(value))
+                result[key] = value
+        })
+    }
+
+    return result
+}
+
+function map(iterable, callback) {
+    var result;
+
+    if ($.isArray(iterable)) {
+        result = [];
+        $.each(iterable, function (i, value) {
+            result.push(callback(value))
+        })
+    }
+    else {
+        result = {};
+        $.each(iterable, function (key, value) {
+            result[key] = callback(value)
+        })
+    }
+
+    return result
+}
+
+// Rendering functions.
 function toggleCheckbox($checkbox, isChecked) {
     $checkbox.prop('checked', isChecked);
 }
@@ -13,28 +63,18 @@ function enableDisableCheckbox($checkbox, isEnabled) {
         $checkbox.closest('tr').removeClass('disabled')
 }
 
-function getParentNodes() {
-    var result = [];
-    $.each(dependencyGraph, function(key, value) {
-        if (value.parents.length === 0)
-            result.push(value)
+// Terms' calculator functions.
+function maxOfTotals() {
+    var startValue = {'days': 0, 'workDays': 0};
+    return reduce(arguments, startValue, function(pTotal, cTotal) {
+        return pTotal.days + pTotal.workDays >
+            cTotal.days + cTotal.workDays ? pTotal : cTotal
     });
-    return result
 }
 
-function calculateNewTotal(node) {
+function calculateTotal(node) {
     function addUpTotals(a, b) {
         return {'days': a.days + b.days, 'workDays': a.workDays + b.workDays}
-    }
-
-    function getMaxTotal(arr) {
-        var result = 0;
-        $.each(arr, function (i, e) {
-            e = recursiveHelper(dependencyGraph[e]);
-            if (e.days + e.workDays > result)
-                result = e.days + e.workDays
-        });
-        return result
     }
 
     function recursiveHelper(node) {
@@ -44,8 +84,12 @@ function calculateNewTotal(node) {
             currentTotal.workDays = node.workDays;
         }
 
-        if (node.checked && node.children.length > 0)
-            return addUpTotals(currentTotal, getMaxTotal(node.children));
+        if (node.checked && node.children.length > 0) {
+            var childrenTotals = map(node.children, function (nodeId) {
+                recursiveHelper(dependencyGraph[nodeId])
+            });
+            return addUpTotals(currentTotal, maxOfTotals(childrenTotals));
+        }
         else
             return currentTotal
     }
@@ -53,52 +97,54 @@ function calculateNewTotal(node) {
     return recursiveHelper(node)
 }
 
+// Main function.
 function manageDependencies(serviceId, isChecked) {
     /* Disable/enable checkboxes for services, when their dependencies are
      * checked or unchecked.
      */
     function walk(currentId, isChecked) {
         dependencyGraph[currentId].checked = isChecked;
-        var children = dependencyGraph[currentId].children;
 
         $.each(dependencyGraph[currentId].children, function(i, childId) {
+            var child = dependencyGraph[childId];
+
             // If checkbox bound to the currentId is unchecked, all its
             // descendants must be unchecked and disabled.
             if (!isChecked) {
-                dependencyGraph[childId].checked = false;
-                dependencyGraph[childId].enabled = false;
+                child.checked = false;
+                child.enabled = false;
                 walk(childId, false);
             }
             // If checkbox bound to the serviceId is checked, all its children
             // must be enabled, but only if their other parents (if any) are
             // checked too.
             else {
-                var mustEnableChild = true;
-                $.each(dependencyGraph[childId].parents, function(i, parentId) {
-                    mustEnableChild = mustEnableChild &&
-                        dependencyGraph[parentId].checked
-                });
+                var mustEnableChild = reduce(child.parents, true,
+                    function(pFlag, cId) {
+                        return pFlag && dependencyGraph[cId].checked
+                    });
                 if (mustEnableChild)
-                    dependencyGraph[childId].enabled = true
+                    child.enabled = true
             }
         });
     }
 
-    // Calculate.
+    // Calculate states.
     if (arguments.length == 0)   // on page load
-        for (var id in dependencyGraph) {
-            if (dependencyGraph.hasOwnProperty(id))
-                walk(id, false);
-        }
+        $.each(dependencyGraph, function (key) {
+            walk(key, false)
+        });
     else {
         walk(serviceId, isChecked)
     }
-    var totalDays = {'days': 0, 'workDays': 0};
-    $.each(getParentNodes(), function(i, node) {
-        var newTotal = calculateNewTotal(node);
-        if (newTotal.days + newTotal.workDays >
-                totalDays.days + totalDays.workDays)
-            totalDays = newTotal
+
+    // Calculate terms.
+    var parentNodes = filter(dependencyGraph, function (value) {
+        return value.parents.length === 0
+    });
+    var startValue = {'days': 0, 'workDays': 0};
+    var totalDays = reduce(parentNodes, startValue, function (pTotal, node) {
+        return maxOfTotals(pTotal, calculateTotal(node))
     });
 
     // Render.
