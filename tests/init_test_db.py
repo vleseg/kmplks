@@ -1,6 +1,5 @@
-from collections import namedtuple
+import logging
 import os
-from time import sleep
 # Third-party imports
 from google.appengine.ext import ndb
 from lxml import etree
@@ -69,25 +68,23 @@ class RefMeta(object):
         self.reference_type = tg.attr('type')
 
 
-def get_entity(kind, prop, value):
-    q = kind.query(prop == value)
-    result = q.get()
-    if result is None:
+def get_entity_key(kind, prop, value):
+    try:
+        return kind.query(
+            ancestor=model.ANCESTOR).filter(prop == value).get().key
+    except AttributeError:
         raise TestDbInitException(
-            u'Entity with {} == {} is not found for kind {}'.format(
-                prop, value, kind).encode("utf-8"))
-    else:
-        return result.key
+            'Entity with {} == {} was not found for kind {}'.format(
+                prop, value.encode('utf-8'), kind.__name__))
 
 
-def put_new_entity(entity_class, entity_init_kwargs, from_console=False):
+def put_new_entity(entity_class, entity_init_kwargs):
+    entity_init_kwargs['parent'] = model.ANCESTOR
     new_entity = entity_class(**entity_init_kwargs)
     new_entity.put()
-    if from_console:
-        sleep(0.1)
 
 
-def init_test_db(from_console=False):
+def init_test_db():
     parser = etree.XMLParser(remove_comments=True)
     file_path = os.path.join(os.path.dirname(__file__), "test_data.xml")
     root = etree.parse(file_path, parser).getroot()
@@ -113,20 +110,21 @@ def init_test_db(from_console=False):
                     if property_class is ndb.IntegerProperty:
                         value_to_store = int(raw_value)
                     elif property_class is ndb.BooleanProperty:
-                        value_to_store = bool(raw_value)
+                        value_to_store = bool(int(raw_value))
                     # Property is ndb.KeyProperty -- single or repeated
                     elif ref_meta_entry is not None:
                         f_kwargs = dict(kind=ref_meta_entry.referred_kind,
                                         prop=ref_meta_entry.referred_field)
                         if ref_meta_entry.reference_type == 'to_one':
                             f_kwargs['value'] = raw_value
-                            value_to_store = get_entity(**f_kwargs)
+                            value_to_store = get_entity_key(**f_kwargs)
                         elif ref_meta_entry.reference_type == 'to_many':
                             value_to_store = []
                             for property_node_child in property_node:
                                 f_kwargs['value'] = TextGetter(
                                     property_node_child).get_text()
-                                value_to_store.append(get_entity(**f_kwargs))
+                                value_to_store.append(
+                                    get_entity_key(**f_kwargs))
                         else:
                             raise TestDbInitException(
                                 "Unknown reference type: {}".format(
@@ -136,4 +134,4 @@ def init_test_db(from_console=False):
                         value_to_store = raw_value
                     entity_init_kwargs[property_name] = value_to_store
 
-                put_new_entity(entity_class, entity_init_kwargs, from_console)
+                put_new_entity(entity_class, entity_init_kwargs)

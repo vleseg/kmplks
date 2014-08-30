@@ -7,6 +7,7 @@ from google.appengine.ext import ndb
 
 ORIGINAL_SUPPLY_TYPE = ('demonstrate', 'return_with_result', 'no_return')
 COUNT_METHOD = ('one_for_all', 'per_service', 'per_ogv')
+ANCESTOR = ndb.Key('app', 'kompleks')
 
 
 class KompleksModelError(BaseException):

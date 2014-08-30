@@ -52,9 +52,15 @@
                     {{ assemble_description(d.description) }}
                 {% endif %}
                 </td>
-                <td class="quantity-col">{{ d.n_originals }}</td>
-                <td class="quantity-col">{{ d.n_copies }}</td>
-                <td>{{ d.o_supply_type }}</td>
+                {% if d.is_a_paper_document %}
+                    <td class="quantity-col">{{ d.n_originals }}</td>
+                    <td class="quantity-col">{{ d.n_copies }}</td>
+                    <td>{{ d.o_supply_type }}</td>
+                {% else %}
+                    <td class="quantity-col"></td>
+                    <td class="quantity-col"></td>
+                    <td></td>
+                {% endif %}
             </tr>
         {% endfor %}
         </tbody>

@@ -420,7 +420,8 @@ class ResultHandler(BaseHandler):
             'name': document.name, 'description': description,
             'n_originals': document.count_up('originals', dts_items),
             'n_copies': document.count_up('copies', dts_items),
-            'o_supply_type': document.define_o_supply_type(dts_items)
+            'o_supply_type': document.define_o_supply_type(dts_items),
+            'is_a_paper_document': document.is_a_paper_document
         }
 
 
