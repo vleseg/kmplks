@@ -66,15 +66,17 @@ function enableDisableCheckbox($checkbox, isEnabled) {
 // Terms' calculator functions.
 function maxOfTotals() {
     var startValue = {'days': 0, 'workDays': 0};
-    return reduce(arguments, startValue, function(pTotal, cTotal) {
+    var arr = $.isArray(arguments[0]) ? arguments[0] : arguments
+
+    return reduce(arr, startValue, function(pTotal, cTotal) {
         return pTotal.days + pTotal.workDays >
             cTotal.days + cTotal.workDays ? pTotal : cTotal
-    });
+    })
 }
 
 function calculateTotal(node) {
     function addUpTotals(a, b) {
-        return {'days': a.days + b.days, 'workDays': a.workDays + b.workDays}
+        return {'days': a.days + b.days, 'workDays': a.workDays + b.workDays};
     }
 
     function recursiveHelper(node) {
@@ -86,7 +88,7 @@ function calculateTotal(node) {
 
         if (node.checked && node.children.length > 0) {
             var childrenTotals = map(node.children, function (nodeId) {
-                recursiveHelper(dependencyGraph[nodeId])
+                return recursiveHelper(dependencyGraph[nodeId])
             });
             return addUpTotals(currentTotal, maxOfTotals(childrenTotals));
         }
@@ -94,7 +96,7 @@ function calculateTotal(node) {
             return currentTotal
     }
 
-    return recursiveHelper(node)
+    return recursiveHelper(node);
 }
 
 // Main function.

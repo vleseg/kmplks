@@ -84,7 +84,7 @@ def put_new_entity(entity_class, entity_init_kwargs, from_console=False):
     new_entity = entity_class(**entity_init_kwargs)
     new_entity.put()
     if from_console:
-        sleep(0.25)
+        sleep(0.1)
 
 
 def init_test_db(from_console=False):

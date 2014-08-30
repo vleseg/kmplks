@@ -45,8 +45,8 @@
 {% endblock %}
 {% block head %}{{ kompleks.name }} — Услуги{% endblock %}
 {% block content %}
-    <div id="form-container">
-        <form method="post">
+    <form method="post">
+        <div id="form-container">
             <p>Выберите нужные услуги:</p>
             <table>
                 <thead>{{ table_head() }}</thead>
@@ -69,15 +69,14 @@
                     </tbody>
                 </table>
             {% endif %}
-
-        </form>
-    </div>
-    <div id="terms-counter">
-        <div id="terms-counter-head">Общий срок:</div>
-        <div id="terms-counter-body">
-            <p><span id="days-total">0</span> к. д.</p>
-            <p><span id="work-days-total">0</span> р. д.</p>
         </div>
-    </div>
-    {{ navigation('/prerequisites', '/services') }}
+        <div id="terms-counter">
+            <div id="terms-counter-head">Общий срок:</div>
+            <div id="terms-counter-body">
+                <p><span id="days-total">0</span> к. д.</p>
+                <p><span id="work-days-total">0</span> р. д.</p>
+            </div>
+        </div>
+        {{ navigation('/prerequisites', '/services') }}
+    </form>
 {% endblock %}

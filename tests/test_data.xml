@@ -36,6 +36,12 @@
                 (Якутия)</name>
             <short_name>Минтруда</short_name>
         </instance>
+        <instance>
+            <name>Министерство по делам молодежи и семейной политики Республики
+                Саха (Якутия)
+            </name>
+            <short_name>Минмолодежи</short_name>
+        </instance>
     </OGV>
     <Service>
         <reference type="to_many">
@@ -124,7 +130,7 @@
             <kb_id>602</kb_id>
             <max_days>0</max_days>
             <max_work_days>43</max_work_days>
-            <ogv>Минтруда</ogv>
+            <ogv>Минмолодежи</ogv>
             <related_komplekses>
                 <element>Рождение ребенка</element>
             </related_komplekses>
