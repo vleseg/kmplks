@@ -16,7 +16,7 @@
         <td>
             <label for="{{ service.id }}">
                 <a href="{{ service.kb_id|to_url }}"
-                   title="Посмотреть в Базе знаний">
+                   title="Посмотреть в Базе знаний" target="_blank">
                     {{ service.name }}
                 </a>
             </label>
@@ -71,7 +71,9 @@
             {% endif %}
         </div>
         <div id="terms-counter">
-            <div id="terms-counter-head">Общий срок:</div>
+            <div id="terms-counter-head">
+                <span title="приблизительно">Общий срок:</span>
+            </div>
             <div id="terms-counter-body">
                 <p><span id="days-total">0</span> к. д.</p>
                 <p><span id="work-days-total">0</span> р. д.</p>

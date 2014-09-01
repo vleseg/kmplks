@@ -66,7 +66,7 @@ function enableDisableCheckbox($checkbox, isEnabled) {
 // Terms' calculator functions.
 function maxOfTotals() {
     var startValue = {'days': 0, 'workDays': 0};
-    var arr = $.isArray(arguments[0]) ? arguments[0] : arguments
+    var arr = $.isArray(arguments[0]) ? arguments[0] : arguments;
 
     return reduce(arr, startValue, function(pTotal, cTotal) {
         return pTotal.days + pTotal.workDays >

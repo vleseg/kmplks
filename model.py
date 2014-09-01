@@ -162,6 +162,7 @@ class Document(BaseModel):
     n_originals = ndb.IntegerProperty(default=1)
     n_copies = ndb.IntegerProperty(default=1)
     is_a_paper_document = ndb.BooleanProperty(default=True)
+    doc_class = ndb.IntegerProperty(required=True)
 
     def precompile_description(self, dts_items):
         """

@@ -17,7 +17,7 @@
 from collections import OrderedDict
 from itertools import chain
 import json
-import logging
+# import logging
 import os
 # Third-party imports
 from google.appengine.ext import ndb
@@ -32,7 +32,7 @@ ENV = Environment(autoescape=True,
                       os.path.join(os.path.dirname(__file__), 'templates')))
 
 
-# Custom jinja2 filters.
+# Custom jinja2 filters and tests.
 def is_list(value):
     return isinstance(value, list)
 
@@ -292,9 +292,9 @@ class PrerequisiteChoiceHandler(BaseHandler):
 
         # If our last choice of prerequisites was saved in session -- restore
         # it.
-        self.context['prereqs_satisfied'] = json.dumps(
-            prereqs_satisfied if prereqs_satisfied else [])
-        self.context['dependency_graph'] = json.dumps(dependency_graph)
+        # self.context['prereqs_satisfied'] = json.dumps(
+        #     prereqs_satisfied if prereqs_satisfied else [])
+        # self.context['dependency_graph'] = json.dumps(dependency_graph)
 
         self.render()
 
@@ -344,11 +344,12 @@ class ServiceChoiceHandler(BaseHandler):
         self.context["kompleks"] = from_urlsafe(d['kompleks_id'])
         self.context["contained_services"] = map(self.prepare,
                                                  contained_services)
-        self.context["related_services"] = map(self.prepare, related_services)
+        self.context["related_services"] = map(self.prepare,
+                                               related_services)
 
         # If our last choice of services was saved in session -- restore it.
-        if service_ids:
-            self.context['service_ids'] = json.dumps(service_ids)
+        # if service_ids:
+        #     self.context['service_ids'] = json.dumps(service_ids)
         self.context["dependency_graph"] = json.dumps(
             self.construct_service_graph(
                 contained_services + related_services))
@@ -368,7 +369,8 @@ class ServiceChoiceHandler(BaseHandler):
                 'ogv': service.ogv.get().short_name,
                 'max_days':  service.max_days, 'kb_id': service.kb_id,
                 'max_work_days': service.max_work_days,
-                'terms_description': service.terms_description}
+                'terms_description': service.terms_description,
+                '_key': service.key}
 
 
 class ResultHandler(BaseHandler):
@@ -404,9 +406,10 @@ class ResultHandler(BaseHandler):
                         doc_id_to_dts[doc_id].append(dts)
 
         # Constructing context.
+        k = lambda e: (e['_class'], e['name'])
         self.context["kompleks"] = kompleks
-        self.context["documents"] = [self.prepare(item) for item in
-                                     doc_id_to_dts.items()]
+        self.context["documents"] = sorted(
+            [self.prepare(item) for item in doc_id_to_dts.items()], key=k)
 
         self.render()
 
@@ -414,15 +417,19 @@ class ResultHandler(BaseHandler):
     def prepare(item):
         doc_id, dts_items = item
         document = from_urlsafe(doc_id)
-        description = document.precompile_description(dts_items)
+        result = {'name': document.name,
+                  'description': document.precompile_description(dts_items),
+                  '_class': document.doc_class}
 
-        return {
-            'name': document.name, 'description': description,
-            'n_originals': document.count_up('originals', dts_items),
-            'n_copies': document.count_up('copies', dts_items),
-            'o_supply_type': document.define_o_supply_type(dts_items),
-            'is_a_paper_document': document.is_a_paper_document
-        }
+        if not document.is_a_paper_document:
+            result.update(n_originals='', n_copies='', o_supply_type='')
+        else:
+            result.update(
+                n_originals=document.count_up('originals', dts_items),
+                n_copies=document.count_up('copies', dts_items),
+                o_supply_type=document.define_o_supply_type(dts_items))
+
+        return result
 
 
 config = {'webapp2_extras.sessions': {

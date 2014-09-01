@@ -161,6 +161,7 @@
             <o_count_method>per_service</o_count_method>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
         </instance>
         <instance>
             <name>Документ, удостоверяющий личность заявителя</name>
@@ -176,6 +177,7 @@
                 </ul>
                 <p>С других страниц копия снимается, если они заполнены.</p>
             </description>
+            <doc_class>2</doc_class>
         </instance>
         <instance>
             <name>Документ, удостоверяющий личность второго родителя</name>
@@ -192,14 +194,17 @@
                 </ul>
                 <p>С других страниц копия снимается, если они заполнены.</p>
             </description>
+            <doc_class>3</doc_class>
         </instance>
         <instance>
             <name>Свидетельство о заключении брака</name>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Медицинское свидетельство о рождении, форма №103/У</name>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Согласие на обработку персональных данных</name>
@@ -211,7 +216,7 @@
             </description>
             <o_count_method>per_ogv</o_count_method>
             <o_supply_type>no_return</o_supply_type>
-            <n_copies>0</n_copies>
+            <doc_class>4</doc_class>
         </instance>
         <instance>
             <name>Доверенность на передачу согласия на обработку ПДн</name>
@@ -222,6 +227,7 @@
                 подаются документы.
             </description>
             <c_count_method>per_ogv</c_count_method>
+            <doc_class>4</doc_class>
         </instance>
         <instance>
             <name>Заявление о регистрации по месту жительства, форма №6</name>
@@ -230,9 +236,11 @@
             <o_count_method>per_service</o_count_method>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
         </instance>
         <instance>
             <name>Свидетельство о рождении</name>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Документ о праве на жилое помещение</name>
@@ -242,12 +250,14 @@
                 оригинала возможно предоставление нотариально удостоверенной
                 копии.
             </description>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Домовая книга</name>
             <description>При наличии</description>
             <o_supply_type>return_with_result</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Заявление о назначении пособия</name>
@@ -278,6 +288,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
         </instance>
         <instance>
             <name>Объяснительная</name>
@@ -290,6 +301,7 @@
                 УСЗН (срок действия — 30 дней) с предыдущего места жительства.
             </description>
             <is_a_paper_document>0</is_a_paper_document>
+            <doc_class>1</doc_class>
         </instance>
         <instance>
             <name>Свидетельство о регистрации по месту пребывания</name>
@@ -297,11 +309,13 @@
                 жительства и нет другого документа, подтверждающего совместное
                 проживание с ребенком.
             </description>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Свидетельство об усыновлении</name>
             <description>Предоставляется, если ребенок был усыновлен.
             </description>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Справка о рождении, форма №25</name>
@@ -311,19 +325,23 @@
                     рождении ребенка стоит прочерк.
                 </p>
             </description>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Свидетельство о расторжении брака</name>
             <description>Если родители ранее состояли в законном браке.
             </description>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Свидетельство об установлении отцовства</name>
             <description>При наличии факта установления отцовства.
             </description>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Трудовая книжка</name>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Справка о доходах с места работы</name>
@@ -332,18 +350,21 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Книга учета расходов и доходов</name>
             <description>Предоставляется ИП, применяющими патентную систему
                 налогообложения.
             </description>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Налоговая декларация</name>
             <description>Предоставляется ИП, не применяющими патентную систему
                 налогообложения. Должна содержать отметку ФНС о приеме.
             </description>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Сведения о свидетельстве о регистрации в качестве ИП</name>
@@ -352,9 +373,11 @@
                 ИП.
             </description>
             <is_a_paper_document>0</is_a_paper_document>
+            <doc_class>6</doc_class>
         </instance>
         <instance>
             <name>Свидетельство о регистрации по месту жительства</name>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Справка о составе семьи</name>
@@ -364,6 +387,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Иной документ, подтверждающий совместное проживание родителя
@@ -378,6 +402,7 @@
                 </ul>
                 <p>Срок действия всех справок — 30 дней.</p>
             </description>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Реквизиты номера лицевого счета заявителя в кредитном
@@ -398,18 +423,22 @@
                 </p>
             </description>
             <is_a_paper_document>0</is_a_paper_document>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Простая доверенность</name>
             <description>При обращении представителя.</description>
+            <doc_class>3</doc_class>
         </instance>
         <instance>
             <name>Нотариально удостоверенная доверенность</name>
             <description>При обращении представителя.</description>
+            <doc_class>3</doc_class>
         </instance>
         <instance>
             <name>Акт органа опеки и попечительства</name>
             <description>При обращении опекуна (попечителя).</description>
+            <doc_class>3</doc_class>
         </instance>
         <instance>
             <name>Справка Пенсионного фонда о размере пенсии</name>
@@ -418,6 +447,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>3</doc_class>
         </instance>
         <instance>
             <name>Справка из центра занятости населения</name>
@@ -430,6 +460,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Справка ФССП о неполучении алиментом</name>
@@ -438,6 +469,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Справка о размере алиментов</name>
@@ -452,6 +484,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Документ, удостоверяющий личность с отметкой о выдаче вида на
@@ -461,6 +494,7 @@
                 или лицом без гражданства, постоянно проживающим на территории
                 Российской Федерации
             </description>
+            <doc_class>8</doc_class>
         </instance>
         <instance>
             <name>Разрешение на временное проживание</name>
@@ -468,10 +502,12 @@
                 гражданином или лицом без гражданства, временно проживающим на
                 территории Российской Федерации.
             </description>
+            <doc_class>8</doc_class>
         </instance>
         <instance>
             <name>Удостоверение беженца</name>
             <description>Предоставляется беженцами.</description>
+            <doc_class>8</doc_class>
         </instance>
         <instance>
             <name>Документ, подтверждающий факт рождения ребенка</name>
@@ -484,6 +520,7 @@
                     использования на территории России и переведено.
                 </p>
             </description>
+            <doc_class>8</doc_class>
         </instance>
         <instance>
             <name>Свидетельство о рождении ребенка, выданное консульским
@@ -492,6 +529,7 @@
             <description>При рождении ребенка на территории иностранного
                 государства.
             </description>
+            <doc_class>8</doc_class>
         </instance>
         <instance>
             <name>Заявление о выдаче нагрудного знака и удостоверения
@@ -502,11 +540,13 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
         </instance>
         <instance>
             <name>Фотография 3х4</name>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>9</doc_class>
         </instance>
         <instance>
             <name>Документ о перемене имени</name>
@@ -518,21 +558,25 @@
                     <li>свидетельство о перемене имени.</li>
                 </ul>
             </description>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Свидетельство о смерти либо решение суда об объявлении
                 гражданина умершим
             </name>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Решение суда о признании гражданина недееспособным,
                 ограниченно дееспособным
             </name>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Решение суда об ограничении родительских прав, о лишении
                 родительских прав, об отмене усыновления
             </name>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Заявление о назначении единовременного пособия при рождении
@@ -540,11 +584,13 @@
             </name>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
         </instance>
         <instance>
             <name>Справка о рождении, форма №24</name>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>5</doc_class>
         </instance>
         <instance>
             <name>Справка с прежнего места работы о неполучении пособия по
@@ -556,6 +602,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Справка с места учебы</name>
@@ -570,6 +617,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Справка из ТО ФСС РС(Я) об отстутсвии сведений о регистрации
@@ -585,6 +633,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
         <instance>
             <name>Справка из воинской части о прохождении службы по призыву
@@ -599,6 +648,7 @@
             </description>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
         </instance>
     </Document>
     <DocumentToService>
