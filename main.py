@@ -419,7 +419,8 @@ class ResultHandler(BaseHandler):
         document = from_urlsafe(doc_id)
         result = {'name': document.name,
                   'description': document.precompile_description(dts_items),
-                  '_class': document.doc_class}
+                  '_class': document.doc_class,
+                  'id': doc_id}
 
         if not document.is_a_paper_document:
             result.update(n_originals='', n_copies='', o_supply_type='')

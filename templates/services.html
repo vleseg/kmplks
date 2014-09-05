@@ -22,13 +22,13 @@
             </label>
         </td>
         <td>{{ service.ogv }}</td>
-        <td  class="cell-with-terms">
+        <td>
         {% if service.terms_description %}
-            <span title="{{ service.terms_description }}">
-                {{ service.max_days }} к. д. +{{ service.max_work_days }} р. д.
-            </span>
+            <abbr title="{{ service.terms_description }}">
+                {{ service.max_days }}&nbsp;к.&nbsp;д.&nbsp;+{{ service.max_work_days }}&nbsp;р.&nbsp;д.
+            </abbr>
         {% else %}
-            {{ service.max_days }} к. д. +{{ service.max_work_days }} р. д.
+            {{ service.max_days }}&nbsp;к.&nbsp;д.&nbsp;+{{ service.max_work_days }}&nbsp;р.&nbsp;д.
         {% endif %}
         </td>
         <td>
@@ -38,17 +38,14 @@
 {% endmacro %}
 {% block title %}Выбор услуг{% endblock %}
 {% block js %}
-{#    Disabled, since it provokes strange errors.   #}
-{#                                                  #}
-{#    var toBeChecked = {{ service_ids|safe }};     #}
     var dependencyGraph = {{ dependency_graph|safe }};
 {% endblock %}
 {% block head %}{{ kompleks.name }} — Услуги{% endblock %}
 {% block content %}
     <form method="post">
-        <div id="form-container">
-            <p>Выберите нужные услуги:</p>
-            <table>
+        <div class="col-md-10">
+            <p class="lead">Выберите нужные услуги:</p>
+            <table class="table table-condensed">
                 <thead>{{ table_head() }}</thead>
                 <tbody>
                 {% for service in contained_services %}
@@ -57,10 +54,10 @@
                 </tbody>
             </table>
             {% if related_services %}
-                <p>Эти услуги не входят в комплекс, но подходят по жизненной
-                    ситуации:
+                <p class="lead">Эти услуги не входят в комплекс, но подходят по
+                    жизненной ситуации:
                 </p>
-                <table>
+                <table class="table table-condensed">
                     <thead>{{ table_head() }}</thead>
                     <tbody>
                     {% for service in related_services %}
@@ -69,16 +66,16 @@
                     </tbody>
                 </table>
             {% endif %}
-        </div>
-        <div id="terms-counter">
-            <div id="terms-counter-head">
-                <span title="приблизительно">Общий срок:</span>
-            </div>
-            <div id="terms-counter-body">
-                <p><span id="days-total">0</span> к. д.</p>
-                <p><span id="work-days-total">0</span> р. д.</p>
-            </div>
-        </div>
         {{ navigation('/prerequisites', '/services') }}
+        </div>
+        <div class="col-md-2 lead">
+            <div class="row-fluid">
+                <abbr title="приблизительно">Общий срок:</abbr>
+            </div>
+            <div class="row-fluid">
+                <p><span id="days-total">0</span>&nbsp;к.&nbsp;д.</p>
+                <p><span id="work-days-total">0</span>&nbsp;р.&nbsp;д.</p>
+            </div>
+        </div>
     </form>
 {% endblock %}

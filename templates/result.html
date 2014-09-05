@@ -23,14 +23,14 @@
 {% endblock %}
 <p>Для получения услуги потребуются следующие документы:</p>
 {% block content %}
-    <table>
+    <table class="table table-striped">
         <thead>
         <tr>
-            <th id="srv-name-head">Документ</th>
-            <th id="srv-description-head">Описание</th>
-            <th id="o-count-col-head">Оригиналы</th>
-            <th id="c-count-col-head">Копии</th>
-            <th id="o-supply-type-head">Возврат оригинала</th>
+            <th>Документ</th>
+            <th>Описание</th>
+            <th>Оригиналы</th>
+            <th>Копии</th>
+            <th>Возврат оригинала</th>
         </tr>
         </thead>
         <tbody>
@@ -39,21 +39,33 @@
                 <td>{{ d.name }}</td>
                 <td>
                 {% if d.description is list %}
-                    {% for e in d.description %}
-                        <div class="multidescr-srv-plank">
-                            Для услуги <span class="multidescr-srv-name">
-                            {{ e.service.name }}</span>:
-                        </div>
-                        <div class="multidescr-srv-body">
-                            {{ assemble_description(e) }}
+                    <div class="accordion" id="acc{{ d.id }}">
+                        {% for e in d.description %}
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle"
+                                   data-toggle="collapse"
+                                   data-parent="#acc{{ d.id }}"
+                                   href="#coll-{{ loop.index0 }}">
+                                    Для услуги <span class="text-info">
+                                    {{ e.service.name }}</span>:
+                                </a>
+                            </div>
+                            <div id="coll-{{ loop.index0 }}"
+                                 class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    {{ assemble_description(e) }}
+                                </div>
+                            </div>
                         </div>
                     {% endfor %}
+                    </div>
                 {% else %}
                     {{ assemble_description(d.description) }}
                 {% endif %}
                 </td>
-                <td class="quantity-col">{{ d.n_originals }}</td>
-                <td class="quantity-col">{{ d.n_copies }}</td>
+                <td><p class="lead">{{ d.n_originals }}</p></td>
+                <td><p class="lead">{{ d.n_copies }}</p></td>
                 <td>{{ d.o_supply_type }}</td>
             </tr>
         {% endfor %}

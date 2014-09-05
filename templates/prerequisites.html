@@ -7,9 +7,10 @@
 {% endblock %}
 {% block head %}{{ kompleks.name }} — Предусловия{% endblock %}
 {% block content %}
-    <p>Если какие-то из этих условий уже удовлетворены — отметьте:</p>
+    <p class="lead">Если какие-то из этих условий уже удовлетворены —
+        отметьте:</p>
     <form action="/prerequisites" method="post">
-        <table>
+        <table class="table table-hover">
             <tbody>
             {% for p in prerequisites %}
             <tr>
