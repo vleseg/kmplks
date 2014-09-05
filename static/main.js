@@ -175,15 +175,3 @@ if (dependencyGraph) {
         manageDependencies()
     });
 }
-
-/* Here be triggers that rely upon document styling (certain classes
- * absent/present.
- */
-$(document).ready(function() {
-    var multidescrSrvPlanks = $('.multidescr-srv-plank');
-
-    if (multidescrSrvPlanks.length)  // if spoilers are present on page
-        multidescrSrvPlanks.on('click', function() {
-            $(this).next().toggle(100)
-        })
-});

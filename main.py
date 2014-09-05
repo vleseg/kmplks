@@ -266,8 +266,6 @@ class PrerequisiteChoiceHandler(BaseHandler):
     def get(self):
         session_data = self.get_session_data(
             ['kompleks_id', 'contained_ids', 'related_ids'])
-        prereqs_satisfied = self.get_session_data(
-            'prereqs_satisfied', obligatory=False)
 
         kompleks = from_urlsafe(session_data['kompleks_id'])
         services = from_urlsafe(
@@ -290,11 +288,7 @@ class PrerequisiteChoiceHandler(BaseHandler):
         self.context["prerequisites"] = [
             self.prepare(s) for s in prerequisites]
 
-        # If our last choice of prerequisites was saved in session -- restore
-        # it.
-        # self.context['prereqs_satisfied'] = json.dumps(
-        #     prereqs_satisfied if prereqs_satisfied else [])
-        # self.context['dependency_graph'] = json.dumps(dependency_graph)
+        self.context['dependency_graph'] = json.dumps(dependency_graph)
 
         self.render()
 
@@ -334,8 +328,6 @@ class ServiceChoiceHandler(BaseHandler):
         # If this page is being visited not for the first time in current
         # session, # retrieve services, that were checked and submitted the
         # last time.
-        service_ids = self.get_session_data('service_ids', obligatory=False)
-
         contained_ids = set(d['contained_ids']) - set(d['prereqs_satisfied'])
         contained_services = from_urlsafe(contained_ids, multi=True)
         related_services = from_urlsafe(d['related_ids'], multi=True)

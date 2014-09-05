@@ -1,4 +1,4 @@
-    {% extends "base.html" %}
+{% extends "base.html" %}
 {% macro table_head() %}
     <tr>
         <th>&nbsp;</th>
@@ -40,7 +40,9 @@
 {% block js %}
     var dependencyGraph = {{ dependency_graph|safe }};
 {% endblock %}
-{% block head %}{{ kompleks.name }} — Услуги{% endblock %}
+{% block head %}
+    {{ kompleks.name }}: <small>УСЛУГИ</small>
+{% endblock %}
 {% block content %}
     <form method="post">
         <div class="col-md-10">
@@ -69,10 +71,10 @@
         {{ navigation('/prerequisites', '/services') }}
         </div>
         <div class="col-md-2 lead">
-            <div class="row-fluid">
+            <div class="row bg-info text-center">
                 <abbr title="приблизительно">Общий срок:</abbr>
             </div>
-            <div class="row-fluid">
+            <div class="row center-block container">
                 <p><span id="days-total">0</span>&nbsp;к.&nbsp;д.</p>
                 <p><span id="work-days-total">0</span>&nbsp;р.&nbsp;д.</p>
             </div>

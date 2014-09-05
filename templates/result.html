@@ -19,7 +19,8 @@
 {% endmacro %}
 
 {% block title %}Результат{% endblock %}
-{% block head %}{{ kompleks.name }} — Документы
+{% block head %}
+    {{ kompleks.name }}: <small>ДОКУМЕНТЫ</small>
 {% endblock %}
 <p>Для получения услуги потребуются следующие документы:</p>
 {% block content %}
@@ -39,21 +40,20 @@
                 <td>{{ d.name }}</td>
                 <td>
                 {% if d.description is list %}
-                    <div class="accordion" id="acc{{ d.id }}">
-                        {% for e in d.description %}
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle"
-                                   data-toggle="collapse"
-                                   data-parent="#acc{{ d.id }}"
-                                   href="#coll-{{ loop.index0 }}">
+                    <div class="panel-group" id="acc-{{ d.id }}">
+                    {% for e in d.description %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading" data-toggle="collapse"
+                                 data-parent="#acc-{{ d.id }}"
+                                 href="#collapse-{{ d.id }}-{{ loop.index0 }}">
+                                <h4 class="panel-title">
                                     Для услуги <span class="text-info">
                                     {{ e.service.name }}</span>:
-                                </a>
+                                </h4>
                             </div>
-                            <div id="coll-{{ loop.index0 }}"
-                                 class="accordion-body collapse">
-                                <div class="accordion-inner">
+                            <div id="collapse-{{ d.id }}-{{ loop.index0 }}"
+                                 class="panel-collapse collapse">
+                                <div class="panel-body">
                                     {{ assemble_description(e) }}
                                 </div>
                             </div>

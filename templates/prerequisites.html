@@ -5,23 +5,23 @@
 {#    var toBeChecked = {{ prereqs_satisfied|safe }};   #}
     var dependencyGraph = {{ dependency_graph|safe }};
 {% endblock %}
-{% block head %}{{ kompleks.name }} — Предусловия{% endblock %}
+{% block head %}{{ kompleks.name }}: <small>ПРЕДУСЛОВИЯ</small>{% endblock %}
 {% block content %}
     <p class="lead">Если какие-то из этих условий уже удовлетворены —
         отметьте:</p>
     <form action="/prerequisites" method="post">
-        <table class="table table-hover">
+        <table class="table">
             <tbody>
             {% for p in prerequisites %}
-            <tr>
-                <td>
-                    <input type="checkbox" name="prerequisite"
-                           value="{{ p.id }}" id="{{ p.id }}"/>
-                </td>
-                <td>
-                    <label for="{{ p.id }}">{{ p.text }}</label>
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        <input type="checkbox" name="prerequisite"
+                               value="{{ p.id }}" id="{{ p.id }}"/>
+                    </td>
+                    <td>
+                        <label for="{{ p.id }}">{{ p.text }}</label>
+                    </td>
+                </tr>
             {% endfor  %}
             </tbody>
         </table>

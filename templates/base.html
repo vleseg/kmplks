@@ -3,23 +3,22 @@
 <meta charset="utf-8">
 {# Reusable template chunks #}
 {% macro navigation(back, with_submit=true) %}
-    <div class="clear navigation">
-        <input type="button" name="back" value="Назад" class="btn btn-large"
+        <input type="button" name="back" value="Назад" class="btn btn-lg"
                onclick="window.location.href = '{{ back }}'"/>
         {% if with_submit %}
             <input type="submit" name="submit" value="Далее"
-                   class="btn btn-large"/>
+                   class="btn btn-lg"/>
         {% endif %}
-    </div>
 {% endmacro %}
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
 
     <!-- Bootstrap -->
     <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Additional styles -->
+    <link href="static/styles.css" rel="stylesheet"/>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -43,7 +42,7 @@
     <div class="navbar navbar-default navbar-static-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">Kompleks</a>
+                <a class="navbar-brand" href="/">Kompleks</a>
             </div>
         </div>
     </div>

@@ -1,0 +1,7 @@
+tr.disabled, tr.disabled a {
+    color: #D3D3D3;
+}
+
+.panel-heading {
+    cursor: pointer;
+}
