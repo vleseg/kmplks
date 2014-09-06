@@ -18,6 +18,26 @@
     {% endif %}
 {% endmacro %}
 
+{% macro description_accodion(e, did, loop_i) %}
+    <div class="panel panel-default">
+        <div class="panel-heading" data-parent="#acc-{{ did }}"
+             data-target="#collapse-{{ did }}-{{ loop_i }}"
+             data-toggle="collapse">
+            <h4 class="panel-title">
+                <i class="glyphicon glyphicon-chevron-right"></i>
+                Для услуги <span class="text-info">
+                {{ e.service.name }}</span>:
+            </h4>
+        </div>
+        <div id="collapse-{{ did }}-{{ loop_i }}"
+             class="panel-collapse collapse">
+            <div class="panel-body">
+                {{ assemble_description(e) }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
 {% block title %}Результат{% endblock %}
 {% block head %}
     {{ kompleks.name }}: <small>ДОКУМЕНТЫ</small>
@@ -42,22 +62,7 @@
                 {% if d.description is list %}
                     <div class="panel-group" id="acc-{{ d.id }}">
                     {% for e in d.description %}
-                        <div class="panel panel-default">
-                            <div class="panel-heading" data-toggle="collapse"
-                                 data-parent="#acc-{{ d.id }}"
-                                 href="#collapse-{{ d.id }}-{{ loop.index0 }}">
-                                <h4 class="panel-title">
-                                    Для услуги <span class="text-info">
-                                    {{ e.service.name }}</span>:
-                                </h4>
-                            </div>
-                            <div id="collapse-{{ d.id }}-{{ loop.index0 }}"
-                                 class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    {{ assemble_description(e) }}
-                                </div>
-                            </div>
-                        </div>
+                        {{ description_accodion(e, d.id, loop.index0) }}
                     {% endfor %}
                     </div>
                 {% else %}

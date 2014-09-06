@@ -1,6 +1,5 @@
 # coding=utf-8
 # TODO: update UML schema and description in Evernote correspondingly
-import logging
 # Third-party imports
 from google.appengine.ext import ndb
 

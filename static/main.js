@@ -175,3 +175,11 @@ if (dependencyGraph) {
         manageDependencies()
     });
 }
+
+$(document).ready(function () {
+   $('div.panel-group div.panel-collapse')
+       .on("shown.bs.collapse hidden.bs.collapse", function () {
+        $(this).prev().find("i.glyphicon")
+            .toggleClass('glyphicon-chevron-down glyphicon-chevron-right')
+   })
+});
