@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{# Process differently descriptions, that were stored as plain text and      #}
+{# those stored as XHTML                                                     #}
+{% macro put_description(s) %}
+    {% if s.startswith('<div>') %}
+        {{ s|safe }}
+    {% else %}
+        <p>{{ s }}</p>
+    {% endif %}
+{% endmacro %}
+
+{% macro assemble_description(d) %}
+    {% if d.from_doc %}
+        {{ put_description(d.from_doc) }}
+    {% endif %}
+    {% if d.from_dts %}
+        {{ put_description(d.from_dts) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro description_accodion(e, did, loop_i) %}
+    <div class="panel panel-default">
+        <div class="panel-heading" data-parent="#acc-{{ did }}"
+             data-target="#collapse-{{ did }}-{{ loop_i }}"
+             data-toggle="collapse">
+            <h4 class="panel-title">
+                <i class="glyphicon glyphicon-chevron-right"></i>
+                Для услуги <span class="text-info">
+                {{ e.service.name }}</span>:
+            </h4>
+        </div>
+        <div id="collapse-{{ did }}-{{ loop_i }}"
+             class="panel-collapse collapse">
+            <div class="panel-body">
+                {{ assemble_description(e) }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block title %}Результат{% endblock %}
+{% block head %}
+    {{ kompleks.name }}: <small>ДОКУМЕНТЫ</small>
+{% endblock %}
+<p>Для получения услуги потребуются следующие документы:</p>
+{% block content %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Документ</th>
+            <th>Описание</th>
+            <th>Оригиналы</th>
+            <th>Копии</th>
+            <th>Возврат оригинала</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for d in documents %}
+            <tr>
+                <td>{{ d.name }}</td>
+                <td>
+                {% if d.description is list %}
+                    <div class="panel-group" id="acc-{{ d.id }}">
+                    {% for e in d.description %}
+                        {{ description_accodion(e, d.id, loop.index0) }}
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    {{ assemble_description(d.description) }}
+                {% endif %}
+                </td>
+                <td><p class="lead">{{ d.n_originals }}</p></td>
+                <td><p class="lead">{{ d.n_copies }}</p></td>
+                <td>{{ d.o_supply_type }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {{ navigation('/services', with_submit=false) }}
+{% endblock %}

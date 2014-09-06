@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Выбор комплексной услуги{% endblock %}
+{% block head %}Комплексные услуги{% endblock %}
+{% block content %}
+    <table class="table">
+        <tbody>
+        {% for kompleks in komplekses %}
+            <tr>
+                <td>
+                    <a href="/?id={{ kompleks.id }}">
+                    {{ kompleks.name }}</a>
+                </td>
+                <td>
+                    {% for mfc in kompleks.mfcs %}
+                        {{ mfc.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
