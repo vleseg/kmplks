@@ -18,6 +18,7 @@ from babel import localedata
 
 
 class MergeResolveTestCase(unittest.TestCase):
+
     def test_merge_items(self):
         d = {1: 'foo', 3: 'baz'}
         localedata.merge(d, {1: 'Foo', 2: 'Bar'})
@@ -28,17 +29,17 @@ class MergeResolveTestCase(unittest.TestCase):
         d2 = {'x': {'a': 1, 'b': 12, 'd': 14}}
         localedata.merge(d1, d2)
         self.assertEqual({
-                             'x': {'a': 1, 'b': 12, 'c': 3, 'd': 14}
-                         }, d1)
+            'x': {'a': 1, 'b': 12, 'c': 3, 'd': 14}
+        }, d1)
 
     def test_merge_nested_dict_no_overlap(self):
         d1 = {'x': {'a': 1, 'b': 2}}
         d2 = {'y': {'a': 11, 'b': 12}}
         localedata.merge(d1, d2)
         self.assertEqual({
-                             'x': {'a': 1, 'b': 2},
-                             'y': {'a': 11, 'b': 12}
-                         }, d1)
+            'x': {'a': 1, 'b': 2},
+            'y': {'a': 11, 'b': 12}
+        }, d1)
 
     def test_merge_with_alias_and_resolve(self):
         alias = localedata.Alias('x')
@@ -52,14 +53,14 @@ class MergeResolveTestCase(unittest.TestCase):
         }
         localedata.merge(d1, d2)
         self.assertEqual({
-                             'x': {'a': 1, 'b': 12, 'c': 3, 'd': 14},
-                             'y': (alias, {'b': 22, 'e': 25})
-                         }, d1)
+            'x': {'a': 1, 'b': 12, 'c': 3, 'd': 14},
+            'y': (alias, {'b': 22, 'e': 25})
+        }, d1)
         d = localedata.LocaleDataDict(d1)
         self.assertEqual({
-                             'x': {'a': 1, 'b': 12, 'c': 3, 'd': 14},
-                             'y': {'a': 1, 'b': 22, 'c': 3, 'd': 14, 'e': 25}
-                         }, dict(d.items()))
+            'x': {'a': 1, 'b': 12, 'c': 3, 'd': 14},
+            'y': {'a': 1, 'b': 22, 'c': 3, 'd': 14, 'e': 25}
+        }, dict(d.items()))
 
 
 def suite():
@@ -67,7 +68,6 @@ def suite():
     suite.addTest(doctest.DocTestSuite(localedata))
     suite.addTest(unittest.makeSuite(MergeResolveTestCase))
     return suite
-
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

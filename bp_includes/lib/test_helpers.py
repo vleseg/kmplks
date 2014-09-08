@@ -9,6 +9,7 @@ from bp_includes import models
 
 
 class HandlerHelpers():
+
     def get(self, *args, **kwargs):
         """Wrap webtest get with nicer defaults"""
         if 'headers' not in kwargs:
@@ -28,14 +29,12 @@ class HandlerHelpers():
         """Load the page and retrieve the form by id"""
         response = self.get(url)
         if response.forms:
-            forms_msg = "Found forms: " + ", ".join(
-                [f for f in response.forms.keys() if isinstance(f, unicode)])
+            forms_msg = "Found forms: " + ", ".join([f for f in response.forms.keys() if isinstance(f, unicode)])
         else:
             forms_msg = 'No forms found.'
-        self.assertIn(form_id, response.forms,
-                      "form {} not found on the page {}. {}"
-                      .format(form_id, url, forms_msg))
-        # print response.pyquery('#' + form_id)
+        self.assertIn(form_id, response.forms, "form {} not found on the page {}. {}"
+                        .format(form_id, url, forms_msg))
+#        print response.pyquery('#' + form_id)
         form = response.forms[form_id]
         if expect_fields:
             form_fields = form.fields.keys()
@@ -47,12 +46,11 @@ class HandlerHelpers():
             self.assertListEqual(form_fields, expect_fields)
         return form
 
-    def submit(self, form, expect_error=False, error_message='', error_field='',
-               success_message='', warning_message=''):
+    def submit(self, form, expect_error=False, error_message='', error_field='', success_message='', warning_message=''):
         """Submit the form"""
         response = form.submit(headers=self.headers)
         if response.status_int == 200:
-            if expect_error:  # form validation errors result in response 200
+            if expect_error: # form validation errors result in response 200
                 error_label = response.pyquery('label.error')
                 error_label_for = error_label.attr('for')
                 if expect_error:
@@ -62,10 +60,8 @@ class HandlerHelpers():
                         self.assertEqual(error_field, error_label_for)
                     return response
                 else:
-                    self.fail(
-                        "form failed due to field '{}' with error: {}".format(
-                            error_label_for, error_label.text()))
-            else:  # some forms do not redirect
+                    self.fail("form failed due to field '{}' with error: {}".format(error_label_for, error_label.text()))
+            else: # some forms do not redirect
                 pass
         elif response.status_int == 302:
             response = response.follow(status=200, headers=self.headers)
@@ -73,16 +69,13 @@ class HandlerHelpers():
             self.fail("unexpected form response: {}".format(response.status))
 
         if expect_error:
-            self.assert_error_message_in_response(response,
-                                                  message=error_message)
+            self.assert_error_message_in_response(response, message=error_message)
         else:
             self.assert_no_error_message_in_response(response)
             if success_message:
-                self.assert_success_message_in_response(response,
-                                                        message=success_message)
+                self.assert_success_message_in_response(response, message=success_message)
             if warning_message:
-                self.assert_warning_message_in_response(response,
-                                                        message=warning_message)
+                self.assert_warning_message_in_response(response, message=warning_message)
         return response
 
     def login_user(self, username, password):
@@ -121,8 +114,7 @@ class HandlerHelpers():
         return user
 
     def register_testuser(self, **kwargs):
-        return self.register_user('testuser', '123456', 'testuser@example.com',
-                                  **kwargs)
+        return self.register_user('testuser', '123456', 'testuser@example.com', **kwargs)
 
     def register_user(self, username, password, email):
         """Register new user account.
@@ -136,16 +128,14 @@ class HandlerHelpers():
         self.submit(form)
 
         users = models.User.query(models.User.username == username).fetch(2)
-        self.assertEqual(1, len(users),
-                         "{} could not register".format(username))
+        self.assertEqual(1, len(users), "{} could not register".format(username))
         user = users[0]
 
         return user
 
     def get_user_data_from_session(self):
         """Retrieve user info from session."""
-        cookies = "; ".join(
-            ["{}={}".format(k, v) for k, v in self.testapp.cookies.items()])
+        cookies = "; ".join(["{}={}".format(k, v) for k, v in self.testapp.cookies.items()])
         request = webapp2.Request.blank('/', headers=[('Cookie', cookies)])
         request.app = self.app
         a = auth.Auth(request=request)
@@ -153,21 +143,18 @@ class HandlerHelpers():
 
     def assert_user_logged_in(self, user_id=None):
         """Check if user is logged in."""
-        cookie_name = self.app.config.get('webapp2_extras.auth').get(
-            'cookie_name')
+        cookie_name = self.app.config.get('webapp2_extras.auth').get('cookie_name')
         self.assertIn(cookie_name, self.testapp.cookies,
                       'user is not logged in: session cookie not found')
         user = self.get_user_data_from_session()
         if user is None:
             self.fail('user is not logged in')
         if user_id:
-            self.assertEqual(user['user_id'], user_id,
-                             'unexpected user is logged in')
+            self.assertEqual(user['user_id'], user_id, 'unexpected user is logged in')
 
     def assert_user_not_logged_in(self):
         """Check if user is not logged in."""
-        self.assertIsNone(self.get_user_data_from_session(),
-                          'user is logged in unexpectedly')
+        self.assertIsNone(self.get_user_data_from_session(), 'user is logged in unexpectedly')
 
     def assert_error_message_in_response(self, response, message=''):
         """Check if response contains one or more error messages.
@@ -185,8 +172,7 @@ class HandlerHelpers():
         Assume success messages rendered as <p class="alert-success"> elements.
         """
         alert = response.pyquery('p.alert-success')
-        self.assertGreater(len(alert), 0,
-                           'no success message found in response')
+        self.assertGreater(len(alert), 0, 'no success message found in response')
         if message:
             self.assertIn(message, alert.text())
 
@@ -196,37 +182,29 @@ class HandlerHelpers():
         Assume warning messages rendered as <p class="alert-warning"> elements.
         """
         alert = response.pyquery('p.alert-warning')
-        self.assertGreater(len(alert), 0,
-                           'no warning message found in response')
+        self.assertGreater(len(alert), 0, 'no warning message found in response')
         if message:
             self.assertIn(message, alert.text())
 
     def assert_no_error_message_in_response(self, response):
         """Check that response has no error messages."""
         el = response.pyquery('p.alert-danger')
-        self.assertEqual(len(el), 0,
-                         'error message found in response unexpectedly: {}'.format(
-                             el.text()))
+        self.assertEqual(len(el), 0, 'error message found in response unexpectedly: {}'.format(el.text()))
         el = response.pyquery('label.error')
-        self.assertEqual(len(el), 0,
-                         'error message found in response unexpectedly: {}'.format(
-                             el.text()))
+        self.assertEqual(len(el), 0, 'error message found in response unexpectedly: {}'.format(el.text()))
 
     def execute_tasks(self, url=None, queue_name='default', expect_tasks=1):
         """Filter and execute tasks accumulated in the task queue stub."""
-        tasks = self.taskqueue_stub.get_filtered_tasks(url=url,
-                                                       queue_names=[queue_name])
+        tasks = self.taskqueue_stub.get_filtered_tasks(url=url, queue_names=[queue_name])
         if expect_tasks:
             self.assertEqual(expect_tasks, len(tasks),
-                             'expect {} task(s) in queue, found {}: {}'.
-                             format(expect_tasks, len(tasks),
-                                    ", ".join([t.name for t in tasks])))
+                    'expect {} task(s) in queue, found {}: {}'.
+                    format(expect_tasks, len(tasks), ", ".join([t.name for t in tasks])))
         for task in tasks:
             self.post(task.url, params=task.payload)
             self.taskqueue_stub.DeleteTask(queue_name, task.name)
 
-    def get_sent_messages(self, to=None, expect_messages=1,
-                          reset_mail_stub=True):
+    def get_sent_messages(self, to=None, expect_messages=1, reset_mail_stub=True):
         """Fetch sent emails accumulated in the mail stub."""
         # in the single threaded test we have to process the tasks before getting mails
         self.execute_tasks(url='/taskqueue-send-email/', expect_tasks=None)
@@ -234,7 +212,7 @@ class HandlerHelpers():
         # remove ALL messages from mail stub
         # TODO: remove only fetched messages and get rid of reset_mail_stub parameter
         if reset_mail_stub:
-            self.mail_stub._cached_messages = []
+            self.mail_stub._cached_messages=[]
         if expect_messages:
             self.assertEqual(expect_messages, len(messages))
         for message in messages:
@@ -242,8 +220,6 @@ class HandlerHelpers():
         return messages
 
     def get_url_from_message(self, message, pattern):
-        m = re.search("http://\S+?(/{}/\S+)".format(pattern),
-                      message.html.payload, re.MULTILINE)
-        self.assertIsNotNone(m,
-                             "{} link not found in mail body".format(pattern))
+        m = re.search("http://\S+?(/{}/\S+)".format(pattern), message.html.payload, re.MULTILINE)
+        self.assertIsNotNone(m, "{} link not found in mail body".format(pattern))
         return m.group(1)

@@ -50,6 +50,7 @@ _openssl_verify = {
                        + OpenSSL.SSL.VERIFY_FAIL_IF_NO_PEER_CERT,
 }
 
+
 orig_util_HAS_SNI = util.HAS_SNI
 orig_connection_ssl_wrap_socket = connection.ssl_wrap_socket
 
@@ -68,7 +69,7 @@ def extract_from_urllib3():
     util.HAS_SNI = orig_util_HAS_SNI
 
 
-# ## Note: This is a slightly bug-fixed version of same from ndg-httpsclient.
+### Note: This is a slightly bug-fixed version of same from ndg-httpsclient.
 def get_subj_alt_name(peer_cert):
     # Search through extensions
     dns_name = []
@@ -100,6 +101,7 @@ def get_subj_alt_name(peer_cert):
 
 
 class fileobject(_fileobject):
+
     def read(self, size=-1):
         # Use max, disallow tiny reads in a loop as they are very inefficient.
         # We never leave read() with any leftover data from a new recv() call
@@ -232,7 +234,7 @@ class fileobject(_fileobject):
                 try:
                     data = self._sock.recv(self._rbufsize)
                 except OpenSSL.SSL.WantReadError:
-                    continue
+                        continue
                 if not data:
                     break
                 left = size - buf_len

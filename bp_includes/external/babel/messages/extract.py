@@ -22,7 +22,6 @@ The main entry points into the extraction functionality are the functions
 """
 
 import os
-
 try:
     set
 except NameError:
@@ -52,21 +51,19 @@ DEFAULT_KEYWORDS = {
 DEFAULT_MAPPING = [('**.py', 'python')]
 
 empty_msgid_warning = (
-    '%s: warning: Empty msgid.  It is reserved by GNU gettext: gettext("") '
-    'returns the header entry with meta information, not the empty string.')
+'%s: warning: Empty msgid.  It is reserved by GNU gettext: gettext("") '
+'returns the header entry with meta information, not the empty string.')
 
 
 def _strip_comment_tags(comments, tags):
     """Helper function for `extract` that strips comment tags from strings
     in a list of comment lines.  This functions operates in-place.
     """
-
     def _strip(line):
         for tag in tags:
             if line.startswith(tag):
                 return line[len(tag):].strip()
         return line
-
     comments[:] = map(_strip, comments)
 
 
@@ -166,12 +163,12 @@ def extract_from_dir(dirname=os.getcwd(), method_map=DEFAULT_MAPPING,
                     if callback:
                         callback(filename, method, options)
                     for lineno, message, comments in \
-                            extract_from_file(method, filepath,
-                                              keywords=keywords,
-                                              comment_tags=comment_tags,
-                                              options=options,
-                                              strip_comment_tags=
-                                              strip_comment_tags):
+                          extract_from_file(method, filepath,
+                                            keywords=keywords,
+                                            comment_tags=comment_tags,
+                                            options=options,
+                                            strip_comment_tags=
+                                                strip_comment_tags):
                         yield filename, lineno, message, comments
                     break
 
@@ -307,7 +304,7 @@ def extract(method, fileobj, keywords=DEFAULT_KEYWORDS, comment_tags=(),
         if not messages[first_msg_index]:
             # An empty string msgid isn't valid, emit a warning
             where = '%s:%i' % (hasattr(fileobj, 'name') and \
-                               fileobj.name or '(unknown)', lineno)
+                                   fileobj.name or '(unknown)', lineno)
             print >> sys.stderr, empty_msgid_warning % where
             continue
 
@@ -371,7 +368,7 @@ def extract_python(fileobj, keywords, comment_tags, options):
             # Strip the comment token from the line
             value = value.decode(encoding)[1:].strip()
             if in_translator_comments and \
-                            translator_comments[-1][0] == lineno - 1:
+                    translator_comments[-1][0] == lineno - 1:
                 # We're already inside a translator comment, continue appending
                 translator_comments.append((lineno, value))
                 continue
@@ -397,7 +394,7 @@ def extract_python(fileobj, keywords, comment_tags, options):
                 # Comments don't apply unless they immediately preceed the
                 # message
                 if translator_comments and \
-                                translator_comments[-1][0] < message_lineno - 1:
+                        translator_comments[-1][0] < message_lineno - 1:
                     translator_comments = []
 
                 yield (message_lineno, funcname, messages,
@@ -414,7 +411,7 @@ def extract_python(fileobj, keywords, comment_tags, options):
                 # https://sourceforge.net/tracker/?func=detail&atid=355470&
                 # aid=617979&group_id=5470
                 value = eval('# coding=%s\n%s' % (encoding, value),
-                             {'__builtins__': {}}, {})
+                             {'__builtins__':{}}, {})
                 if isinstance(value, str):
                     value = value.decode(encoding)
                 buf.append(value)
@@ -430,7 +427,7 @@ def extract_python(fileobj, keywords, comment_tags, options):
                     # Let's increase the last comment's lineno in order
                     # for the comment to still be a valid one
                     old_lineno, old_comment = translator_comments.pop()
-                    translator_comments.append((old_lineno + 1, old_comment))
+                    translator_comments.append((old_lineno+1, old_comment))
         elif call_stack > 0 and tok == OP and value == ')':
             call_stack -= 1
         elif funcname and call_stack == -1:
@@ -453,7 +450,6 @@ def extract_javascript(fileobj, keywords, comment_tags, options):
     :rtype: ``iterator``
     """
     from babel.messages.jslexer import tokenize, unquote_string
-
     funcname = message_lineno = None
     messages = []
     last_argument = None
@@ -472,7 +468,7 @@ def extract_javascript(fileobj, keywords, comment_tags, options):
         elif call_stack == -1 and token.type == 'linecomment':
             value = token.value[2:].strip()
             if translator_comments and \
-                            translator_comments[-1][0] == token.lineno - 1:
+               translator_comments[-1][0] == token.lineno - 1:
                 translator_comments.append((token.lineno, value))
                 continue
 
@@ -510,7 +506,7 @@ def extract_javascript(fileobj, keywords, comment_tags, options):
                 # Comments don't apply unless they immediately precede the
                 # message
                 if translator_comments and \
-                                translator_comments[-1][0] < message_lineno - 1:
+                   translator_comments[-1][0] < message_lineno - 1:
                     translator_comments = []
 
                 if messages is not None:
@@ -543,16 +539,16 @@ def extract_javascript(fileobj, keywords, comment_tags, options):
                     concatenate_next = True
 
         elif call_stack > 0 and token.type == 'operator' \
-                and token.value == ')':
+             and token.value == ')':
             call_stack -= 1
 
         elif funcname and call_stack == -1:
             funcname = None
 
         elif call_stack == -1 and token.type == 'name' and \
-                        token.value in keywords and \
-                (last_token is None or last_token.type != 'name' or
-                         last_token.value != 'function'):
+             token.value in keywords and \
+             (last_token is None or last_token.type != 'name' or
+              last_token.value != 'function'):
             funcname = token.value
 
         last_token = token

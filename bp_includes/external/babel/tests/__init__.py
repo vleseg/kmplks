@@ -13,11 +13,9 @@
 
 import unittest
 
-
 def suite():
     from babel.tests import core, dates, localedata, numbers, support, util
     from babel.messages import tests as messages
-
     suite = unittest.TestSuite()
     suite.addTest(core.suite())
     suite.addTest(dates.suite())
@@ -27,7 +25,6 @@ def suite():
     suite.addTest(support.suite())
     suite.addTest(util.suite())
     return suite
-
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')

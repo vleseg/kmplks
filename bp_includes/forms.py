@@ -10,7 +10,7 @@ from bp_includes.lib import utils
 from webapp2_extras.i18n import lazy_gettext as _
 from webapp2_extras.i18n import ngettext, gettext
 
-FIELD_MAXLENGTH = 50  # intended to stop maliciously long input
+FIELD_MAXLENGTH = 50 # intended to stop maliciously long input
 
 
 class FormTranslations(object):
@@ -25,64 +25,50 @@ class BaseForm(Form):
     def __init__(self, request_handler):
         super(BaseForm, self).__init__(request_handler.request.POST)
 
-    @staticmethod
-    def _get_translations():
+    def _get_translations(self):
         return FormTranslations()
-
 
 # ==== Mixins ====
 class PasswordConfirmMixin(BaseForm):
-    password = fields.TextField(
-        _('Password'), [validators.Required(), validators.Length(
-            max=FIELD_MAXLENGTH, message=_(
-                "Field cannot be longer than %(max)d characters."))])
-    c_password = fields.TextField(
-        _('Confirm Password'),
-        [validators.Required(), validators.EqualTo('password', _(
-            'Passwords must match.')),
-         validators.Length(max=FIELD_MAXLENGTH, message=_(
-             "Field cannot be longer than %(max)d characters."))])
+    password = fields.TextField(_('Password'), [validators.Required(),
+                                                validators.Length(max=FIELD_MAXLENGTH, message=_(
+                                                    "Field cannot be longer than %(max)d characters."))])
+    c_password = fields.TextField(_('Confirm Password'),
+                                  [validators.Required(), validators.EqualTo('password', _('Passwords must match.')),
+                                   validators.Length(max=FIELD_MAXLENGTH,
+                                                     message=_("Field cannot be longer than %(max)d characters."))])
 
 
 class UsernameMixin(BaseForm):
-    username = fields.TextField(
-        _('Username'), [validators.Required(),
-                        validators.Length(max=FIELD_MAXLENGTH, message=_(
-                            "Field cannot be longer than %(max)d characters.")),
-                        validators.regexp(utils.VALID_USERNAME_REGEXP,
-                                          message=_(
-                                              "Username invalid. Use only "
-                                              "letters and numbers."))])
+    username = fields.TextField(_('Username'), [validators.Required(),
+                                                validators.Length(max=FIELD_MAXLENGTH, message=_(
+                                                    "Field cannot be longer than %(max)d characters.")),
+                                                validators.regexp(utils.VALID_USERNAME_REGEXP, message=_(
+                                                    "Username invalid. Use only letters and numbers."))])
 
 
 class UsernameEmailMixin(BaseForm):
-    username = fields.TextField(
-        _('Username'), [validators.Required(),
-                        validators.Length(max=FIELD_MAXLENGTH, message=_(
-                            "Field cannot be longer than %(max)d characters."))])
+    username = fields.TextField(_('Username'), [validators.Required(),
+                                                validators.Length(max=FIELD_MAXLENGTH, message=_(
+                                                    "Field cannot be longer than %(max)d characters."))])
 
 
 class NameMixin(BaseForm):
     name = fields.TextField(_('Name'), [
-        validators.Length(max=FIELD_MAXLENGTH, message=_(
-            "Field cannot be longer than %(max)d characters.")),
+        validators.Length(max=FIELD_MAXLENGTH, message=_("Field cannot be longer than %(max)d characters.")),
         validators.regexp(utils.NAME_LASTNAME_REGEXP, message=_(
             "Name invalid. Use only letters and numbers."))])
     last_name = fields.TextField(_('Last Name'), [
-        validators.Length(max=FIELD_MAXLENGTH, message=_(
-            "Field cannot be longer than %(max)d characters.")),
+        validators.Length(max=FIELD_MAXLENGTH, message=_("Field cannot be longer than %(max)d characters.")),
         validators.regexp(utils.NAME_LASTNAME_REGEXP, message=_(
             "Last Name invalid. Use only letters and numbers."))])
 
 
 class EmailMixin(BaseForm):
-    email = fields.TextField(
-        _('Email'), [validators.Required(),
-                     validators.Length(min=8, max=FIELD_MAXLENGTH, message=_(
-                         "Field must be between %(min)d and %(max)d characters "
-                         "long.")),
-                     validators.regexp(utils.EMAIL_REGEXP, message=_(
-                         'Invalid email address.'))])
+    email = fields.TextField(_('Email'), [validators.Required(),
+                                          validators.Length(min=8, max=FIELD_MAXLENGTH, message=_(
+                                                    "Field must be between %(min)d and %(max)d characters long.")),
+                                          validators.regexp(utils.EMAIL_REGEXP, message=_('Invalid email address.'))])
 
 
 # ==== Forms ====
@@ -91,14 +77,10 @@ class PasswordResetCompleteForm(PasswordConfirmMixin):
 
 
 class LoginForm(UsernameEmailMixin):
-    password = fields.TextField(
-        _('Password'), [validators.Required(),
-                        validators.Length(
-                            max=FIELD_MAXLENGTH,
-                            message=_(
-                                "Field cannot be longer than %(max)d "
-                                "characters."))],
-        id='l_password')
+    password = fields.TextField(_('Password'), [validators.Required(),
+                                                validators.Length(max=FIELD_MAXLENGTH, message=_(
+                                                    "Field cannot be longer than %(max)d characters."))],
+                                id='l_password')
     pass
 
 
@@ -115,23 +97,19 @@ class EditProfileForm(UsernameMixin, NameMixin):
 
 
 class EditPasswordForm(PasswordConfirmMixin):
-    current_password = fields.TextField(
-        _('Password'), [validators.Required(),
-                        validators.Length(max=FIELD_MAXLENGTH, message=_(
-                            "Field cannot be longer than %(max)d "
-                            "characters."))])
+    current_password = fields.TextField(_('Password'), [validators.Required(),
+                                                        validators.Length(max=FIELD_MAXLENGTH, message=_(
+                                                            "Field cannot be longer than %(max)d characters."))])
     pass
 
 
 class EditEmailForm(BaseForm):
-    new_email = fields.TextField(
-        _('Email'), [validators.Required(), validators.Length(
-            min=8, max=FIELD_MAXLENGTH, message=_(
-                "Field must be between %(min)d and %(max)d characters long.")),
-                     validators.regexp(utils.EMAIL_REGEXP, message=_(
-                         'Invalid email address.'))])
-    password = fields.TextField(
-        _('Password'), [validators.Required(), validators.Length(
-            max=FIELD_MAXLENGTH, message=_(
-                "Field cannot be longer than %(max)d characters."))])
+    new_email = fields.TextField(_('Email'), [validators.Required(),
+                                              validators.Length(min=8, max=FIELD_MAXLENGTH, message=_(
+                                                    "Field must be between %(min)d and %(max)d characters long.")),
+                                              validators.regexp(utils.EMAIL_REGEXP,
+                                                                message=_('Invalid email address.'))])
+    password = fields.TextField(_('Password'), [validators.Required(),
+                                                validators.Length(max=FIELD_MAXLENGTH, message=_(
+                                                    "Field cannot be longer than %(max)d characters."))])
     pass

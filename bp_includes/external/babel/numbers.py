@@ -21,14 +21,12 @@ following environment variables, in that order:
  * ``LANG``
 """
 # TODO:
-# Padding and rounding increments in pattern:
+#  Padding and rounding increments in pattern:
 #  - http://www.unicode.org/reports/tr35/ (Appendix G.6)
 import math
 import re
-
 try:
     from decimal import Decimal
-
     have_decimal = True
 except ImportError:
     have_decimal = False
@@ -42,7 +40,6 @@ __all__ = ['format_number', 'format_decimal', 'format_currency',
 __docformat__ = 'restructuredtext en'
 
 LC_NUMERIC = default_locale('LC_NUMERIC')
-
 
 def get_currency_name(currency, locale=LC_NUMERIC):
     """Return the name used by the locale for the specified currency.
@@ -58,7 +55,6 @@ def get_currency_name(currency, locale=LC_NUMERIC):
     """
     return Locale.parse(locale).currencies.get(currency, currency)
 
-
 def get_currency_symbol(currency, locale=LC_NUMERIC):
     """Return the symbol used by the locale for the specified currency.
     
@@ -72,7 +68,6 @@ def get_currency_symbol(currency, locale=LC_NUMERIC):
     """
     return Locale.parse(locale).currency_symbols.get(currency, currency)
 
-
 def get_decimal_symbol(locale=LC_NUMERIC):
     """Return the symbol used by the locale to separate decimal fractions.
     
@@ -84,7 +79,6 @@ def get_decimal_symbol(locale=LC_NUMERIC):
     :rtype: `unicode`
     """
     return Locale.parse(locale).number_symbols.get('decimal', u'.')
-
 
 def get_plus_sign_symbol(locale=LC_NUMERIC):
     """Return the plus sign symbol used by the current locale.
@@ -98,7 +92,6 @@ def get_plus_sign_symbol(locale=LC_NUMERIC):
     """
     return Locale.parse(locale).number_symbols.get('plusSign', u'+')
 
-
 def get_minus_sign_symbol(locale=LC_NUMERIC):
     """Return the plus sign symbol used by the current locale.
     
@@ -110,7 +103,6 @@ def get_minus_sign_symbol(locale=LC_NUMERIC):
     :rtype: `unicode`
     """
     return Locale.parse(locale).number_symbols.get('minusSign', u'-')
-
 
 def get_exponential_symbol(locale=LC_NUMERIC):
     """Return the symbol used by the locale to separate mantissa and exponent.
@@ -124,7 +116,6 @@ def get_exponential_symbol(locale=LC_NUMERIC):
     """
     return Locale.parse(locale).number_symbols.get('exponential', u'E')
 
-
 def get_group_symbol(locale=LC_NUMERIC):
     """Return the symbol used by the locale to separate groups of thousands.
     
@@ -136,7 +127,6 @@ def get_group_symbol(locale=LC_NUMERIC):
     :rtype: `unicode`
     """
     return Locale.parse(locale).number_symbols.get('group', u',')
-
 
 def format_number(number, locale=LC_NUMERIC):
     """Return the given number formatted for a specific locale.
@@ -151,7 +141,6 @@ def format_number(number, locale=LC_NUMERIC):
     """
     # Do we really need this one?
     return format_decimal(number, locale=locale)
-
 
 def format_decimal(number, format=None, locale=LC_NUMERIC):
     """Return the given decimal number formatted for a specific locale.
@@ -185,7 +174,6 @@ def format_decimal(number, format=None, locale=LC_NUMERIC):
     pattern = parse_pattern(format)
     return pattern.apply(number, locale)
 
-
 def format_currency(number, currency, format=None, locale=LC_NUMERIC):
     u"""Return formatted currency value.
     
@@ -213,7 +201,6 @@ def format_currency(number, currency, format=None, locale=LC_NUMERIC):
     pattern = parse_pattern(format)
     return pattern.apply(number, locale, currency=currency)
 
-
 def format_percent(number, format=None, locale=LC_NUMERIC):
     """Return formatted percent value for a specific locale.
     
@@ -240,7 +227,6 @@ def format_percent(number, format=None, locale=LC_NUMERIC):
         format = locale.percent_formats.get(format)
     pattern = parse_pattern(format)
     return pattern.apply(number, locale)
-
 
 def format_scientific(number, format=None, locale=LC_NUMERIC):
     """Return value formatted in scientific notation for a specific locale.
@@ -296,7 +282,6 @@ def parse_number(string, locale=LC_NUMERIC):
     except ValueError:
         raise NumberFormatError('%r is not a valid number' % string)
 
-
 def parse_decimal(string, locale=LC_NUMERIC):
     """Parse localized decimal string into a float.
     
@@ -322,7 +307,7 @@ def parse_decimal(string, locale=LC_NUMERIC):
     locale = Locale.parse(locale)
     try:
         return float(string.replace(get_group_symbol(locale), '')
-                     .replace(get_decimal_symbol(locale), '.'))
+                           .replace(get_decimal_symbol(locale), '.'))
     except ValueError:
         raise NumberFormatError('%r is not a valid decimal number' % string)
 
@@ -337,7 +322,6 @@ SUFFIX_PATTERN = r"(?P<suffix>.*)"
 number_re = re.compile(r"%s%s%s" % (PREFIX_PATTERN, NUMBER_PATTERN,
                                     SUFFIX_PATTERN))
 
-
 def split_number(value):
     """Convert a number into a (intasstring, fractionasstring) tuple"""
     if have_decimal and isinstance(value, Decimal):
@@ -351,7 +335,6 @@ def split_number(value):
     else:
         a, b = text, ''
     return a, b
-
 
 def bankersround(value, ndigits=0):
     """Round a number to a given precision.
@@ -378,14 +361,13 @@ def bankersround(value, ndigits=0):
         pass
     elif digits[i] > '5':
         add = 1
-    elif digits[i] == '5' and digits[i - 1] in '13579':
+    elif digits[i] == '5' and digits[i-1] in '13579':
         add = 1
-    scale = 10 ** ndigits
+    scale = 10**ndigits
     if have_decimal and isinstance(value, Decimal):
         return Decimal(int(value * scale + add)) / scale * sign
     else:
         return float(int(value * scale + add)) / scale * sign
-
 
 def parse_pattern(pattern):
     """Parse number format patterns"""
@@ -455,7 +437,7 @@ def parse_pattern(pattern):
     int_prec = parse_precision(integer)
     frac_prec = parse_precision(fraction)
     if exp:
-        frac_prec = parse_precision(integer + fraction)
+        frac_prec = parse_precision(integer+fraction)
         exp_plus = exp.startswith('+')
         exp = exp.lstrip('+')
         exp_prec = parse_precision(exp)
@@ -463,13 +445,14 @@ def parse_pattern(pattern):
         exp_plus = None
         exp_prec = None
     grouping = parse_grouping(integer)
-    return NumberPattern(pattern, (pos_prefix, neg_prefix),
+    return NumberPattern(pattern, (pos_prefix, neg_prefix), 
                          (pos_suffix, neg_suffix), grouping,
-                         int_prec, frac_prec,
+                         int_prec, frac_prec, 
                          exp_prec, exp_plus)
 
 
 class NumberPattern(object):
+
     def __init__(self, pattern, prefix, suffix, grouping,
                  int_prec, frac_prec, exp_prec, exp_plus):
         self.pattern = pattern
@@ -493,7 +476,7 @@ class NumberPattern(object):
     def apply(self, value, locale, currency=None):
         value *= self.scale
         is_negative = int(value < 0)
-        if self.exp_prec:  # Scientific notation
+        if self.exp_prec: # Scientific notation
             value = abs(value)
             if value:
                 exp = int(math.floor(math.log(value, 10)))
@@ -508,9 +491,9 @@ class NumberPattern(object):
             if not have_decimal or not isinstance(value, Decimal):
                 value = float(value)
             if exp < 0:
-                value = value * 10 ** (-exp)
+                value = value * 10**(-exp)
             else:
-                value = value / 10 ** exp
+                value = value / 10**exp
             exp_sign = ''
             if exp < 0:
                 exp_sign = get_minus_sign_symbol(locale)
@@ -518,15 +501,15 @@ class NumberPattern(object):
                 exp_sign = get_plus_sign_symbol(locale)
             exp = abs(exp)
             number = u'%s%s%s%s' % \
-                     (self._format_sigdig(value, self.frac_prec[0],
-                                          self.frac_prec[1]),
-                      get_exponential_symbol(locale), exp_sign,
-                      self._format_int(str(exp), self.exp_prec[0],
-                                       self.exp_prec[1], locale))
-        elif '@' in self.pattern:  # Is it a siginificant digits pattern?
+                 (self._format_sigdig(value, self.frac_prec[0], 
+                                     self.frac_prec[1]), 
+                  get_exponential_symbol(locale),  exp_sign,
+                  self._format_int(str(exp), self.exp_prec[0],
+                                   self.exp_prec[1], locale))
+        elif '@' in self.pattern: # Is it a siginificant digits pattern?
             text = self._format_sigdig(abs(value),
-                                       self.int_prec[0],
-                                       self.int_prec[1])
+                                      self.int_prec[0],
+                                      self.int_prec[1])
             if '.' in text:
                 a, b = text.split('.')
                 a = self._format_int(a, 0, 1000, locale)
@@ -535,8 +518,8 @@ class NumberPattern(object):
                 number = a + b
             else:
                 number = self._format_int(text, 0, 1000, locale)
-        else:  # A normal number pattern
-            a, b = split_number(bankersround(abs(value),
+        else: # A normal number pattern
+            a, b = split_number(bankersround(abs(value), 
                                              self.frac_prec[1]))
             b = b or '0'
             a = self._format_int(a, self.int_prec[0],
@@ -544,7 +527,7 @@ class NumberPattern(object):
             b = self._format_frac(b, locale)
             number = a + b
         retval = u'%s%s%s' % (self.prefix[is_negative], number,
-                              self.suffix[is_negative])
+                                self.suffix[is_negative])
         if u'¤' in retval:
             retval = retval.replace(u'¤¤', currency.upper())
             retval = retval.replace(u'¤', get_currency_symbol(currency, locale))

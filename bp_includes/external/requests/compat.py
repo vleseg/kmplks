@@ -15,7 +15,7 @@ import sys
 # Syntax sugar.
 _ver = sys.version_info
 
-# : Python 2.x?
+#: Python 2.x?
 is_py2 = (_ver[0] == 2)
 
 #: Python 3.x?
@@ -46,7 +46,7 @@ is_py26 = (is_py2 and _ver[1] == 6)
 is_py25 = (is_py2 and _ver[1] == 5)
 
 #: Python 2.4.x
-is_py24 = (is_py2 and _ver[1] == 4)  # I'm assuming this is not by choice.
+is_py24 = (is_py2 and _ver[1] == 4)   # I'm assuming this is not by choice.
 
 
 # ---------
@@ -70,8 +70,8 @@ is_windows = 'win32' in str(sys.platform).lower()
 # Standard Linux 2+ system.
 is_linux = ('linux' in str(sys.platform).lower())
 is_osx = ('darwin' in str(sys.platform).lower())
-is_hpux = ('hpux' in str(sys.platform).lower())  # Complete guess.
-is_solaris = ('solar==' in str(sys.platform).lower())  # Complete guess.
+is_hpux = ('hpux' in str(sys.platform).lower())   # Complete guess.
+is_solaris = ('solar==' in str(sys.platform).lower())   # Complete guess.
 
 try:
     import simplejson as json
@@ -83,8 +83,7 @@ except ImportError:
 # ---------
 
 if is_py2:
-    from urllib import quote, unquote, quote_plus, unquote_plus, urlencode, \
-        getproxies, proxy_bypass
+    from urllib import quote, unquote, quote_plus, unquote_plus, urlencode, getproxies, proxy_bypass
     from urlparse import urlparse, urlunparse, urljoin, urlsplit, urldefrag
     from urllib2 import parse_http_list
     import cookielib
@@ -101,8 +100,7 @@ if is_py2:
 
 
 elif is_py3:
-    from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, \
-        quote, unquote, quote_plus, unquote_plus, urldefrag
+    from urllib.parse import urlparse, urlunparse, urljoin, urlsplit, urlencode, quote, unquote, quote_plus, unquote_plus, urldefrag
     from urllib.request import parse_http_list, getproxies, proxy_bypass
     from http import cookiejar as cookielib
     from http.cookies import Morsel

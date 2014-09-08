@@ -6,9 +6,7 @@ from google.appengine.api import urlfetch
 from webapp2_extras import i18n
 from babel import Locale
 
-
-def parse_accept_language_header(string,
-                                 pattern='([a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?'):
+def parse_accept_language_header(string, pattern='([a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?'):
     """
     Parse a dict from an Accept-Language header string
     (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html)
@@ -22,7 +20,7 @@ def parse_accept_language_header(string,
             q = 1
         else:
             q = match.group(4)
-        l = match.group(1).replace('-', '_')
+        l = match.group(1).replace('-','_')
         if len(l) == 2:
             l = l.lower()
         elif len(l) == 5:
@@ -30,9 +28,8 @@ def parse_accept_language_header(string,
         else:
             l = None
         if l:
-            res[l] = int(100 * float(q))
+            res[l] = int(100*float(q))
     return res
-
 
 def get_locale_from_accept_header(request):
     """
@@ -51,10 +48,8 @@ def get_locale_from_accept_header(request):
     parsed = parse_accept_language_header(header)
     if parsed is None:
         return None
-    pairs_sorted_by_q = sorted(parsed.items(), key=lambda (lang, q): q,
-                               reverse=True)
-    locale = Locale.negotiate([lang for (lang, q) in pairs_sorted_by_q],
-                              request.app.config.get('locales'), sep='_')
+    pairs_sorted_by_q = sorted(parsed.items(), key=lambda (lang, q): q, reverse=True)
+    locale = Locale.negotiate([lang for (lang, q) in pairs_sorted_by_q], request.app.config.get('locales'), sep='_')
     return str(locale)
 
 
@@ -134,5 +129,5 @@ def set_locale(cls, request, force=None):
                         locale = i18n.get_store().default_locale
     i18n.get_i18n().set_locale(locale)
     # save locale in cookie with 26 weeks expiration (in seconds)
-    cls.response.set_cookie('hl', locale, max_age=15724800)
+    cls.response.set_cookie('hl', locale, max_age = 15724800)
     return locale

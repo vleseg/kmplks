@@ -8,6 +8,19 @@ from bp_includes import forms
 from bp_includes.lib.basehandler import BaseHandler
 
 
+class AdminUserGeoChartHandler(BaseHandler):
+    def get(self):
+        users = self.user_model.query().fetch(projection=['country'])
+        users_by_country = Counter()
+        for user in users:
+            if user.country:
+                users_by_country[user.country] += 1
+        params = {
+            "data": users_by_country.items()
+        }
+        return self.render_template('admin_users_geochart.html', **params)
+
+
 class EditProfileForm(forms.EditProfileForm):
     activated = fields.BooleanField('Activated')
 
@@ -21,24 +34,21 @@ class AdminUserListHandler(BaseHandler):
         cursor = Cursor(urlsafe=c)
 
         if q:
-            qry = self.user_model.query(
-                ndb.OR(self.user_model.last_name == q.lower(),
-                       self.user_model.email == q.lower(),
-                       self.user_model.username == q.lower()))
+            qry = self.user_model.query(ndb.OR(self.user_model.last_name == q.lower(),
+                                           self.user_model.email == q.lower(),
+                                           self.user_model.username == q.lower()))
         else:
             qry = self.user_model.query()
 
         PAGE_SIZE = 50
         if forward:
-            users, next_cursor, more = qry.order(
-                self.user_model.key).fetch_page(PAGE_SIZE, start_cursor=cursor)
+            users, next_cursor, more = qry.order(self.user_model.key).fetch_page(PAGE_SIZE, start_cursor=cursor)
             if next_cursor and more:
                 self.view.next_cursor = next_cursor
             if c:
                 self.view.prev_cursor = cursor.reversed()
         else:
-            users, next_cursor, more = qry.order(
-                -self.user_model.key).fetch_page(PAGE_SIZE, start_cursor=cursor)
+            users, next_cursor, more = qry.order(-self.user_model.key).fetch_page(PAGE_SIZE, start_cursor=cursor)
             users = list(reversed(users))
             if next_cursor and more:
                 self.view.prev_cursor = next_cursor

@@ -115,8 +115,7 @@ class RequestEncodingMixin(object):
                         v = str(v)
 
                     new_fields.append(
-                        (field.decode('utf-8') if isinstance(field,
-                                                             bytes) else field,
+                        (field.decode('utf-8') if isinstance(field, bytes) else field,
                          v.encode('utf-8') if isinstance(v, str) else v))
 
         for (k, v) in files:
@@ -153,14 +152,12 @@ class RequestHooksMixin(object):
         """Properly register a hook."""
 
         if event not in self.hooks:
-            raise ValueError(
-                'Unsupported event specified, with event name "%s"' % (event))
+            raise ValueError('Unsupported event specified, with event name "%s"' % (event))
 
         if isinstance(hook, collections.Callable):
             self.hooks[event].append(hook)
         elif hasattr(hook, '__iter__'):
-            self.hooks[event].extend(
-                h for h in hook if isinstance(h, collections.Callable))
+            self.hooks[event].extend(h for h in hook if isinstance(h, collections.Callable))
 
     def deregister_hook(self, event, hook):
         """Deregister a previously registered hook.
@@ -197,17 +194,17 @@ class Request(RequestHooksMixin):
       <PreparedRequest [GET]>
 
     """
-
     def __init__(self,
-                 method=None,
-                 url=None,
-                 headers=None,
-                 files=None,
-                 data=None,
-                 params=None,
-                 auth=None,
-                 cookies=None,
-                 hooks=None):
+        method=None,
+        url=None,
+        headers=None,
+        files=None,
+        data=None,
+        params=None,
+        auth=None,
+        cookies=None,
+        hooks=None):
+
         # Default empty dicts for dict params.
         data = [] if data is None else data
         files = [] if files is None else files
@@ -268,7 +265,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
     """
 
     def __init__(self):
-        # : HTTP verb to send to the server.
+        #: HTTP verb to send to the server.
         self.method = None
         #: HTTP URL to send the request to.
         self.url = None
@@ -319,7 +316,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
 
     def prepare_url(self, url, params):
         """Prepares the given HTTP URL."""
-        # : Accept objects that have string representations.
+        #: Accept objects that have string representations.
         try:
             url = unicode(url)
         except NameError:
@@ -380,17 +377,14 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             else:
                 query = enc_params
 
-        url = requote_uri(
-            urlunparse([scheme, netloc, path, None, query, fragment]))
+        url = requote_uri(urlunparse([scheme, netloc, path, None, query, fragment]))
         self.url = url
 
     def prepare_headers(self, headers):
         """Prepares the given HTTP headers."""
 
         if headers:
-            self.headers = CaseInsensitiveDict(
-                (to_native_string(name), value) for name, value in
-                headers.items())
+            self.headers = CaseInsensitiveDict((to_native_string(name), value) for name, value in headers.items())
         else:
             self.headers = CaseInsensitiveDict()
 
@@ -421,8 +415,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             body = data
 
             if files:
-                raise NotImplementedError(
-                    'Streamed bodies and files are mutually exclusive.')
+                raise NotImplementedError('Streamed bodies and files are mutually exclusive.')
 
             if length is not None:
                 self.headers['Content-Length'] = builtin_str(length)
@@ -435,9 +428,7 @@ class PreparedRequest(RequestEncodingMixin, RequestHooksMixin):
             else:
                 if data:
                     body = self._encode_params(data)
-                    if isinstance(data, str) or isinstance(data,
-                                                           builtin_str) or hasattr(
-                            data, 'read'):
+                    if isinstance(data, str) or isinstance(data, builtin_str) or hasattr(data, 'read'):
                         content_type = None
                     else:
                         content_type = 'application/x-www-form-urlencoded'
@@ -526,7 +517,7 @@ class Response(object):
         self._content = False
         self._content_consumed = False
 
-        # : Integer Code of responded HTTP Status.
+        #: Integer Code of responded HTTP Status.
         self.status_code = None
 
         #: Case-insensitive Dictionary of Response Headers.
@@ -685,8 +676,7 @@ class Response(object):
                 if self.status_code == 0:
                     self._content = None
                 else:
-                    self._content = bytes().join(
-                        self.iter_content(CONTENT_CHUNK_SIZE)) or bytes()
+                    self._content = bytes().join(self.iter_content(CONTENT_CHUNK_SIZE)) or bytes()
 
             except AttributeError:
                 self._content = None
@@ -774,12 +764,10 @@ class Response(object):
         http_error_msg = ''
 
         if 400 <= self.status_code < 500:
-            http_error_msg = '%s Client Error: %s' % (
-            self.status_code, self.reason)
+            http_error_msg = '%s Client Error: %s' % (self.status_code, self.reason)
 
         elif 500 <= self.status_code < 600:
-            http_error_msg = '%s Server Error: %s' % (
-            self.status_code, self.reason)
+            http_error_msg = '%s Server Error: %s' % (self.status_code, self.reason)
 
         if http_error_msg:
             raise HTTPError(http_error_msg, response=self)

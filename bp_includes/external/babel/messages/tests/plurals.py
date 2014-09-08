@@ -16,12 +16,10 @@ import unittest
 
 from babel.messages import plurals
 
-
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(doctest.DocTestSuite(plurals))
     return suite
-
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
