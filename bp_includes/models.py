@@ -32,7 +32,7 @@ class User(User):
     #: Account activation verifies email
     activated = ndb.BooleanProperty(default=False)
     #: helper property to get the users full name
-    full_name = ndb.ComputedProperty(lambda self: self.name + " " + self.last_name)
+    full_name = ndb.ComputedProperty(lambda self: self.construct_full_name())
 	
     @classmethod
     def get_by_email(cls, email):
@@ -77,6 +77,12 @@ class User(User):
             else:
                 result['unused'].append(v)
         return result
+
+    def construct_full_name(self):
+        name = self.name if self.name is not None else ""
+        last_name = self.last_name if self.last_name is not None else ""
+
+        return (name + last_name).strip()
 
 
 class LogVisit(ndb.Model):
