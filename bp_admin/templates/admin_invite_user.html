@@ -6,6 +6,6 @@
 
 {% block content %}
 
-  {% trans %}Not implemented.{% endtrans %}
+  {{ lib.render_form(form, uri_for('admin-users-list'), btn="Send") }}
 
 {% endblock %}

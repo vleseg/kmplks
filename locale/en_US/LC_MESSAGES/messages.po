@@ -315,7 +315,7 @@ msgstr ""
 msgid "Username or Email"
 msgstr ""
 
-msgid "Users Geolocation"
+msgid "Invite a User"
 msgstr ""
 
 msgid "Visit Site"

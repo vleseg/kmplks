@@ -23,7 +23,7 @@ _routes = [
     RedirectRoute('/admin/logs/visits/', logsvisits.AdminLogsVisitsHandler,
                   name='admin-logs-visits', strict_slash=True),
 
-    RedirectRoute('/admin/invite/', users.AdminInviteUser,
+    RedirectRoute('/admin/invite/', users.AdminInviteUserHandler,
                   name='admin-invite-user', strict_slash=True),
 
     RedirectRoute('/admin/logout/', admin.AdminLogoutHandler,

@@ -332,6 +332,9 @@ msgstr "Имя пользователя или E-Mail"
 msgid "Visit Site"
 msgstr "Перейти на сайт"
 
+msgid "Invite a User"
+msgstr "Пригласить пользователя"
+
 msgid "Welcome <strong>{}</strong>, you are now logged in."
 msgstr ""
 

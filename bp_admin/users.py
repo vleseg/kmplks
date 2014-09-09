@@ -96,12 +96,15 @@ class AdminUserEditHandler(BaseHandler):
 
     @webapp2.cached_property
     def form(self):
-        f = EditProfileForm(self)
-        return f
+        return EditProfileForm(self)
 
 
-class AdminInviteUser(BaseHandler):
+class AdminInviteUserHandler(BaseHandler):
     def get(self):
         params = {}
 
         return self.render_template('admin_invite_user.html', **params)
+
+    @webapp2.cached_property
+    def form(self):
+        return forms.InviteUserForm(self)

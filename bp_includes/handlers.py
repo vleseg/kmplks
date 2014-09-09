@@ -358,7 +358,7 @@ class ResendActivationEmailHandler(BaseHandler):
             user = self.user_model.get_by_id(long(user_id))
             email = user.email
 
-            if (user.activated == False):
+            if not user.activated:
                 # send email
                 subject = _("%s Account Verification" % self.app.config.get('app_name'))
                 confirmation_url = self.uri_for("account-activation",
@@ -417,10 +417,6 @@ class EditProfileHandler(BaseHandler):
             self.form.last_name.data = user_info.last_name
             self.form.country.data = user_info.country
             self.form.tz.data = user_info.tz
-            if not user_info.password:
-                params['local_account'] = False
-            else:
-                params['local_account'] = True
             params['country'] = user_info.country
             params['tz'] = user_info.tz
 

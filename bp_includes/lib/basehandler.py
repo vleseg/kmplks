@@ -15,6 +15,7 @@ from bp_includes import models
 from bp_includes.lib import utils, i18n, jinja_bootstrap
 from babel import Locale
 
+
 class ViewClass:
     """
         ViewClass to insert variables into the template.
@@ -53,10 +54,12 @@ class BaseHandler(webapp2.RequestHandler):
 
         try:
             # csrf protection
-            if self.request.method == "POST" and not self.request.path.startswith('/taskqueue'):
+            if self.request.method == "POST" and not self.request.path.startswith(
+                    '/taskqueue'):
                 token = self.session.get('_csrf_token')
                 if not token or (token != self.request.get('_csrf_token') and
-                         token != self.request.headers.get('_csrf_token')):
+                                         token != self.request.headers.get(
+                                             '_csrf_token')):
                     self.abort(403)
 
             # Dispatch the request.
@@ -163,9 +166,11 @@ class BaseHandler(webapp2.RequestHandler):
         Useful to put it on a template to concatenate with '&hl=NEW_LOCALE'
         Example: .../?hl=en_US
         """
-        path_lang = re.sub(r'(^hl=(\w{5})\&*)|(\&hl=(\w{5})\&*?)', '', str(self.request.query_string))
+        path_lang = re.sub(r'(^hl=(\w{5})\&*)|(\&hl=(\w{5})\&*?)', '',
+                           str(self.request.query_string))
 
-        return self.request.path + "?" if path_lang == "" else str(self.request.path) + "?" + path_lang
+        return self.request.path + "?" if path_lang == "" else str(
+            self.request.path) + "?" + path_lang
 
     @property
     def locales(self):
@@ -181,7 +186,8 @@ class BaseHandler(webapp2.RequestHandler):
             language = current_locale.languages[l.split('_')[0]]
             territory = current_locale.territories[l.split('_')[1]]
             localized_locale_name = Locale.parse(l).display_name.capitalize()
-            locales[l] = language.capitalize() + " (" + territory.capitalize() + ") - " + localized_locale_name
+            locales[
+                l] = language.capitalize() + " (" + territory.capitalize() + ") - " + localized_locale_name
         return locales
 
     @webapp2.cached_property
@@ -225,7 +231,8 @@ class BaseHandler(webapp2.RequestHandler):
 
     @webapp2.cached_property
     def jinja2(self):
-        return jinja2.get_jinja2(factory=jinja_bootstrap.jinja2_factory, app=self.app)
+        return jinja2.get_jinja2(factory=jinja_bootstrap.jinja2_factory,
+                                 app=self.app)
 
     @webapp2.cached_property
     def get_base_layout(self):
@@ -233,7 +240,9 @@ class BaseHandler(webapp2.RequestHandler):
         Get the current base layout template for jinja2 templating. Uses the variable base_layout set in config
         or if there is a base_layout defined, use the base_layout.
         """
-        return self.base_layout if hasattr(self, 'base_layout') else self.app.config.get('base_layout')
+        return self.base_layout if hasattr(self,
+                                           'base_layout') else self.app.config.get(
+            'base_layout')
 
     def set_base_layout(self, layout):
         """
@@ -271,9 +280,12 @@ class BaseHandler(webapp2.RequestHandler):
             'query_string': self.request.query_string,
             'path_for_language': self.path_for_language,
             'is_mobile': self.is_mobile,
-            'locale_iso': locale_iso, # babel locale object
-            'locale_language': language.capitalize() + " (" + territory.capitalize() + ")", # babel locale object
-            'locale_language_id': language_id, # babel locale object
+            # babel locale objects
+            'locale_iso': locale_iso,
+            'locale_language':
+                language.capitalize() + ' (' + territory.capitalize() + ')',
+            'locale_language_id': language_id,
+            # /babel locale objects
             'locales': self.locales,
             'base_layout': self.get_base_layout
         })
