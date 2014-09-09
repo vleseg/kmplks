@@ -122,15 +122,6 @@ msgstr "Укажите"
 msgid "Error sending the message. Please try again later."
 msgstr "Ошибка при отправке сообщения. Попробуйте еще раз позже."
 
-msgid "Existing social association"
-msgstr "Существующие связанные социальные сервисы"
-
-msgid "Facebook association added!"
-msgstr "Добавлена ассоциация с Facebook"
-
-msgid "Federated login is disabled."
-msgstr ""
-
 #, python-format
 msgid "Field cannot be longer than %(max)d characters."
 msgstr ""
@@ -141,9 +132,6 @@ msgstr ""
 
 msgid "Forgot your password?"
 msgstr "Забыли пароль?"
-
-msgid "Github association added."
-msgstr "Добавлена ассоциация с GitHub"
 
 msgid "Good Password"
 msgstr "Хороший пароль"
@@ -181,9 +169,6 @@ msgstr ""
 msgid "Learn why this Boilerplate Rocks"
 msgstr "Узнайте о Boilerplate Rocks"
 
-msgid "Linkedin association added!"
-msgstr ""
-
 msgid "Login"
 msgstr "Войти"
 
@@ -206,11 +191,6 @@ msgid "New Password"
 msgstr "Новый пароль"
 
 #, python-format
-msgid ""
-"No user authentication information received from %s. Please ensure you "
-"are logging in from an authorized OpenID Provider (OP)."
-msgstr ""
-
 msgid "Or Sign in using:"
 msgstr "Или войти с помощью:"
 
@@ -256,9 +236,6 @@ msgid "Sign Up"
 msgstr "Регистрация"
 
 #, python-format
-msgid "Social account on %s not found for this user."
-msgstr ""
-
 msgid "Sorry you are not logged in."
 msgstr "Извините, но "
 
@@ -315,29 +292,11 @@ msgid ""
 msgstr ""
 
 #, python-format
-msgid "This %s account is already in use."
-msgstr ""
-
-msgid "This Facebook account is already in use!"
-msgstr ""
-
-msgid "This Github account is already in use."
-msgstr ""
-
-msgid "This Linkedin account is already in use!"
-msgstr ""
-
-msgid "This Twitter account is already in use."
-msgstr ""
-
 msgid "This authentication method is not yet implemented."
 msgstr "Этот метод аутентификации не реализован."
 
 msgid "Timezone"
 msgstr "Временной пояс"
-
-msgid "Twitter association added."
-msgstr "Добавлена ассоциация с Twitter."
 
 msgid "Unable to update profile. Please try again later."
 msgstr ""
@@ -370,11 +329,8 @@ msgstr "Неверное имя пользователя. Используйте
 msgid "Username or Email"
 msgstr "Имя пользователя или E-Mail"
 
-msgid "Users Geolocation"
-msgstr ""
-
 msgid "Visit Site"
-msgstr ""
+msgstr "Перейти на сайт"
 
 msgid "Welcome <strong>{}</strong>, you are now logged in."
 msgstr ""
@@ -395,8 +351,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"You've signed out successfully. Warning: Please clear all cookies and "
-"logout of OpenID providers too if you logged in on a public computer."
+"You've signed out successfully. Warning: Please clear all cookies "
+"if you logged in on a public computer."
 msgstr ""
 
 msgid ""

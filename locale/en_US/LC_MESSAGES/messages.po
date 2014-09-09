@@ -112,15 +112,6 @@ msgstr ""
 msgid "Error sending the message. Please try again later."
 msgstr ""
 
-msgid "Existing social association"
-msgstr ""
-
-msgid "Facebook association added!"
-msgstr ""
-
-msgid "Federated login is disabled."
-msgstr ""
-
 #, python-format
 msgid "Field cannot be longer than %(max)d characters."
 msgstr ""
@@ -130,9 +121,6 @@ msgid "Field must be between %(min)d and %(max)d characters long."
 msgstr ""
 
 msgid "Forgot your password?"
-msgstr ""
-
-msgid "Github association added."
 msgstr ""
 
 msgid "Good Password"
@@ -170,9 +158,6 @@ msgstr ""
 msgid "Learn why this Boilerplate Rocks"
 msgstr ""
 
-msgid "Linkedin association added!"
-msgstr ""
-
 msgid "Login"
 msgstr ""
 
@@ -195,11 +180,6 @@ msgid "New Password"
 msgstr ""
 
 #, python-format
-msgid ""
-"No user authentication information received from %s. Please ensure you "
-"are logging in from an authorized OpenID Provider (OP)."
-msgstr ""
-
 msgid "Or Sign in using:"
 msgstr ""
 
@@ -245,9 +225,6 @@ msgid "Sign Up"
 msgstr ""
 
 #, python-format
-msgid "Social account on %s not found for this user."
-msgstr ""
-
 msgid "Sorry, Some error occurred."
 msgstr ""
 
@@ -301,28 +278,10 @@ msgid ""
 msgstr ""
 
 #, python-format
-msgid "This %s account is already in use."
-msgstr ""
-
-msgid "This Facebook account is already in use!"
-msgstr ""
-
-msgid "This Github account is already in use."
-msgstr ""
-
-msgid "This Linkedin account is already in use!"
-msgstr ""
-
-msgid "This Twitter account is already in use."
-msgstr ""
-
 msgid "This authentication method is not yet implemented."
 msgstr ""
 
 msgid "Timezone"
-msgstr ""
-
-msgid "Twitter association added."
 msgstr ""
 
 msgid "Unable to update profile. Please try again later."
@@ -380,8 +339,8 @@ msgid ""
 msgstr ""
 
 msgid ""
-"You've signed out successfully. Warning: Please clear all cookies and "
-"logout of OpenID providers too if you logged in on a public computer."
+"You've signed out successfully. Warning: Please clear all cookies if you "
+"logged in on a public computer."
 msgstr ""
 
 msgid ""

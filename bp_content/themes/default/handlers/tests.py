@@ -65,40 +65,12 @@ class AppTest(unittest.TestCase, test_helpers.HandlerHelpers):
         self.headers = {'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) Version/6.0 Safari/536.25',
                         'Accept-Language' : 'en_US'}
 
-        # fix configuration if this is still a raw boilerplate code - required by test with mails
-        if not utils.is_email_valid(self.app.config.get('contact_sender')):
-            self.app.config['contact_sender'] = "noreply-testapp@example.com"
-        if not utils.is_email_valid(self.app.config.get('contact_recipient')):
-            self.app.config['contact_recipient'] = "support-testapp@example.com"
 
     def tearDown(self):
         self.testbed.deactivate()
 
     def test_config_environment(self):
         self.assertEquals(self.app.config.get('environment'), 'testing')
-
-    def test_contact(self):
-        form = self.get_form('/contact/', 'form_contact',
-                            expect_fields=['exception', 'name', 'email', 'message'])
-        form['name'] = 'Anton'
-        form['email'] = 'anton@example.com'
-        form['message'] = 'Hi there...'
-        self.submit(form)
-        message = self.get_sent_messages(to=self.app.config.get('contact_recipient'))[0]
-        self.assertEqual(message.sender, self.app.config.get('contact_sender'))
-        self.assertIn('Hi there...', message.html.payload)
-
-        self.register_activate_login_testuser()
-        form = self.get_form('/contact/', 'form_contact')
-        self.assertEqual(form['name'].value, '')
-        self.assertEqual(form['email'].value, 'testuser@example.com')
-        self.assertEqual(form['message'].value, '')
-        form['message'] = 'help'
-        self.submit(form, expect_error=True, error_field='name')
-        form['name'].value = 'Antonioni'
-        self.submit(form, expect_error=False)
-        message = self.get_sent_messages(to=self.app.config.get('contact_recipient'))[0]
-        self.assertIn('help', message.html.payload)
 
 
 class ModelTest(unittest.TestCase):

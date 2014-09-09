@@ -59,25 +59,6 @@ class User(User):
     def delete_resend_token(cls, user_id, token):
         cls.token_model.get_key(user_id, 'resend-activation-mail', token).delete()
 
-    def get_social_providers_names(self):
-        social_user_objects = SocialUser.get_by_user(self.key)
-        result = []
-#        import logging
-        for social_user_object in social_user_objects:
-#            logging.error(social_user_object.extra_data['screen_name'])
-            result.append(social_user_object.provider)
-        return result
-
-    def get_social_providers_info(self):
-        providers = self.get_social_providers_names()
-        result = {'used': [], 'unused': []}
-        for k,v in SocialUser.PROVIDERS_INFO.items():
-            if k in providers:
-                result['used'].append(v)
-            else:
-                result['unused'].append(v)
-        return result
-
     def construct_full_name(self):
         name = self.name if self.name is not None else ""
         last_name = self.last_name if self.last_name is not None else ""
@@ -112,58 +93,3 @@ class LogEmail(ndb.Model):
 
     def get_id(self):
         return self._key.id()
-
-class SocialUser(ndb.Model):
-    PROVIDERS_INFO = { # uri is for OpenID only (not OAuth)
-        'google': {'name': 'google', 'label': 'Google', 'uri': 'gmail.com'},
-        'github': {'name': 'github', 'label': 'Github', 'uri': ''},
-        'facebook': {'name': 'facebook', 'label': 'Facebook', 'uri': ''},
-        'linkedin': {'name': 'linkedin', 'label': 'LinkedIn', 'uri': ''},
-        'myopenid': {'name': 'myopenid', 'label': 'MyOpenid', 'uri': 'myopenid.com'},
-        'twitter': {'name': 'twitter', 'label': 'Twitter', 'uri': ''},
-        'yahoo': {'name': 'yahoo', 'label': 'Yahoo!', 'uri': 'yahoo.com'},
-    }
-
-    user = ndb.KeyProperty(kind=User)
-    provider = ndb.StringProperty()
-    uid = ndb.StringProperty()
-    extra_data = ndb.JsonProperty()
-
-    @classmethod
-    def get_by_user(cls, user):
-        return cls.query(cls.user == user).fetch()
-
-    @classmethod
-    def get_by_user_and_provider(cls, user, provider):
-        return cls.query(cls.user == user, cls.provider == provider).get()
-
-    @classmethod
-    def get_by_provider_and_uid(cls, provider, uid):
-        return cls.query(cls.provider == provider, cls.uid == uid).get()
-
-    @classmethod
-    def check_unique_uid(cls, provider, uid):
-        # pair (provider, uid) should be unique
-        test_unique_provider = cls.get_by_provider_and_uid(provider, uid)
-        if test_unique_provider is not None:
-            return False
-        else:
-            return True
-    
-    @classmethod
-    def check_unique_user(cls, provider, user):
-        # pair (user, provider) should be unique
-        test_unique_user = cls.get_by_user_and_provider(user, provider)
-        if test_unique_user is not None:
-            return False
-        else:
-            return True
-
-    @classmethod
-    def check_unique(cls, user, provider, uid):
-        # pair (provider, uid) should be unique and pair (user, provider) should be unique
-        return cls.check_unique_uid(provider, uid) and cls.check_unique_user(provider, user)
-    
-    @staticmethod
-    def open_id_providers():
-        return [k for k,v in SocialUser.PROVIDERS_INFO.items() if v['uri']]

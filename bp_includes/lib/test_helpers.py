@@ -189,7 +189,8 @@ class HandlerHelpers():
     def assert_no_error_message_in_response(self, response):
         """Check that response has no error messages."""
         el = response.pyquery('p.alert-danger')
-        self.assertEqual(len(el), 0, 'error message found in response unexpectedly: {}'.format(el.text()))
+        self.assertEqual(len(el), 0, 'error message found in response '
+                                     'unexpectedly: {}'.format(el.text()))
         el = response.pyquery('label.error')
         self.assertEqual(len(el), 0, 'error message found in response unexpectedly: {}'.format(el.text()))
 

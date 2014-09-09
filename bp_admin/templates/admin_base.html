@@ -34,28 +34,25 @@
 <div id="page">
     {% block navbar %}
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="glyphicon-chevron-down glyphicon"></span>
-                </button>
-                <a class="navbar-brand" href="{{ uri_for('admin-users-geochart') }}">{{ app_name }} Admin</a>
-            </div>
             <div>
-
-                <div class="navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li {% if path == uri_for('admin-users-geochart') %}class="active"{% endif %}><a href="{{ uri_for('admin-users-geochart') }}">{% trans %}Users Geolocation{% endtrans %}</a></li>
-                        <li {% if path == uri_for('admin-users-list') %}class="active"{% endif %}><a href="{{ uri_for('admin-users-list') }}">{% trans %}User List{% endtrans %}</a></li>
-                        <li {% if path == uri_for('admin-logs-emails') %}class="active"{% endif %}><a href="{{ uri_for('admin-logs-emails') }}">{% trans %}Email Logs{% endtrans %}</a></li>
-                        <li {% if path == uri_for('admin-logs-visits') %}class="active"{% endif %}><a href="{{ uri_for('admin-logs-visits') }}">{% trans %}Visit Logs{% endtrans %}</a></li>
-                    </ul>
-
-                    <ul class="nav navbar-nav pull-right">
-                        <li><a href="/">{% trans %}Visit Site{% endtrans %}</a></li>
-
-                        <li><a href="{{ uri_for('admin-logout') }}">{% trans %}Logout{% endtrans %}</a></li>
-                    </ul>
-                </div><!-- /navbar-collapse -->
+                <ul class="nav navbar-nav">
+                    {{ lib.navbar_item('admin-users-list', 'User List') }}
+                    {{ lib.navbar_item('admin-logs-emails', 'Email Logs') }}
+                    {{ lib.navbar_item('admin-logs-visits', 'Visit Logs') }}
+                    {{ lib.navbar_item('admin-invite-user', 'Invite a User') }}
+                </ul>
+                <ul class="nav navbar-nav pull-right">
+                    <li>
+                        <a href="/">
+                        {% trans %}Visit Site{% endtrans %}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ uri_for('admin-logout') }}">
+                        {% trans %}Logout{% endtrans %}
+                        </a>
+                    </li>
+                </ul>
             </div><!-- /navbar-inner -->
         </div><!-- /navbar -->
     {% endblock %}
@@ -99,13 +96,6 @@
 <!-- scripts concatenated and minified via build script -->
 <script src="/boilerplate/js/plugins.js"></script>
 <script src="/boilerplate/js/script.js"></script>
-{% if locale_language_id != "en" %}
-    {% if locale_iso.language == "pt" and locale_iso.territory == "BR" %}
-        <script src="/boilerplate/js/libs/jquery_validation/localization/messages_{{ locale_iso.language }}_{{ locale_iso.territory }}.js"></script>
-    {% else %}
-        <script src="/boilerplate/js/libs/jquery_validation/localization/messages_{{ locale_language_id }}.js"></script>
-    {% endif %}
-{% endif %}
 {% block mediaJS %}{% endblock %}
 <!-- end scripts -->
 </body>
