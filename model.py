@@ -106,7 +106,7 @@ class Service(BaseModel):
         prerequisite_description is met.
     """
     name = ndb.StringProperty(required=True)
-    short_description = ndb.StringProperty(required=True)
+    short_description = ndb.TextProperty(required=True)
     kb_id = ndb.IntegerProperty(required=True)
     prerequisite_description = ndb.StringProperty()
     max_days = ndb.IntegerProperty(required=True)

@@ -1,14 +1,6 @@
 {% extends "base.html" %}
 {# Process differently descriptions, that were stored as plain text and      #}
 {# those stored as XHTML                                                     #}
-{% macro put_description(s) %}
-    {% if s.startswith('<div>') %}
-        {{ s|safe }}
-    {% else %}
-        <p>{{ s }}</p>
-    {% endif %}
-{% endmacro %}
-
 {% macro assemble_description(d) %}
     {% if d.from_doc %}
         {{ put_description(d.from_doc) }}

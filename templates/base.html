@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <meta charset="utf-8">
-{# Reusable template chunks #}
+{# Shared macros #}
 {% macro navigation(back, with_submit=true) %}
         <input type="button" name="back" value="Назад" class="btn btn-lg"
                onclick="window.location.href = '{{ back }}'"/>
@@ -10,6 +10,15 @@
                    class="btn btn-lg"/>
         {% endif %}
 {% endmacro %}
+
+{% macro put_description(s) %}
+    {% if s.startswith('<div>') %}
+        {{ s|safe }}
+    {% else %}
+        <p>{{ s }}</p>
+    {% endif %}
+{% endmacro %}
+{# End shared macros #}
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">

@@ -23,7 +23,9 @@
     </Kompleks>
     <OGV>
         <instance>
-            <name>Управление ЗАГС по Республике Саха (Якутия)</name>
+            <name>Управление записи актов гражданского состояния по Республике
+                Саха (Якутия)
+            </name>
             <short_name>УЗАГС</short_name>
         </instance>
         <instance>
@@ -43,6 +45,13 @@
                 Саха (Якутия)
             </name>
             <short_name>Минмолодежи</short_name>
+        </instance>
+        <instance>
+            <name>Мунициальное казенное учреждение «Агетство земельных
+                отношений» при Департаменте имущественных и земельных отношений
+                Окружной администрации г. Якутска
+            </name>
+            <short_name>МКУ «АЗО» Якутск</short_name>
         </instance>
     </OGV>
     <Service>
@@ -154,6 +163,33 @@
                 <element>Регистрация по месту жительства</element>
             </dependencies>
         </instance>
+        <instance>
+            <name>Предоставление земельного участка многодетной семье</name>
+            <short_description>
+                <p>Для многодетных семей, непрерывно проживающих не менее 5 лет
+                    по месту подачи заявелния, если их дети:
+                </p>
+                <ul>
+                    <li>несовершеннолетние;</li>
+                    <li>стали совершеннолетними в период с 17.06.2011 по
+                        10.12.2011;
+                    </li>
+                    <li>не старше 25 лет, обучаются по очной форме обучения и
+                        не состоят в браке.
+                    </li>
+                </ul>
+            </short_description>
+            <kb_id>605</kb_id>
+            <max_days>30</max_days>
+            <max_work_days>3</max_work_days>
+            <ogv>МКУ «АЗО» Якутск</ogv>
+            <related_komplekses>
+                <element>Рождение ребенка</element>
+            </related_komplekses>
+            <dependencies>
+                <element>Государственная регистрация рождения ребенка</element>
+            </dependencies>
+        </instance>
     </Service>
     <Document>
         <instance>
@@ -198,6 +234,8 @@
         </instance>
         <instance>
             <name>Свидетельство о заключении брака</name>
+            <description>Если родители состоят в зарегистрированном браке.
+            </description>
             <doc_class>5</doc_class>
         </instance>
         <instance>
@@ -260,7 +298,7 @@
             <doc_class>7</doc_class>
         </instance>
         <instance>
-            <name>Заявление о назначении пособия</name>
+            <name>Заявление о назначении ежемесячного пособия на ребенка</name>
             <description>
                 <p>В заявлении указываются:</p>
                 <ul>
@@ -386,6 +424,7 @@
                 дней.
             </description>
             <o_supply_type>no_return</o_supply_type>
+            <o_count_method>per_service</o_count_method>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
         </instance>
@@ -448,6 +487,7 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>3</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
         <instance>
             <name>Справка из центра занятости населения</name>
@@ -461,6 +501,7 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
         <instance>
             <name>Справка ФССП о неполучении алиментом</name>
@@ -470,6 +511,7 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
         <instance>
             <name>Справка о размере алиментов</name>
@@ -485,6 +527,7 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
         <instance>
             <name>Документ, удостоверяющий личность с отметкой о выдаче вида на
@@ -603,6 +646,7 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
         <instance>
             <name>Справка с места учебы</name>
@@ -618,6 +662,7 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
         <instance>
             <name>Справка из ТО ФСС РС(Я) об отстутсвии сведений о регистрации
@@ -634,6 +679,7 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
         <instance>
             <name>Справка из воинской части о прохождении службы по призыву
@@ -649,6 +695,79 @@
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </instance>
+        <instance>
+            <name>Заявление о включении в список нуждающихся в получении
+                земельного участка
+            </name>
+            <description>
+                <p>При заполнении графы «Предполагаемая площадь» исходить из
+                    следующих показателей:
+                </p>
+                <ul>
+                    <li>под личное подсобное хозяйство: 1000—3000 кв. м.;</li>
+                    <li>под сайылычное хозяйство: 1500—10000 кв. м.;</li>
+                    <li>под садоводство и огородничество: 100—2500 кв. м.;</li>
+                    <li>под дачное строительство: 100—4000 кв. м.;</li>
+                    <li>под ИЖС: 800—2500 кв. м.;</li>
+                    <li>вид разрешенного использования, испрашиваемое право на
+                        земельный участок.
+                    </li>
+                </ul>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
+        </instance>
+        <instance>
+            <name>Паспорт ребенка</name>
+            <description>Предоставляется на каждого ребенка в семье в возрасте
+                от 14 лет.
+            </description>
+            <doc_class>2</doc_class>
+        </instance>
+        <instance>
+            <name>Решение об усыновлении, судебное решение и иные документы об
+                усыновлении, признании отцовства
+            </name>
+            <description>Если в семье есть усыновленные, удочеренные дети.
+            </description>
+            <doc_class>5</doc_class>
+        </instance>
+        <instance>
+            <name>Справка органа местного самоуправления о постановке на учет в
+                качестве нуждающегося в жилом помещении по договору соцнайма
+            </name>
+            <description>Для подтверждения права первоочердного получения
+                земельного участка.
+            </description>
+            <doc_class>7</doc_class>
+        </instance>
+        <instance>
+            <name>Справка органа местного самоуправления о том, что супруг
+                (супруга) не стоит на регистрационном учете
+            </name>
+            <description>Если один из супругов зарегистрирован в другом
+                муниципальном образовании. По желанию заявителя.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </instance>
+        <instance>
+            <name>Справка о реализации граждаинном права на бесплатное
+                приобретение земельного участка по основаниям и в порядке,
+                установленным земельным законодательством
+            </name>
+            <description>Если один из супругов зарегистрирован в другом
+                муниципальном образовании. По желанию заявителя.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
         </instance>
     </Document>
     <DocumentToService>
@@ -688,6 +807,8 @@
         <instance>
             <document>Свидетельство о заключении брака</document>
             <service>Государственная регистрация рождения ребенка</service>
+            <description>Предоставляется в любом случае.</description>
+            <override_description>1</override_description>
         </instance>
         <instance>
             <document>Медицинское свидетельство о рождении, форма №103/У
@@ -737,7 +858,8 @@
         </instance>
         <!-- Monthly child welfare -->
         <instance>
-            <document>Заявление о назначении пособия</document>
+            <document>Заявление о назначении ежемесячного пособия на ребенка
+            </document>
             <service>Ежемесячное пособие на ребенка</service>
         </instance>
         <instance>
@@ -778,9 +900,6 @@
         <instance>
             <document>Свидетельство о заключении брака</document>
             <service>Ежемесячное пособие на ребенка</service>
-            <description>Если родители ребенка состоят в законном браке.
-            </description>
-            <override_description>1</override_description>
         </instance>
         <instance>
             <document>Свидетельство о расторжении брака</document>
@@ -971,6 +1090,7 @@
             <description>Предоставляется на каждого ребенка в семье младше 18
                 лет.
             </description>
+            <override_description>1</override_description>
         </instance>
         <instance>
             <document>Свидетельство об усыновлении</document>
@@ -1078,9 +1198,6 @@
         <instance>
             <document>Свидетельство о заключении брака</document>
             <service>Единовременное пособие при рождении ребенка</service>
-            <description>Если родители ребенка состоят в законном браке.
-            </description>
-            <override_description>1</override_description>
         </instance>
         <instance>
             <document>Свидетельство о расторжении брака</document>
@@ -1193,6 +1310,107 @@
         <instance>
             <document>Удостоверение беженца</document>
             <service>Единовременное пособие при рождении ребенка</service>
+        </instance>
+        <instance>
+            <document>Заявление о включении в список нуждающихся в получении
+                земельного участка
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+        </instance>
+        <instance>
+            <document>Документ, удостоверяющий личность заявителя</document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+            <description>Копии снимаются со страниц о личности, регистрации по
+                месту жительства, семейном положениии.
+            </description>
+            <override_description>1</override_description>
+        </instance>
+        <instance>
+            <document>Документ, удостоверяющий личность второго родителя
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+            <description>Копии снимаются со страниц о личности, регистрации по
+                месту жительства, семейном положениии.
+            </description>
+            <override_description>1</override_description>
+        </instance>
+        <instance>
+            <document>Нотариально удостоверенная доверенность</document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+        </instance>
+        <instance>
+            <document>Свидетельство о рождении</document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+            <description>Предоставляется на каждого ребенка в семье в возрасте
+                до 14 лет.
+            </description>
+            <override_description>1</override_description>
+        </instance>
+        <instance>
+            <document>Паспорт ребенка</document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+            <description>При достижении ребенком возраста 16 лет, дополнительно
+                предоставляется копия страницы о семейном положении.
+            </description>
+        </instance>
+        <instance>
+            <document>Свидетельство о заключении брака</document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+        </instance>
+        <instance>
+            <document>Решение об усыновлении, судебное решение и иные документы
+                об усыновлении, признании отцовства
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+        </instance>
+        <instance>
+            <document>Справка органа местного самоуправления о постановке на
+                учет в качестве нуждающегося в жилом помещении по договору
+                соцнайма
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+        </instance>
+        <instance>
+            <document>Справка с места учебы
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+            <description>От каждого ребенка, обучающегося по очной форме
+                обучения. Срок действия справки — 30 дней.
+            </description>
+            <override_description>1</override_description>
+        </instance>
+        <instance>
+            <document>Справка органа местного самоуправления о том, что супруг
+                (супруга) не стоит на регистрационном учете
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+        </instance>
+        <instance>
+            <document>Справка о реализации граждаинном права на бесплатное
+                приобретение земельного участка по основаниям и в порядке,
+                установленным земельным законодательством
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+        </instance>
+        <instance>
+            <document>Справка о составе семьи
+            </document>
+            <service>Предоставление земельного участка многодетной семье
+            </service>
+            <description>По желанию заявителя.</description>
+            <override_description>1</override_description>
         </instance>
     </DocumentToService>
 </data>

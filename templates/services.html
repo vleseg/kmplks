@@ -22,7 +22,7 @@
             </label>
         </td>
         <td>{{ service.ogv }}</td>
-        <td>
+        <td class="lead">
         {% if service.terms_description %}
             <abbr title="{{ service.terms_description }}">
                 {{ service.max_days }}&nbsp;к.&nbsp;д.&nbsp;+{{ service.max_work_days }}&nbsp;р.&nbsp;д.
@@ -32,7 +32,7 @@
         {% endif %}
         </td>
         <td>
-            {{ service.description }}
+            {{ put_description(service.description) }}
         </td>
     </tr>
 {% endmacro %}

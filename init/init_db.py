@@ -7,7 +7,7 @@ from lxml import etree
 import model
 
 
-class TestDbInitException(BaseException):
+class DbInitException(BaseException):
     pass
 
 
@@ -20,7 +20,7 @@ class TextGetter(object):
     def __init__(self, node):
         self.node = node
         if len(node) > 0:  # if it is not a leaf node
-            if self.node.tag == 'description':
+            if 'description' in self.node.tag:
                 self.type = 'xhtml'
             else:
                 self.type = 'non-leaf'
@@ -68,25 +68,29 @@ class RefMeta(object):
         self.reference_type = tg.attr('type')
 
 
-def get_entity_key(kind, prop, value):
+def get_entity_key(kind, prop, value, test_mode):
     try:
-        return kind.query(
-            ancestor=model.ANCESTOR).filter(prop == value).get().key
+        if not test_mode:
+            return kind.query(
+                ancestor=model.ANCESTOR).filter(prop == value).get().key
+        else:
+            return kind.query().filter(prop == value).get().key
     except AttributeError:
-        raise TestDbInitException(
+        raise DbInitException(
             'Entity with {} == {} was not found for kind {}'.format(
                 prop, value.encode('utf-8'), kind.__name__))
 
 
 def put_new_entity(entity_class, entity_init_kwargs):
-    entity_init_kwargs['parent'] = model.ANCESTOR
+    if not entity_init_kwargs.pop('test_mode'):
+        entity_init_kwargs['parent'] = model.ANCESTOR
     new_entity = entity_class(**entity_init_kwargs)
     new_entity.put()
 
 
-def init_test_db():
+def init_db(test_mode=False):
     parser = etree.XMLParser(remove_comments=True)
-    file_path = os.path.join(os.path.dirname(__file__), "test_data.xml")
+    file_path = os.path.join(os.path.dirname(__file__), "init_data.xml")
     root = etree.parse(file_path, parser).getroot()
 
     for kind_node in root:
@@ -115,6 +119,7 @@ def init_test_db():
                     elif ref_meta_entry is not None:
                         f_kwargs = dict(kind=ref_meta_entry.referred_kind,
                                         prop=ref_meta_entry.referred_field)
+                        f_kwargs['test_mode'] = test_mode
                         if ref_meta_entry.reference_type == 'to_one':
                             f_kwargs['value'] = raw_value
                             value_to_store = get_entity_key(**f_kwargs)
@@ -126,12 +131,13 @@ def init_test_db():
                                 value_to_store.append(
                                     get_entity_key(**f_kwargs))
                         else:
-                            raise TestDbInitException(
+                            raise DbInitException(
                                 "Unknown reference type: {}".format(
                                     ref_meta_entry.reference_type))
                     # Property is ndb.StringProperty, ndb.TextProperty or other
                     else:
                         value_to_store = raw_value
                     entity_init_kwargs[property_name] = value_to_store
+                    entity_init_kwargs['test_mode'] = test_mode
 
                 put_new_entity(entity_class, entity_init_kwargs)

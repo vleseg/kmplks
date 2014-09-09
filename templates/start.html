@@ -12,7 +12,9 @@
                 </td>
                 <td>
                     {% for mfc in kompleks.mfcs %}
-                        {{ mfc.name }}{% if not loop.last %}, {% endif %}
+                        <i>
+                            {{ mfc.name }}{% if not loop.last %}, {% endif %}
+                        </i>
                     {% endfor %}
                 </td>
             </tr>
