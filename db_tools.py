@@ -61,17 +61,17 @@ class TextGetter(object):
         return result
 
 
-def get_entity_key(kind, prop, value, test_mode):
-    try:
-        if not test_mode:
-            return kind.query(
-                ancestor=model.ANCESTOR).filter(prop == value).get().key
-        else:
-            return kind.query().filter(prop == value).get().key
-    except AttributeError:
-        raise DbToolsException(
-            'Entity with {} == {} was not found for kind {}'.format(
-                prop, value.encode('utf-8'), kind.__name__))
+def get_entity_by_prop(kind, prop, value, test_mode, key_only=True):
+    qry_params = {'ancestor': model.ANCESTOR} if not test_mode else {}
+    entity = kind.query(**qry_params).filter(prop == value).get()
+
+    if key_only:
+        if entity is None:
+            raise DbToolsException(
+                'Entity with {} == {} was not found for kind {}'.format(
+                    prop, value.encode('utf-8'), kind.__name__))
+        return entity.key
+    return entity
 
 
 def get_kind(raw_kind):
@@ -82,17 +82,23 @@ def get_kind(raw_kind):
 
 
 def insert_or_update(entity_class, entity_init_kwargs):
-    if not entity_init_kwargs.pop('test_mode'):
+    test_mode = entity_init_kwargs.pop('test_mode')
+    if not test_mode:
         entity_init_kwargs['parent'] = model.ANCESTOR
     if entity_init_kwargs.pop('load_mode') == 'init':
-        new_entity = entity_class(**entity_init_kwargs)
-        new_entity.put()
-    else:  # TODO: patch mode
-        pass
+        entity = entity_class(**entity_init_kwargs)
+    else:  # load_mode == 'patch'
+        # TODO: test coverage
+        entity = get_entity_by_prop(
+            entity_class, entity_class.id, entity_init_kwargs['id'], test_mode,
+            key_only=False)
+        entity.populate(**entity_init_kwargs)
+    entity.put()
 
 
 def bulk_load(test_mode=False, load_mode='init', f=None):
     if load_mode == 'init':
+        ndb.delete_multi(ndb.Query().iter(keys_only=True))  # clean up
         f = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
     elif load_mode == 'patch':
         if f is None:
@@ -129,10 +135,10 @@ def bulk_load(test_mode=False, load_mode='init', f=None):
                         for property_node_child in property_node:
                             f_kwargs['value'] = int(TextGetter(
                                 property_node_child).get_text())
-                            value_to_store.append(get_entity_key(**f_kwargs))
+                            value_to_store.append(get_entity_by_prop(**f_kwargs))
                     else:
                         f_kwargs['value'] = int(raw_value)
-                        value_to_store = get_entity_key(**f_kwargs)
+                        value_to_store = get_entity_by_prop(**f_kwargs)
                 # Property is ndb.StringProperty, ndb.TextProperty or other
                 else:
                     value_to_store = raw_value
