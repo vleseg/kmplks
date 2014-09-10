@@ -61,23 +61,6 @@ class TextGetter(object):
         return result
 
 
-class RefMeta(object):
-    def __init__(self, raw_data):
-        tg = TextGetter(raw_data)
-        self.referring_property = tg.name
-        self.raw_referred_field = tg.refd_field
-        self.referred_kind = None
-
-    def get_referred_field(self):
-        return getattr(self.referred_kind, self.raw_referred_field)
-
-    def put_referred_kind(self, raw_kind):
-        if isinstance(raw_kind, basestring):
-            self.referred_kind = getattr(model, raw_kind)
-        else:
-            self.referred_kind = raw_kind
-
-
 def get_entity_key(kind, prop, value, test_mode):
     try:
         if not test_mode:
@@ -91,12 +74,21 @@ def get_entity_key(kind, prop, value, test_mode):
                 prop, value.encode('utf-8'), kind.__name__))
 
 
+def get_kind(raw_kind):
+    if isinstance(raw_kind, basestring):
+        return getattr(model, raw_kind)
+    else:
+        return raw_kind
+
+
 def insert_or_update(entity_class, entity_init_kwargs):
     if not entity_init_kwargs.pop('test_mode'):
         entity_init_kwargs['parent'] = model.ANCESTOR
     if entity_init_kwargs.pop('load_mode') == 'init':
         new_entity = entity_class(**entity_init_kwargs)
         new_entity.put()
+    else:  # TODO: patch mode
+        pass
 
 
 def bulk_load(test_mode=False, load_mode='init', f=None):
@@ -113,50 +105,41 @@ def bulk_load(test_mode=False, load_mode='init', f=None):
 
     for kind_node in root:
         entity_class = getattr(model, kind_node.tag)
-        references = {}
 
         for _kind_node_child in kind_node:
             entity_init_kwargs = {}
 
-            if _kind_node_child.tag == 'reference':
-                rm = RefMeta(_kind_node_child)
-                references[rm.referring_property] = rm
-            else:
-                instance_node = _kind_node_child
-                for property_node in instance_node:
-                    property_name = property_node.tag
-                    property_class = getattr(entity_class, property_name)
-                    ref_meta_entry = references.get(property_name)
-                    raw_value = TextGetter(property_node).get_text()
+            instance_node = _kind_node_child
+            for property_node in instance_node:
+                property_name = property_node.tag
+                property_class = getattr(entity_class, property_name)
+                raw_value = TextGetter(property_node).get_text()
 
-                    if property_class.__class__.__name__ == 'IntegerProperty':
-                        value_to_store = int(raw_value)
-                    elif property_class.__class__.__name__ == 'BooleanProperty':
-                        value_to_store = bool(int(raw_value))
-                    # Property is ndb.KeyProperty -- single or repeated
-                    elif ref_meta_entry is not None:
-                        ref_meta_entry.put_referred_kind(property_class._kind)
-                        f_kwargs = dict(
-                            kind=ref_meta_entry.referred_kind,
-                            prop=ref_meta_entry.get_referred_field())
-                        f_kwargs['test_mode'] = test_mode
-                        if property_class._repeated:
-                            value_to_store = []
-                            for property_node_child in property_node:
-                                f_kwargs['value'] = TextGetter(
-                                    property_node_child).get_text()
-                                value_to_store.append(
-                                    get_entity_key(**f_kwargs))
-                        else:
-                            f_kwargs['value'] = raw_value
-                            value_to_store = get_entity_key(**f_kwargs)
-                    # Property is ndb.StringProperty, ndb.TextProperty or other
+                if property_class.__class__.__name__ == 'IntegerProperty':
+                    value_to_store = int(raw_value)
+                elif property_class.__class__.__name__ == 'BooleanProperty':
+                    value_to_store = bool(int(raw_value))
+                elif property_class.__class__.__name__ == 'KeyProperty':
+                    referred_kind = get_kind(property_class._kind)
+                    f_kwargs = dict(kind=referred_kind,
+                                    prop=referred_kind.id,
+                                    test_mode=test_mode)
+                    if property_class._repeated:
+                        value_to_store = []
+                        for property_node_child in property_node:
+                            f_kwargs['value'] = int(TextGetter(
+                                property_node_child).get_text())
+                            value_to_store.append(get_entity_key(**f_kwargs))
                     else:
-                        value_to_store = raw_value
-                    entity_init_kwargs[property_name] = value_to_store
-                    entity_init_kwargs.update({
-                        'test_mode': test_mode,
-                        'load_mode': load_mode
-                    })
+                        f_kwargs['value'] = int(raw_value)
+                        value_to_store = get_entity_key(**f_kwargs)
+                # Property is ndb.StringProperty, ndb.TextProperty or other
+                else:
+                    value_to_store = raw_value
+                entity_init_kwargs[property_name] = value_to_store
+                entity_init_kwargs.update({
+                    'test_mode': test_mode,
+                    'load_mode': load_mode
+                })
 
-                insert_or_update(entity_class, entity_init_kwargs)
+            insert_or_update(entity_class, entity_init_kwargs)

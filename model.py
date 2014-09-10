@@ -17,6 +17,8 @@ class BaseModel(ndb.Model):
     """
     Base class for models in Kompleks app. Inherit new models from it.
     """
+    id = ndb.IntegerProperty(required=True)
+
     def urlsafe(self):
         return self.key.urlsafe()
 
@@ -67,7 +69,7 @@ class Kompleks(BaseModel):
     name = ndb.StringProperty(required=True)
 
     # Relationships
-    mfcs = ndb.KeyProperty(kind='MFC', repeated=True)
+    mfcs = ndb.KeyProperty(MFC, repeated=True)
 
 
 class Service(BaseModel):
