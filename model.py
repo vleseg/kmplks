@@ -67,7 +67,7 @@ class Kompleks(BaseModel):
     name = ndb.StringProperty(required=True)
 
     # Relationships
-    mfcs = ndb.KeyProperty(MFC, repeated=True)
+    mfcs = ndb.KeyProperty(kind='MFC', repeated=True)
 
 
 class Service(BaseModel):

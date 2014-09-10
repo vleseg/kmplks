@@ -1,13 +1,11 @@
 # coding=utf-8
-import os
-import sys
 import unittest
 # Third-party imports
 from google.appengine.ext import testbed
 import webtest
 # Project imports
+from db_tools import bulk_load
 from main import app
-from init.init_db import init_db
 
 
 class AppTest(unittest.TestCase):
@@ -18,7 +16,7 @@ class AppTest(unittest.TestCase):
         cls.testbed.activate()
         cls.testbed.init_datastore_v3_stub()
         cls.testbed.init_memcache_stub()
-        init_db(test_mode=True)
+        bulk_load(test_mode=True)
 
     def test_kompleks_choice_handler(self):
         response = self.testapp.get('/')

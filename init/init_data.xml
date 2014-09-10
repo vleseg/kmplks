@@ -1,52 +1,55 @@
 <data>
     <MFC>
         <instance>
+            <id>1</id>
             <name>МФЦ г. Якутск</name>
         </instance>
         <instance>
+            <id>2</id>
             <name>МФЦ г. Нюрба</name>
         </instance>
     </MFC>
     <Kompleks>
-        <reference type="to_many">
-            <name>mfcs</name>
-            <refd_kind>MFC</refd_kind>
-            <refd_field>name</refd_field>
-        </reference>
         <instance>
+            <id>1</id>
             <name>Рождение ребенка</name>
             <mfcs>
-                <element>МФЦ г. Якутск</element>
-                <element>МФЦ г. Нюрба</element>
+                <item>1</item>
+                <item>2</item>
             </mfcs>
         </instance>
     </Kompleks>
     <OGV>
         <instance>
+            <id>1</id>
             <name>Управление записи актов гражданского состояния по Республике
                 Саха (Якутия)
             </name>
             <short_name>УЗАГС</short_name>
         </instance>
         <instance>
+            <id>2</id>
             <name>Управление Федеральной миграционной службы России по
                 Республике Саха (Якутия)
             </name>
             <short_name>УФМС</short_name>
         </instance>
         <instance>
+            <id>3</id>
             <name>Министерство труда и социального развития Республики Саха
                 (Якутия)
             </name>
             <short_name>Минтруда</short_name>
         </instance>
         <instance>
+            <id>4</id>
             <name>Министерство по делам молодежи и семейной политики Республики
                 Саха (Якутия)
             </name>
             <short_name>Минмолодежи</short_name>
         </instance>
         <instance>
+            <id>5</id>
             <name>Мунициальное казенное учреждение «Агетство земельных
                 отношений» при Департаменте имущественных и земельных отношений
                 Окружной администрации г. Якутска
@@ -55,27 +58,8 @@
         </instance>
     </OGV>
     <Service>
-        <reference type="to_many">
-            <name>related_komplekses</name>
-            <refd_kind>Kompleks</refd_kind>
-            <refd_field>name</refd_field>
-        </reference>
-        <reference type="to_many">
-            <name>containing_komplekses</name>
-            <refd_kind>Kompleks</refd_kind>
-            <refd_field>name</refd_field>
-        </reference>
-        <reference type="to_one">
-            <name>ogv</name>
-            <refd_kind>OGV</refd_kind>
-            <refd_field>short_name</refd_field>
-        </reference>
-        <reference type="to_many">
-            <name>dependencies</name>
-            <refd_kind>Service</refd_kind>
-            <refd_field>name</refd_field>
-        </reference>
         <instance>
+            <id>1</id>
             <name>Государственная регистрация рождения ребенка</name>
             <short_description>Только для родителей, состоящих в браке и
                 имеющих регистрацию по месту обращения (или если ребенок
@@ -86,12 +70,13 @@
             </prerequisite_description>
             <max_days>0</max_days>
             <max_work_days>4</max_work_days>
-            <ogv>УЗАГС</ogv>
+            <ogv>1</ogv>
             <containing_komplekses>
-                <element>Рождение ребенка</element>
+                <item>1</item>
             </containing_komplekses>
         </instance>
         <instance>
+            <id>2</id>
             <name>Регистрация по месту жительства</name>
             <short_description>Только для проживвающих в доме, жилом помещении
                 (не ведомственном) на территории ГО «Город Якутск»
@@ -104,15 +89,16 @@
             <terms_description>Если не нужно выполнять межведомственные
                 запросы, срок сокращается до 6 рабочих дней
             </terms_description>
-            <ogv>УФМС</ogv>
+            <ogv>2</ogv>
             <containing_komplekses>
-                <element>Рождение ребенка</element>
+                <item>1</item>
             </containing_komplekses>
             <dependencies>
-                <element>Государственная регистрация рождения ребенка</element>
+                <item>1</item>
             </dependencies>
         </instance>
         <instance>
+            <id>3</id>
             <name>Ежемесячное пособие на ребенка</name>
             <short_description>Только для семей с низким среднедушевым доходом
                 (ниже прожиточного минимума)
@@ -120,16 +106,17 @@
             <kb_id>304</kb_id>
             <max_days>10</max_days>
             <max_work_days>3</max_work_days>
-            <ogv>Минтруда</ogv>
+            <ogv>3</ogv>
             <containing_komplekses>
-                <element>Рождение ребенка</element>
+                <item>1</item>
             </containing_komplekses>
             <dependencies>
-                <element>Государственная регистрация рождения ребенка</element>
-                <element>Регистрация по месту жительства</element>
+                <item>1</item>
+                <item>2</item>
             </dependencies>
         </instance>
         <instance>
+            <id>4</id>
             <name>Единовременное пособие при рождении ребенка</name>
             <short_description>Только если оба родителя не работают (в т. ч.
                 учатся). Нужна регистрация, если родители — не студенты
@@ -137,15 +124,16 @@
             <kb_id>211</kb_id>
             <max_days>10</max_days>
             <max_work_days>3</max_work_days>
-            <ogv>Минтруда</ogv>
+            <ogv>3</ogv>
             <containing_komplekses>
-                <element>Рождение ребенка</element>
+                <item>1</item>
             </containing_komplekses>
             <dependencies>
-                <element>Государственная регистрация рождения ребенка</element>
+                <item>1</item>
             </dependencies>
         </instance>
         <instance>
+            <id>5</id>
             <name>Выдача нагрудного знака и удостоверения многодетной семьи
             </name>
             <short_description>Только для многодетных семей (3 и более детей в
@@ -154,16 +142,17 @@
             <kb_id>602</kb_id>
             <max_days>0</max_days>
             <max_work_days>43</max_work_days>
-            <ogv>Минмолодежи</ogv>
+            <ogv>4</ogv>
             <related_komplekses>
-                <element>Рождение ребенка</element>
+                <item>1</item>
             </related_komplekses>
             <dependencies>
-                <element>Государственная регистрация рождения ребенка</element>
-                <element>Регистрация по месту жительства</element>
+                <item>1</item>
+                <item>2</item>
             </dependencies>
         </instance>
         <instance>
+            <id>6</id>
             <name>Предоставление земельного участка многодетной семье</name>
             <short_description>
                 <p>Для многодетных семей, непрерывно проживающих не менее 5 лет
@@ -182,17 +171,18 @@
             <kb_id>605</kb_id>
             <max_days>30</max_days>
             <max_work_days>3</max_work_days>
-            <ogv>МКУ «АЗО» Якутск</ogv>
+            <ogv>5</ogv>
             <related_komplekses>
-                <element>Рождение ребенка</element>
+                <item>1</item>
             </related_komplekses>
             <dependencies>
-                <element>Государственная регистрация рождения ребенка</element>
+                <item>1</item>
             </dependencies>
         </instance>
     </Service>
     <Document>
         <instance>
+            <id>1</id>
             <name>Заявление о рождении, форма №1</name>
             <o_count_method>per_service</o_count_method>
             <o_supply_type>no_return</o_supply_type>
@@ -200,6 +190,7 @@
             <doc_class>1</doc_class>
         </instance>
         <instance>
+            <id>2</id>
             <name>Документ, удостоверяющий личность заявителя</name>
             <description>
                 <p>Предоставляется в любом случае. Копия снимается со следующих
@@ -216,6 +207,7 @@
             <doc_class>2</doc_class>
         </instance>
         <instance>
+            <id>3</id>
             <name>Документ, удостоверяющий личность второго родителя</name>
             <description>
                 <p>Если родители состоят в браке или было установлено
@@ -233,18 +225,21 @@
             <doc_class>3</doc_class>
         </instance>
         <instance>
+            <id>4</id>
             <name>Свидетельство о заключении брака</name>
             <description>Если родители состоят в зарегистрированном браке.
             </description>
             <doc_class>5</doc_class>
         </instance>
         <instance>
+            <id>5</id>
             <name>Медицинское свидетельство о рождении, форма №103/У</name>
             <o_supply_type>no_return</o_supply_type>
             <n_copies>0</n_copies>
             <doc_class>7</doc_class>
         </instance>
         <instance>
+            <id>6</id>
             <name>Согласие на обработку персональных данных</name>
             <description>Если подаются документы или информация о другом лице
                 (не заявителе; например, о втором родителе). Подписывается
@@ -257,6 +252,7 @@
             <doc_class>4</doc_class>
         </instance>
         <instance>
+            <id>7</id>
             <name>Доверенность на передачу согласия на обработку ПДн</name>
             <description>Предоставляется вместе с согласием на обработку ПДн от
                 другого лица (не заявителя). Подписывается лично субъектом
@@ -268,6 +264,7 @@
             <doc_class>4</doc_class>
         </instance>
         <instance>
+            <id>8</id>
             <name>Заявление о регистрации по месту жительства, форма №6</name>
             <description>Форма заявления предоставляется консультантом МФЦ.
             </description>
@@ -277,10 +274,12 @@
             <doc_class>1</doc_class>
         </instance>
         <instance>
-            <name>Свидетельство о рождении</name>
+            <id>Свидетельство о рождении</id>
+            <name>9</name>
             <doc_class>5</doc_class>
         </instance>
         <instance>
+            <id>10</id>
             <name>Документ о праве на жилое помещение</name>
             <description>Договор соцнайма, свидетельство о государственной
                 регистрации права и т. д Если документ прошел государственную
@@ -291,6 +290,7 @@
             <doc_class>7</doc_class>
         </instance>
         <instance>
+            <id>11</id>
             <name>Домовая книга</name>
             <description>При наличии</description>
             <o_supply_type>return_with_result</o_supply_type>
@@ -298,6 +298,7 @@
             <doc_class>7</doc_class>
         </instance>
         <instance>
+            <id>12</id>
             <name>Заявление о назначении ежемесячного пособия на ребенка</name>
             <description>
                 <p>В заявлении указываются:</p>
@@ -329,6 +330,7 @@
             <doc_class>1</doc_class>
         </instance>
         <instance>
+            <id>13</id>
             <name>Объяснительная</name>
             <description>Пишется прямо в заявлении о назначении пособия, если с
                 начала текущего года или с момента рождения последнего ребенка
@@ -342,6 +344,7 @@
             <doc_class>1</doc_class>
         </instance>
         <instance>
+            <id>14</id>
             <name>Свидетельство о регистрации по месту пребывания</name>
             <description>Если в паспорте нет штампов о регистрации по месту
                 жительства и нет другого документа, подтверждающего совместное
@@ -771,147 +774,130 @@
         </instance>
     </Document>
     <DocumentToService>
-        <reference type="to_one">
-            <name>document</name>
-            <refd_kind>Document</refd_kind>
-            <refd_field>name</refd_field>
-        </reference>
-        <reference type="to_one">
-            <name>service</name>
-            <refd_kind>Service</refd_kind>
-            <refd_field>name</refd_field>
-        </reference>
-        <reference type="to_one">
-            <name>kompleks</name>
-            <refd_kind>Kompleks</refd_kind>
-            <refd_field>name</refd_field>
-        </reference>
         <!-- Birth registration -->
         <instance>
-            <document>Заявление о рождении, форма №1</document>
-            <service>Государственная регистрация рождения ребенка</service>
+            <document>1</document>
+            <service>1</service>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность заявителя</document>
-            <service>Государственная регистрация рождения ребенка</service>
+            <document>2</document>
+            <service>1</service>
             <description>Предоставляется в любом случае</description>
             <override_description>1</override_description>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность второго родителя
-            </document>
-            <service>Государственная регистрация рождения ребенка</service>
+            <document>3</document>
+            <service>1</service>
             <description>Предоставляется в любом случае</description>
             <override_description>1</override_description>
         </instance>
         <instance>
-            <document>Свидетельство о заключении брака</document>
-            <service>Государственная регистрация рождения ребенка</service>
+            <document>4</document>
+            <service>1</service>
             <description>Предоставляется в любом случае.</description>
             <override_description>1</override_description>
         </instance>
         <instance>
-            <document>Медицинское свидетельство о рождении, форма №103/У
-            </document>
-            <service>Государственная регистрация рождения ребенка</service>
+            <document>5</document>
+            <service>1</service>
         </instance>
         <instance>
-            <document>Согласие на обработку персональных данных</document>
-            <service>Государственная регистрация рождения ребенка</service>
+            <document>6</document>
+            <service>1</service>
         </instance>
         <instance>
-            <document>Доверенность на передачу согласия на обработку ПДн
-            </document>
-            <service>Государственная регистрация рождения ребенка</service>
+            <document>7</document>
+            <service>1</service>
         </instance>
+        <!-- Resident registration -->
         <instance>
-            <!-- Resident registration -->
-            <document>Заявление о регистрации по месту жительства, форма №6
-            </document>
-            <service>Регистрация по месту жительства</service>
+            <document>8</document>
+            <service>2</service>
             <kompleks>Рождение ребенка</kompleks>
             <description>Заявление подписывается законным представителем
                 (родителем, опекуном) ребенка.
             </description>
         </instance>
         <instance>
-            <document>Свидетельство о рождении</document>
-            <service>Регистрация по месту жительства</service>
+            <document>9</document>
+            <service>2</service>
             <kompleks>Рождение ребенка</kompleks>
             <o_supply_type>return_with_result</o_supply_type>
             <n_copies>0</n_copies>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность заявителя</document>
-            <service>Регистрация по месту жительства</service>
+            <document>2</document>
+            <service>2</service>
             <kompleks>Рождение ребенка</kompleks>
             <description>Паспорт родителя (опекуна)</description>
             <override_description>1</override_description>
         </instance>
         <instance>
-            <document>Документ о праве на жилое помещение</document>
-            <service>Регистрация по месту жительства</service>
+            <document>10</document>
+            <service>2</service>
         </instance>
         <instance>
-            <document>Домовая книга</document>
-            <service>Регистрация по месту жительства</service>
+            <document>11</document>
+            <service>2</service>
         </instance>
         <!-- Monthly child welfare -->
         <instance>
-            <document>Заявление о назначении ежемесячного пособия на ребенка
-            </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <document>12</document>
+            <service>3</service>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность заявителя</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <document>14</document>
+            <service>3</service>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность второго родителя
-            </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <document>2</document>
+            <service>3</service>
+        </instance>
+        <instance>
+            <document>3</document>
+            <service>3</service>
         </instance>
         <instance>
             <document>Свидетельство о регистрации по месту пребывания
             </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
-            <document>Согласие на обработку персональных данных</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <document>6</document>
+            <service>3</service>
         </instance>
         <instance>
-            <document>Доверенность на передачу согласия на обработку ПДн
+            <document>7
             </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
-            <document>Свидетельство о рождении</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <document>9</document>
+            <service>3</service>
         </instance>
         <instance>
             <document>Свидетельство об усыновлении</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Справка о рождении, форма №25</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
-            <document>Свидетельство о заключении брака</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <document>4</document>
+            <service>3</service>
         </instance>
         <instance>
             <document>Свидетельство о расторжении брака</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Свидетельство об установлении отцовства</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Трудовая книжка</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>
                 <p>Должна содержать запись об увольнении с последнего места
                     работы.
@@ -933,7 +919,7 @@
         </instance>
         <instance>
             <document>Справка о доходах с места работы</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>
                 <p>Предоставляется каждым работающим членом семьи.</p>
                 <p>Можнозаменить эту справку 2-НДФЛ.</p>
@@ -941,16 +927,16 @@
         </instance>
         <instance>
             <document>Книга учета расходов и доходов</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Налоговая декларация</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Свидетельство о регистрации по месту жительства
             </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>Свидетельство, оформленное на ребенка.
                 Предоставляется, если адрес, указанный в свидетельстве
                 совпадает с адресом, указанным у родителя в паспорте.
@@ -959,62 +945,62 @@
         </instance>
         <instance>
             <document>Справка о составе семьи</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Иной документ, подтверждающий совместное проживание
                 родителя и ребенка
             </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Реквизиты номера лицевого счета заявителя в кредитном
                 учреждении
             </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Простая доверенность</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>Предоставляется, если в заявлении указаны реквизиты
                 банковского счета получателя услуги.
             </description>
         </instance>
         <instance>
             <document>Нотариально удостоверенная доверенность</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>Предоставляется, если в заявлении указаны реквизиты
                 банковского счета представителя.
             </description>
         </instance>
         <instance>
             <document>Акт органа опеки и попечительства</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Справка Пенсионного фонда о размере пенсии</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>Предоставляется на каждого члена семьи, получающего
                 пенсию по старости, по инвалидности, по потере кормильца.
             </description>
         </instance>
         <instance>
             <document>Справка из центра занятости населения</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>Предоставляется родителем (или обоими родителями),
                 стоящим на учете в центре занятости в качестве безработного.
             </description>
         </instance>
         <instance>
             <document>Справка ФССП о неполучении алиментом</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>Предоставляется, если родители в разводе, а ребенок не
                 получает алименты
             </description>
         </instance>
         <instance>
             <document>Справка о размере алиментов</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
             <description>Предоставляется, если родители в разводе, а ребенок
                 получает алименты
             </description>
@@ -1023,38 +1009,36 @@
             <document>Документ, удостоверяющий личность с отметкой о выдаче
                 вида на жительство
             </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Разрешение на временное проживание</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Удостоверение беженца</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Документ, подтверждающий факт рождения ребенка</document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <instance>
             <document>Свидетельство о рождении ребенка, выданное консульским
                 учреждением РФ за пределами территории РФ
             </document>
-            <service>Ежемесячное пособие на ребенка</service>
+            <service>3</service>
         </instance>
         <!-- Long family breastplate and license -->
         <instance>
             <document>Заявление о выдаче нагрудного знака и удостоверения
                 многодетной семьи
             </document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность заявителя</document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <document>2</document>
+            <service>4</service>
             <description>
                 <p>Таким документом может быть:</p>
                 <ul>
@@ -1072,21 +1056,18 @@
         </instance>
         <instance>
             <document>Фотография 3х4</document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
             <description>На фотографии должен быть изображен будущий владелец
                 удостоверения.
             </description>
         </instance>
         <instance>
             <document>Простая доверенность</document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
         </instance>
         <instance>
-            <document>Свидетельство о рождении</document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <document>9</document>
+            <service>4</service>
             <description>Предоставляется на каждого ребенка в семье младше 18
                 лет.
             </description>
@@ -1094,16 +1075,14 @@
         </instance>
         <instance>
             <document>Свидетельство об усыновлении</document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
             <description>Предоставляется на каждого усыновленного ребенка в
                 семье младше 18 лет.
             </description>
         </instance>
         <instance>
             <document>Документ о перемене имени</document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
             <description>Предоставляется, если получатель услуги менял фамилию,
                 имя, отчество с момент рождения последнего ребенка.
             </description>
@@ -1112,8 +1091,7 @@
             <document>Свидетельство о смерти либо решение суда об объявлении
                 гражданина умершим
             </document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
             <description>При обращении отца, если мать умерла или признана
                 судом умершей
             </description>
@@ -1122,8 +1100,7 @@
             <document>Решение суда о признании гражданина недееспособным,
                 ограниченно дееспособным
             </document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
             <description>При обращении отца, если мать была признана судом
                 недееспособной или ограниченно дееспособной.
             </description>
@@ -1132,8 +1109,7 @@
             <document>Решение суда об ограничении родительских прав, о лишении
                 родительских прав, об отмене усыновления
             </document>
-            <service>Выдача нагрудного знака и удостоверения многодетной семьи
-            </service>
+            <service>4</service>
             <description>При обращении отца, если мать была лишена родительских
                 прав либо в ее отношении отменено решение об усыновлении.
             </description>
@@ -1143,73 +1119,60 @@
             <document>Заявление о назначении единовременного пособия при
                 рождении ребенка
             </document>
-            <service>Единовременное пособие при рождении
-                ребенка
-            </service>
+            <service>5</service>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность заявителя
+            <document>2
             </document>
-            <service>Единовременное пособие при рождении
-                ребенка
-            </service>
+            <service>5</service>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность второго родителя
+            <document>3
             </document>
-            <service>Единовременное пособие при рождении
-                ребенка
-            </service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Свидетельство о регистрации по месту пребывания
             </document>
-            <service>Единовременное пособие при рождении
-                ребенка
-            </service>
+            <service>5</service>
         </instance>
         <instance>
-            <document>Согласие на обработку персональных данных</document>
-            <service>Единовременное пособие при рождении
-                ребенка
-            </service>
+            <document>6</document>
+            <service>5</service>
         </instance>
         <instance>
-            <document>Доверенность на передачу согласия на обработку ПДн
+            <document>7</document>
+            <service>5</service>
+        </instance>
+        <instance>
+            <document>9
             </document>
-            <service>Единовременное пособие при рождении
-                ребенка
-            </service>
-        </instance>
-        <instance>
-            <document>Свидетельство о рождении
-            </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Справка о рождении, форма №24
             </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Справка о рождении, форма №25</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
-            <document>Свидетельство о заключении брака</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <document>4</document>
+            <service>5</service>
         </instance>
         <instance>
             <document>Свидетельство о расторжении брака</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Свидетельство об установлении отцовства</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Трудовая книжка</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
             <description>
                 <p>Предоставляется родителем (или обоими родителями), если он
                     не работает, трудоспособный, нигде не обучается по очной
@@ -1230,12 +1193,12 @@
         </instance>
         <instance>
             <document>Справка с места учебы</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Сведения о свидетельстве о регистрации в качестве ИП
             </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
             <description>От родителя, с которым брак был расторгнут и с которым
                 ребенок не проживает книжка не требуется
             </description>
@@ -1243,7 +1206,7 @@
         <instance>
             <document>Свидетельство о регистрации по месту жительства
             </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
             <description>Свидетельство, оформленное на ребенка.
                 Предоставляется, если адрес, указанный в свидетельстве
                 совпадает с адресом, указанным у родителя в паспорте.
@@ -1252,13 +1215,13 @@
         </instance>
         <instance>
             <document>Справка о составе семьи</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Иной документ, подтверждающий совместное проживание
                 родителя и ребенка
             </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
             <description>
                 <p>Таким документом может быть:</p>
                 <ul>
@@ -1275,24 +1238,24 @@
         <instance>
             <document>Справка из воинской части о прохождении службы по призыву
             </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Реквизиты номера лицевого счета заявителя в кредитном
                 учреждении
             </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Простая доверенность</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
             <description>Предоставляется, если в заявлении указаны реквизиты
                 банковского счета получателя услуги.
             </description>
         </instance>
         <instance>
             <document>Нотариально удостоверенная доверенность</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
             <description>Предоставляется, если в заявлении указаны реквизиты
                 банковского счета представителя.
             </description>
@@ -1301,15 +1264,15 @@
             <document>Документ, удостоверяющий личность с отметкой о выдаче
                 вида на жительство
             </document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Разрешение на временное проживание</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Удостоверение беженца</document>
-            <service>Единовременное пособие при рождении ребенка</service>
+            <service>5</service>
         </instance>
         <instance>
             <document>Заявление о включении в список нуждающихся в получении
@@ -1318,20 +1281,18 @@
             <service>Предоставление земельного участка многодетной семье
             </service>
         </instance>
+        <!-- Land for a long family -->
         <instance>
-            <document>Документ, удостоверяющий личность заявителя</document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <document>2</document>
+            <service>6</service>
             <description>Копии снимаются со страниц о личности, регистрации по
                 месту жительства, семейном положениии.
             </description>
             <override_description>1</override_description>
         </instance>
         <instance>
-            <document>Документ, удостоверяющий личность второго родителя
-            </document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <document>3</document>
+            <service>6</service>
             <description>Копии снимаются со страниц о личности, регистрации по
                 месту жительства, семейном положениии.
             </description>
@@ -1339,13 +1300,11 @@
         </instance>
         <instance>
             <document>Нотариально удостоверенная доверенность</document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
         </instance>
         <instance>
-            <document>Свидетельство о рождении</document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <document>9</document>
+            <service>6</service>
             <description>Предоставляется на каждого ребенка в семье в возрасте
                 до 14 лет.
             </description>
@@ -1353,37 +1312,32 @@
         </instance>
         <instance>
             <document>Паспорт ребенка</document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
             <description>При достижении ребенком возраста 16 лет, дополнительно
                 предоставляется копия страницы о семейном положении.
             </description>
         </instance>
         <instance>
-            <document>Свидетельство о заключении брака</document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <document>4</document>
+            <service>6</service>
         </instance>
         <instance>
             <document>Решение об усыновлении, судебное решение и иные документы
                 об усыновлении, признании отцовства
             </document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
         </instance>
         <instance>
             <document>Справка органа местного самоуправления о постановке на
                 учет в качестве нуждающегося в жилом помещении по договору
                 соцнайма
             </document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
         </instance>
         <instance>
             <document>Справка с места учебы
             </document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
             <description>От каждого ребенка, обучающегося по очной форме
                 обучения. Срок действия справки — 30 дней.
             </description>
@@ -1393,22 +1347,19 @@
             <document>Справка органа местного самоуправления о том, что супруг
                 (супруга) не стоит на регистрационном учете
             </document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
         </instance>
         <instance>
             <document>Справка о реализации граждаинном права на бесплатное
                 приобретение земельного участка по основаниям и в порядке,
                 установленным земельным законодательством
             </document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
         </instance>
         <instance>
             <document>Справка о составе семьи
             </document>
-            <service>Предоставление земельного участка многодетной семье
-            </service>
+            <service>6</service>
             <description>По желанию заявителя.</description>
             <override_description>1</override_description>
         </instance>
