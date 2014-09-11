@@ -156,9 +156,9 @@ def bulk_load(test_mode=False, load_mode='init', xml=None):
                 else:
                     value_to_store = raw_value
                 entity_init_kwargs[property_name] = value_to_store
-                entity_init_kwargs.update({
-                    'test_mode': test_mode,
-                    'load_mode': load_mode
-                })
+            entity_init_kwargs.update({
+                'test_mode': test_mode,
+                'load_mode': load_mode
+            })
 
             insert_or_update(entity_class, entity_init_kwargs)

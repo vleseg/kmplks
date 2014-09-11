@@ -110,9 +110,26 @@ class AppTest(unittest.TestCase):
         with open(path, 'r') as f:
             xml = f.read()
         bulk_load(test_mode=True, load_mode='patch', xml=xml)
+
         start_page = self.testapp.get('/')
         self.assertNotIn(u'Дурацкая походка', start_page)
 
+    def test_update_patching(self):
+        path = os.path.join(os.path.dirname(__file__), 'test_patch_update.xml')
+        with open(path, 'r') as f:
+            xml = f.read()
+        bulk_load(test_mode=True, load_mode='patch', xml=xml)
+
+        start_page = self.testapp.get('/')
+        for assert_str in (u'Рождение ребенка', u'МФЦ г. Якутск',
+                           u'МФЦ г. Нюрба', u'МФЦ с. Намцы'):
+            self.assertIn(assert_str, start_page)
+
+        prerequisites_page = start_page.click(
+            description=u'Рождение ребенка').follow()
+        services_page = self.testapp.post('/prerequisites').follow()
+        self.assertNotIn(u'Регистрация по месту жительства', services_page)
+        self.assertIn(u'Регистрация по месту пребывания', services_page)
 
     @classmethod
     def tearDownClass(cls):
