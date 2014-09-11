@@ -1,0 +1,88 @@
+<data>
+    <MFC>
+        <item>
+            <id>-1</id>
+            <name>МФЦ с. Намцы</name>
+        </item>
+    </MFC>
+    <Kompleks>
+        <item>
+            <id>-1</id>
+            <name>Дурацкая походка</name>
+            <mfcs>
+                <item>-1</item>
+                <item>1</item>
+                <item>2</item>
+            </mfcs>
+        </item>
+    </Kompleks>
+    <OGV>
+        <item>
+            <id>-1</id>
+            <name>Министерство дурацкой походки Республики Саха (Якутия)</name>
+            <short_name>Миндурпоходки</short_name>
+        </item>
+    </OGV>
+    <Service>
+        <item>
+            <id>-1</id>
+            <name>Лицензирование дурацкой походки</name>
+            <short_description>Только для тех, у кого походка действительно
+                дурацкая
+            </short_description>
+            <kb_id>-1</kb_id>
+            <max_days>4</max_days>
+            <max_work_days>10</max_work_days>
+            <ogv>-1</ogv>
+            <containing_komplekses>
+                <item>-1</item>
+            </containing_komplekses>
+        </item>
+        <item>
+            <id>-2</id>
+            <name>Выдача выписки из реестра дурацких походок</name>
+            <short_description>Без ограничений</short_description>
+            <kb_id>-2</kb_id>
+            <max_days>1</max_days>
+            <max_work_days>0</max_work_days>
+            <ogv>-1</ogv>
+            <containing_komplekses>
+                <item>-1</item>
+            </containing_komplekses>
+        </item>
+    </Service>
+    <Document>
+        <item>
+            <id>-1</id>
+            <name>Заявление о лицензировании дурацкой походки</name>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>-2</id>
+            <name>Заявление о выдаче выписки из реестра дурацких походок</name>
+            <doc_class>1</doc_class>
+        </item>
+    </Document>
+    <DocumentToService>
+        <item>
+            <id>-1</id>
+            <document>-1</document>
+            <service>-1</service>
+        </item>
+        <item>
+            <id>-2</id>
+            <document>-2</document>
+            <service>-2</service>
+        </item>
+        <item>
+            <id>-3</id>
+            <document>2</document>
+            <service>-1</service>
+        </item>
+        <item>
+            <id>-4</id>
+            <document>2</document>
+            <service>-2</service>
+        </item>
+    </DocumentToService>
+</data>

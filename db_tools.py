@@ -99,18 +99,20 @@ def insert_or_update(entity_class, entity_init_kwargs):
     entity.put()
 
 
-def bulk_load(test_mode=False, load_mode='init', f=None):
+def bulk_load(test_mode=False, load_mode='init', xml=None):
     if load_mode == 'init':
         ndb.delete_multi(ndb.Query().iter(keys_only=True))  # clean up
-        f = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
+        path = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
+        with open(path, 'r') as f:
+            xml = f.read()
     elif load_mode == 'patch':
-        if f is None:
-            raise DbToolsException("Patch file not provided")
+        if xml is None:
+            raise DbToolsException("patch not provided")
     else:
         raise DbToolsException("Unknown bulk load mode: {}".format(load_mode))
 
     parser = etree.XMLParser(remove_comments=True)
-    root = etree.parse(f, parser).getroot()
+    root = etree.fromstring(xml, parser)
 
     for kind_node in root:
         entity_class = getattr(model, kind_node.tag)
