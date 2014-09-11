@@ -10,7 +10,7 @@
     <button data-toggle="modal" data-target="#db-patch-modal" type="button"
             class="btn btn-primary btn-lg btn-block">
         Внести изменения в БД
-        <small><i>(нужен патч-файл в формате XML)</i></small>
+        <small><i>(нужен XML-патч)</i></small>
     </button>
 
     <!-- DB Patch Modal -->
@@ -21,10 +21,13 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4>Загрузка патч-файла</h4>
+                    <h4>Загрузка патча</h4>
                 </div>
                 <div class="modal-body">
-                    <input type="file"/>
+                    <textarea class="form-control"></textarea>
+                    <span class="help-block">
+                        Сюда нужно вставить текст патча в формате XML
+                    </span>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default"

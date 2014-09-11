@@ -23,6 +23,17 @@ class BaseModel(ndb.Model):
         return self.key.urlsafe()
 
 
+class DocClass(BaseModel):
+    """
+    A class of a document.
+
+    Purpose of a document, issuing OGV, it's nature or any other trait, that
+    may serve as a unifying characteristic for a set of documents.
+    """
+    value = ndb.StringProperty(required=True)
+    sort_key = ndb.IntegerProperty(required=True)
+
+
 class MFC(BaseModel):
     """
     A multifunctional center for delivery of public services.
@@ -150,6 +161,8 @@ class Document(BaseModel):
         overridden by a bound DocumentToService instance.
     is_a_paper_document: Designation of whether this document has a physical
         (paper) form.
+
+    doc_class: Class of the document.
     """
     name = ndb.StringProperty(required=True)
     description = ndb.TextProperty(
@@ -163,7 +176,7 @@ class Document(BaseModel):
     n_originals = ndb.IntegerProperty(default=1)
     n_copies = ndb.IntegerProperty(default=1)
     is_a_paper_document = ndb.BooleanProperty(default=True)
-    doc_class = ndb.IntegerProperty(required=True)
+    doc_class = ndb.KeyProperty(DocClass, required=True)
 
     def precompile_description(self, dts_items):
         """

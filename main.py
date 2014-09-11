@@ -20,6 +20,7 @@ import json
 # import logging
 import os
 # Third-party imports
+from google.appengine.ext import deferred
 from google.appengine.ext import ndb
 from jinja2 import Environment, FileSystemLoader
 import webapp2
@@ -411,7 +412,7 @@ class ResultHandler(BaseHandler):
         document = from_urlsafe(doc_id)
         result = {'name': document.name,
                   'description': document.precompile_description(dts_items),
-                  '_class': document.doc_class,
+                  '_class': document.doc_class.get().sort_key,
                   'id': doc_id}
 
         if not document.is_a_paper_document:
@@ -429,7 +430,9 @@ class AdminHandler(BaseHandler):
     template_filename = 'admin.html'
 
     def get(self):
+        # TODO: implement defer logic
         self.render()
+
 
 config = {'webapp2_extras.sessions': {
     'secret_key': 'O12ZXGyXkE32Fz0kGWd5',

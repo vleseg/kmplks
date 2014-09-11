@@ -162,3 +162,6 @@ def bulk_load(test_mode=False, load_mode='init', xml=None):
             })
 
             insert_or_update(entity_class, entity_init_kwargs)
+
+    def create_patch(modified):
+        original = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
