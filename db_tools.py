@@ -92,7 +92,10 @@ def insert_or_update(entity_class, entity_init_kwargs):
         entity = get_entity_by_prop(
             entity_class, entity_class.id, entity_init_kwargs['id'], test_mode,
             key_only=False)
-        entity.populate(**entity_init_kwargs)
+        if entity is not None:
+            entity.populate(**entity_init_kwargs)
+        else:
+            entity = entity_class(**entity_init_kwargs)
     entity.put()
 
 

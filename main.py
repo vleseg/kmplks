@@ -425,11 +425,18 @@ class ResultHandler(BaseHandler):
         return result
 
 
+class AdminHandler(BaseHandler):
+    template_filename = 'admin.html'
+
+    def get(self):
+        self.render()
+
 config = {'webapp2_extras.sessions': {
     'secret_key': 'O12ZXGyXkE32Fz0kGWd5',
     'session_max_age': 3600 * 24
 }}
 app = webapp2.WSGIApplication([
+    ('/admin', AdminHandler),
     ('/services', ServiceChoiceHandler),
     ('/result', ResultHandler),
     ('/prerequisites', PrerequisiteChoiceHandler),

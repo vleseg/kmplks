@@ -176,10 +176,21 @@ if (dependencyGraph) {
     });
 }
 
+// Bootstrap accordion panel icons behaviour.
 $(document).ready(function () {
    $('div.panel-group div.panel-collapse')
        .on("shown.bs.collapse hidden.bs.collapse", function () {
         $(this).prev().find("i.glyphicon")
             .toggleClass('glyphicon-chevron-down glyphicon-chevron-right')
+   })
+});
+
+// Handlers for admin page buttons.
+$(document).ready(function () {
+   $('button#admin-btn-init').click(function () {
+       ;
+   });
+   $('button#admin-btn-patch').click(function () {
+       ;
    })
 });
