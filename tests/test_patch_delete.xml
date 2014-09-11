@@ -1,0 +1,47 @@
+<data>
+    <MFC delete="true">
+        <item>
+            <id>-1</id>
+        </item>
+    </MFC>
+    <Kompleks delete="true">
+        <item>
+            <id>-1</id>
+        </item>
+    </Kompleks>
+    <OGV delete="true">
+        <item>
+            <id>-1</id>
+        </item>
+    </OGV>
+    <Service delete="true">
+        <item>
+            <id>-1</id>
+        </item>
+        <item>
+            <id>-2</id>
+        </item>
+    </Service>
+    <Document delete="true">
+        <item>
+            <id>-1</id>
+        </item>
+        <item>
+            <id>-2</id>
+        </item>
+    </Document>
+    <DocumentToService delete="true">
+        <item>
+            <id>-1</id>
+        </item>
+        <item>
+            <id>-2</id>
+        </item>
+        <item>
+            <id>-3</id>
+        </item>
+        <item>
+            <id>-4</id>
+        </item>
+    </DocumentToService>
+</data>

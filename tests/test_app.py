@@ -19,6 +19,12 @@ class AppTest(unittest.TestCase):
         cls.testbed.init_memcache_stub()
         bulk_load(test_mode=True)
 
+    def insert_patch(self):
+        path = os.path.join(os.path.dirname(__file__), 'test_patch_insert.xml')
+        with open(path, 'r') as f:
+            xml = f.read()
+        bulk_load(test_mode=True, load_mode='patch', xml=xml)
+
     def test_standard_routine(self):
         start_page = self.testapp.get('/')
         self.assertEqual(start_page.status_int, 200)
@@ -66,10 +72,8 @@ class AppTest(unittest.TestCase):
             self.assertIn(assert_str, result_page)
 
     def test_insert_patching(self):
-        path = os.path.join(os.path.dirname(__file__), 'test_patch_insert.xml')
-        with open(path, 'r') as f:
-            xml = f.read()
-        bulk_load(test_mode=True, load_mode='patch', xml=xml)
+        self.insert_patch()
+
         start_page = self.testapp.get('/')
         for assert_str in (u'Дурацкая походка', u'МФЦ г. Якутск',
                            u'МФЦ г. Нюрба', u'МФЦ с. Намцы'):
@@ -82,7 +86,6 @@ class AppTest(unittest.TestCase):
             u'Лицензирование дурацкой походки',
             u'Выдача выписки из реестра дурацких походок'
         ]
-        print services_page
         for assert_str in [u'Дурацкая походка'] + srv_names:
             self.assertIn(assert_str, services_page)
 
@@ -99,6 +102,17 @@ class AppTest(unittest.TestCase):
         ]
         for assert_str in doc_names:
             self.assertIn(assert_str, result_page)
+
+    def test_delete_patching(self):
+        self.insert_patch()
+
+        path = os.path.join(os.path.dirname(__file__), 'test_patch_delete.xml')
+        with open(path, 'r') as f:
+            xml = f.read()
+        bulk_load(test_mode=True, load_mode='patch', xml=xml)
+        start_page = self.testapp.get('/')
+        self.assertNotIn(u'Дурацкая походка', start_page)
+
 
     @classmethod
     def tearDownClass(cls):

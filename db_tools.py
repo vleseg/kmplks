@@ -69,7 +69,7 @@ def get_entity_by_prop(kind, prop, value, test_mode, key_only=True):
         if entity is None:
             raise DbToolsException(
                 'Entity with {} == {} was not found for kind {}'.format(
-                    prop, value.encode('utf-8'), kind.__name__))
+                    prop, str(value).encode('utf-8'), kind.__name__))
         return entity.key
     return entity
 
@@ -116,6 +116,14 @@ def bulk_load(test_mode=False, load_mode='init', xml=None):
 
     for kind_node in root:
         entity_class = getattr(model, kind_node.tag)
+
+        if kind_node.get('delete') == 'true':
+            for item_node in kind_node:
+                entity = get_entity_by_prop(
+                    entity_class, entity_class.id,
+                    int(item_node.find('id').text), test_mode)
+                entity.delete()
+            continue
 
         for _kind_node_child in kind_node:
             entity_init_kwargs = {}
