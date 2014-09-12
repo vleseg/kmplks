@@ -3,7 +3,7 @@
 {% block head %}Администрирование{% endblock %}
 {% block content %}
     <form action="/admin" method="post">
-        <button id="admin-init-btn" type="submit"
+        <button id="admin-init-btn" type="submit" name="mode" value="init"
                 class="btn btn-default btn-lg btn-block">
             Инициализировать БД
             <small><i>(будет использован файл «init_data.xml»)</i></small>
