@@ -42,7 +42,7 @@ class AppTest(unittest.TestCase):
 
         id_to_use = None
         for cell in prerequisites_page.html.findAll('td'):
-            if u'Уже есть свидетельство о рождении' in cell.get_text():
+            if u'Уже есть свидетельство о рождении' in cell.text:
                 id_to_use = cell.label['for']
         services_page = self.testapp.post(
             '/prerequisites', {'prerequisite': id_to_use}).follow()
@@ -58,7 +58,7 @@ class AppTest(unittest.TestCase):
 
         ids_to_use = []
         for cell in services_page.html.findAll('td'):
-            if cell.get_text().strip() in srv_names:
+            if cell.text.strip() in srv_names:
                 ids_to_use.append(cell.label['for'])
         req_params = {'service': ids_to_use}
         result_page = self.testapp.post('/services', req_params).follow()
@@ -91,7 +91,7 @@ class AppTest(unittest.TestCase):
 
         ids_to_use = []
         for cell in services_page.html.findAll('td'):
-            if cell.get_text().strip() in srv_names:
+            if cell.text.strip() in srv_names:
                 ids_to_use.append(cell.label['for'])
         req_params = {'service': ids_to_use}
         result_page = self.testapp.post('/services', req_params).follow()
