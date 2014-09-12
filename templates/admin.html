@@ -2,17 +2,18 @@
 {% block title %}Администрирование{% endblock %}
 {% block head %}Администрирование{% endblock %}
 {% block content %}
-    <button id="admin-init-btn" type="button"
-            class="btn btn-default btn-lg btn-block">
-        Инициализировать БД
-        <small><i>(будет использован файл «init_data.xml»)</i></small>
-    </button>
-    <button data-toggle="modal" data-target="#db-patch-modal" type="button"
-            class="btn btn-primary btn-lg btn-block">
-        Внести изменения в БД
-        <small><i>(нужен XML-патч)</i></small>
-    </button>
-
+    <form action="/admin" method="post">
+        <button id="admin-init-btn" type="submit"
+                class="btn btn-default btn-lg btn-block">
+            Инициализировать БД
+            <small><i>(будет использован файл «init_data.xml»)</i></small>
+        </button>
+        <button data-toggle="modal" data-target="#db-patch-modal"
+                type="button" class="btn btn-primary btn-lg btn-block">
+            Внести изменения в БД
+            <small><i>(нужен XML-патч)</i></small>
+        </button>
+    </form>
     <!-- DB Patch Modal -->
     <div class="modal fade" id="db-patch-modal">
         <div class="modal-dialog">

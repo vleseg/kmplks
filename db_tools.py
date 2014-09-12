@@ -1,6 +1,7 @@
 import logging
 import os
 # Third-party imports
+from google.appengine.api.app_identity import get_application_id
 from google.appengine.ext import ndb
 from lxml import etree
 # Project imports
@@ -61,8 +62,11 @@ class TextGetter(object):
         return result
 
 
-def get_entity_by_prop(kind, prop, value, test_mode, key_only=True):
-    qry_params = {'ancestor': model.ANCESTOR} if not test_mode else {}
+def get_entity_by_prop(kind, prop, value, key_only=True):
+    qry_params = {}
+    if get_application_id() != 'testbed-test':
+        qry_params['ancestor'] = model.ANCESTOR
+
     entity = kind.query(**qry_params).filter(prop == value).get()
 
     if key_only:
@@ -82,15 +86,14 @@ def get_kind(raw_kind):
 
 
 def insert_or_update(entity_class, entity_init_kwargs):
-    test_mode = entity_init_kwargs.pop('test_mode')
-    if not test_mode:
+    if get_application_id() != 'testbed-test':
         entity_init_kwargs['parent'] = model.ANCESTOR
     if entity_init_kwargs.pop('load_mode') == 'init':
         entity = entity_class(**entity_init_kwargs)
     else:  # load_mode == 'patch'
         # TODO: test coverage
         entity = get_entity_by_prop(
-            entity_class, entity_class.id, entity_init_kwargs['id'], test_mode,
+            entity_class, entity_class.id, entity_init_kwargs['id'],
             key_only=False)
         if entity is not None:
             entity.populate(**entity_init_kwargs)
@@ -99,7 +102,7 @@ def insert_or_update(entity_class, entity_init_kwargs):
     entity.put()
 
 
-def bulk_load(test_mode=False, load_mode='init', xml=None):
+def bulk_load(load_mode='init', xml=None):
     if load_mode == 'init':
         ndb.delete_multi(ndb.Query().iter(keys_only=True))  # clean up
         path = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
@@ -121,7 +124,7 @@ def bulk_load(test_mode=False, load_mode='init', xml=None):
             for item_node in kind_node:
                 entity = get_entity_by_prop(
                     entity_class, entity_class.id,
-                    int(item_node.find('id').text), test_mode)
+                    int(item_node.find('id').text))
                 entity.delete()
             continue
 
@@ -141,8 +144,7 @@ def bulk_load(test_mode=False, load_mode='init', xml=None):
                 elif property_class.__class__.__name__ == 'KeyProperty':
                     referred_kind = get_kind(property_class._kind)
                     f_kwargs = dict(kind=referred_kind,
-                                    prop=referred_kind.id,
-                                    test_mode=test_mode)
+                                    prop=referred_kind.id)
                     if property_class._repeated:
                         value_to_store = []
                         for property_node_child in property_node:
@@ -156,10 +158,7 @@ def bulk_load(test_mode=False, load_mode='init', xml=None):
                 else:
                     value_to_store = raw_value
                 entity_init_kwargs[property_name] = value_to_store
-            entity_init_kwargs.update({
-                'test_mode': test_mode,
-                'load_mode': load_mode
-            })
+            entity_init_kwargs.update({'load_mode': load_mode})
 
             insert_or_update(entity_class, entity_init_kwargs)
 

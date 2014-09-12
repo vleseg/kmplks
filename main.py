@@ -17,20 +17,24 @@
 from collections import OrderedDict
 from itertools import chain
 import json
-# import logging
 import os
 # Third-party imports
-from google.appengine.ext import deferred
+from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 from jinja2 import Environment, FileSystemLoader
 import webapp2
 from webapp2_extras import sessions
 # Project imports
+from db_tools import bulk_load, insert_or_update
 from model import Kompleks, Service, DocumentToService
 
 ENV = Environment(autoescape=True,
                   loader=FileSystemLoader(
                       os.path.join(os.path.dirname(__file__), 'templates')))
+
+
+class KompleksException(BaseException):
+    pass
 
 
 # Custom jinja2 filters and tests.
@@ -430,8 +434,33 @@ class AdminHandler(BaseHandler):
     template_filename = 'admin.html'
 
     def get(self):
-        # TODO: implement defer logic
         self.render()
+
+    def post(self):
+        load_mode = self.request.get('mode')
+        if load_mode == 'init':
+            taskqueue.add(url='/admin/worker', params={'mode': 'init'})
+        elif load_mode == 'patch':
+            xml = self.request.get('xml')
+            taskqueue.add(
+                url='/admin/worker', params={'mode': 'patch', 'xml': xml})
+        elif load_mode is None:
+            raise KompleksException('bulk load mode not specified')
+        else:
+            raise KompleksException(
+                'unknown bulk load mode: {}'.format(load_mode))
+        self.redirect('/admin')
+
+
+class AdminWorker(webapp2.RequestHandler):
+    def post(self):
+        load_mode = self.request.get('mode')
+
+        if load_mode == 'init':
+            bulk_load(load_mode='init')
+        else:  # load_mode == 'patch'
+            xml = self.request.get('xml')
+            bulk_load(load_mode='patch', xml=xml)
 
 
 config = {'webapp2_extras.sessions': {
@@ -439,6 +468,7 @@ config = {'webapp2_extras.sessions': {
     'session_max_age': 3600 * 24
 }}
 app = webapp2.WSGIApplication([
+    ('/admin/worker', AdminWorker),
     ('/admin', AdminHandler),
     ('/services', ServiceChoiceHandler),
     ('/result', ResultHandler),

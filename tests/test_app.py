@@ -17,13 +17,13 @@ class AppTest(unittest.TestCase):
         cls.testbed.activate()
         cls.testbed.init_datastore_v3_stub()
         cls.testbed.init_memcache_stub()
-        bulk_load(test_mode=True)
+        bulk_load()
 
     def insert_patch(self):
         path = os.path.join(os.path.dirname(__file__), 'test_patch_insert.xml')
         with open(path, 'r') as f:
             xml = f.read()
-        bulk_load(test_mode=True, load_mode='patch', xml=xml)
+        bulk_load(load_mode='patch', xml=xml)
 
     def test_standard_routine(self):
         start_page = self.testapp.get('/')
@@ -109,7 +109,7 @@ class AppTest(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__), 'test_patch_delete.xml')
         with open(path, 'r') as f:
             xml = f.read()
-        bulk_load(test_mode=True, load_mode='patch', xml=xml)
+        bulk_load(load_mode='patch', xml=xml)
 
         start_page = self.testapp.get('/')
         self.assertNotIn(u'Дурацкая походка', start_page)
@@ -118,7 +118,7 @@ class AppTest(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__), 'test_patch_update.xml')
         with open(path, 'r') as f:
             xml = f.read()
-        bulk_load(test_mode=True, load_mode='patch', xml=xml)
+        bulk_load(load_mode='patch', xml=xml)
 
         start_page = self.testapp.get('/')
         for assert_str in (u'Рождение ребенка', u'МФЦ г. Якутск',
