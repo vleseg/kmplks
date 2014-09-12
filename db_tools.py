@@ -102,9 +102,17 @@ def insert_or_update(entity_class, entity_init_kwargs):
     entity.put()
 
 
+def iter_kinds():
+    for name in model.__dict__:
+        kind = getattr(model, name)
+        if isinstance(kind, type) and issubclass(ndb.Model, kind):
+            yield kind
+
+
 def bulk_load(load_mode='init', xml=None):
     if load_mode == 'init':
-        ndb.delete_multi(ndb.Query().iter(keys_only=True))  # clean up
+        for kind in iter_kinds():
+            ndb.delete_multi(kind.query().iter(keys_only=True))  # clean up
         path = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
         with open(path, 'r') as f:
             xml = f.read()
