@@ -3,12 +3,10 @@ import os
 from google.appengine.api.app_identity import get_application_id
 from google.appengine.ext import ndb
 from lxml import etree
-from lxml.builder import E
 # Project imports
 import model
 
 PATH_TO_INIT_FILE = "init/init_data.xml"
-PARSER = etree.XMLParser(remove_comments=True)
 
 
 class DbToolsException(BaseException):
@@ -83,25 +81,11 @@ def get_kind(raw_kind):
         return raw_kind
 
 
-def insert_or_update(entity_kind, entity_properties, load_mode):
+def insert_or_update(entity_kind, entity_properties):
     if get_application_id() != 'testbed-test':
         entity_properties['parent'] = model.ANCESTOR
 
-    if load_mode == 'init':
-        entity = entity_kind(**entity_properties)
-    else:  # load_mode == 'patch'
-        entity = by_property(
-            entity_kind=entity_kind,
-            property_=entity_kind.id,
-            value=entity_properties['id'],
-            key_only=False
-        )
-        if entity is not None:
-            entity.populate(**entity_properties)
-        else:
-            entity = entity_kind(**entity_properties)
-
-    entity.put()
+    entity_kind(**entity_properties).put()
 
 
 def iter_existing_kinds():
@@ -115,35 +99,18 @@ def iter_existing_kinds():
             pass
 
 
-def bulk_load(load_mode='init', xml=None):
-    if load_mode == 'init':
+def initialize_datastore(path_to_xml=None):
+    if path_to_xml is None:  # not test mode; use init/init_data.xml
         for kind in iter_existing_kinds():
             ndb.delete_multi(kind.query().iter(keys_only=True))  # clean up
 
-        path = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
-        with open(path, 'r') as f:
-            xml = f.read()
-    elif load_mode == 'patch':
-        if xml is None:
-            raise DbToolsException("Patch not provided")
-    elif load_mode is None or load_mode == '':
-        raise DbToolsException('Bulk load mode not specified')
-    else:
-        raise DbToolsException("Unknown bulk load mode: {}".format(load_mode))
+        path_to_xml = os.path.join(
+            os.path.dirname(__file__), PATH_TO_INIT_FILE)
 
-    root = etree.fromstring(xml, PARSER)
+    p = etree.XMLParser(remove_comments=True)
 
-    for kind_node in root:
+    for kind_node in etree.parse(path_to_xml, parser=p).getroot():
         entity_kind = getattr(model, kind_node.tag)
-
-        if kind_node.get('delete') == 'true':
-            for item_node in kind_node:
-                by_property(
-                    entity_kind=entity_kind,
-                    property_=entity_kind.id,
-                    value=int(item_node.find('id').text)
-                ).delete()
-            continue
 
         for item_node in kind_node:
             entity_properties = {}
@@ -160,7 +127,9 @@ def bulk_load(load_mode='init', xml=None):
                 elif property_class.__class__.__name__ == 'KeyProperty':
                     referred_kind = get_kind(property_class._kind)
                     req_params = {
-                        'kind': referred_kind, 'property': referred_kind.id}
+                        'entity_kind': referred_kind,
+                        'property_': referred_kind.id
+                    }
                     if property_class._repeated:
                         value_to_store = []
                         for id_ in map(int, reader.xpath('item/text()')):
@@ -175,29 +144,4 @@ def bulk_load(load_mode='init', xml=None):
 
                 entity_properties[property_name] = value_to_store
 
-            insert_or_update(
-                entity_kind, entity_properties, load_mode=load_mode)
-
-
-def create_patch(modified):
-    original = os.path.join(os.path.dirname(__file__), PATH_TO_INIT_FILE)
-
-    modified_root = etree.fromstring(modified, parser=PARSER)
-    original_root = etree.parse(original, parser=PARSER).getroot()
-    patch_root = etree.Element('data')
-
-    for kind_node in modified_root:
-        patch_kind_node = etree.Element(kind_node.tag)
-        patch_kind_node_w_delete = etree.Element(
-            kind_node.tag, attrib={'delete': 'true'})
-
-        ids_xpath = 'item/id/text()'
-        original_ids = original_root.find(kind_node.tag).xpath(ids_xpath)
-        modified_ids = kind_node.xpath(ids_xpath)
-
-        for id_ in set(original_ids) - set(modified_ids):
-            patch_kind_node_w_delete.append(E.item(E.id(id_)))
-
-        for id_ in modified_ids:
-            pass  # TODO: finish
-
+            insert_or_update(entity_kind, entity_properties)

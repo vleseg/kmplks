@@ -1,0 +1,1521 @@
+<test_data.xml>
+    <DocClass>
+        <item>
+            <id>1</id>
+            <sort_key>1</sort_key>
+            <value>Заявления</value>
+        </item>
+        <item>
+            <id>2</id>
+            <sort_key>2</sort_key>
+            <value>Удостоверения личности</value>
+        </item>
+        <item>
+            <id>3</id>
+            <sort_key>3</sort_key>
+            <value>Документы, удостоверяющие полномочия представителя</value>
+        </item>
+        <item>
+            <id>4</id>
+            <sort_key>4</sort_key>
+            <value>Документы о предоставлении персональных данных</value>
+        </item>
+        <item>
+            <id>5</id>
+            <sort_key>5</sort_key>
+            <value>Свидетельства ЗАГС</value>
+        </item>
+        <item>
+            <id>6</id>
+            <sort_key>6</sort_key>
+            <value>Свидетельства ФНС</value>
+        </item>
+        <item>
+            <id>7</id>
+            <sort_key>7</sort_key>
+            <value>Другое</value>
+        </item>
+        <item>
+            <id>8</id>
+            <sort_key>8</sort_key>
+            <value>Документы иностранцев</value>
+        </item>
+        <item>
+            <id>9</id>
+            <sort_key>9</sort_key>
+            <value>Фотографии</value>
+        </item>
+    </DocClass>
+    <MFC>
+        <item>
+            <id>1</id>
+            <name>МФЦ г. Якутск</name>
+        </item>
+        <item>
+            <id>2</id>
+            <name>МФЦ г. Нюрба</name>
+        </item>
+    </MFC>
+    <Kompleks>
+        <item>
+            <id>1</id>
+            <name>Рождение ребенка</name>
+            <mfcs>
+                <item>1</item>
+                <item>2</item>
+            </mfcs>
+        </item>
+    </Kompleks>
+    <OGV>
+        <item>
+            <id>1</id>
+            <name>Управление записи актов гражданского состояния по Республике
+                Саха (Якутия)
+            </name>
+            <short_name>УЗАГС</short_name>
+        </item>
+        <item>
+            <id>2</id>
+            <name>Управление Федеральной миграционной службы России по
+                Республике Саха (Якутия)
+            </name>
+            <short_name>УФМС</short_name>
+        </item>
+        <item>
+            <id>3</id>
+            <name>Министерство труда и социального развития Республики Саха
+                (Якутия)
+            </name>
+            <short_name>Минтруда</short_name>
+        </item>
+        <item>
+            <id>4</id>
+            <name>Министерство по делам молодежи и семейной политики Республики
+                Саха (Якутия)
+            </name>
+            <short_name>Минмолодежи</short_name>
+        </item>
+        <item>
+            <id>5</id>
+            <name>Муниципальное казенное учреждение «Агентство земельных
+                отношений» при Департаменте имущественных и земельных отношений
+                Окружной администрации г. Якутска
+            </name>
+            <short_name>МКУ «АЗО» Якутск</short_name>
+        </item>
+    </OGV>
+    <Service>
+        <item>
+            <id>1</id>
+            <name>Государственная регистрация рождения ребенка</name>
+            <short_description>Только для родителей, состоящих в браке и
+                имеющих регистрацию по месту обращения (или если ребенок
+                родился по месту обращения)
+            </short_description>
+            <kb_id>244</kb_id>
+            <prerequisite_description>Уже есть свидетельство о рождении
+            </prerequisite_description>
+            <max_days>0</max_days>
+            <max_work_days>4</max_work_days>
+            <ogv>1</ogv>
+            <containing_komplekses>
+                <item>1</item>
+            </containing_komplekses>
+        </item>
+        <item>
+            <id>2</id>
+            <name>Регистрация по месту жительства</name>
+            <short_description>Только для проживающих в доме, жилом помещении
+                (не ведомственном) на территории ГО «Город Якутск»
+            </short_description>
+            <kb_id>443</kb_id>
+            <prerequisite_description>Уже есть прописка
+            </prerequisite_description>
+            <max_days>0</max_days>
+            <max_work_days>11</max_work_days>
+            <terms_description>Если не нужно выполнять межведомственные
+                запросы, срок сокращается до 6 рабочих дней
+            </terms_description>
+            <ogv>2</ogv>
+            <containing_komplekses>
+                <item>1</item>
+            </containing_komplekses>
+            <dependencies>
+                <item>1</item>
+            </dependencies>
+        </item>
+        <item>
+            <id>3</id>
+            <name>Ежемесячное пособие на ребенка</name>
+            <short_description>Только для семей с низким среднедушевым доходом
+                (ниже прожиточного минимума)
+            </short_description>
+            <kb_id>304</kb_id>
+            <max_days>10</max_days>
+            <max_work_days>3</max_work_days>
+            <ogv>3</ogv>
+            <containing_komplekses>
+                <item>1</item>
+            </containing_komplekses>
+            <dependencies>
+                <item>1</item>
+                <item>2</item>
+            </dependencies>
+        </item>
+        <item>
+            <id>4</id>
+            <name>Выдача нагрудного знака и удостоверения многодетной семьи
+            </name>
+            <short_description>Только для многодетных семей (3 и более детей в
+                возрасте до 18 лет)
+            </short_description>
+            <kb_id>602</kb_id>
+            <max_days>0</max_days>
+            <max_work_days>43</max_work_days>
+            <ogv>4</ogv>
+            <related_komplekses>
+                <item>1</item>
+            </related_komplekses>
+            <dependencies>
+                <item>1</item>
+                <item>2</item>
+            </dependencies>
+        </item>
+        <item>
+            <id>5</id>
+            <name>Единовременное пособие при рождении ребенка</name>
+            <short_description>Только если оба родителя не работают (в т. ч.
+                учатся). Нужна регистрация, если родители — не студенты
+            </short_description>
+            <kb_id>211</kb_id>
+            <max_days>10</max_days>
+            <max_work_days>3</max_work_days>
+            <ogv>3</ogv>
+            <containing_komplekses>
+                <item>1</item>
+            </containing_komplekses>
+            <dependencies>
+                <item>1</item>
+            </dependencies>
+        </item>
+        <item>
+            <id>6</id>
+            <name>Предоставление земельного участка многодетной семье</name>
+            <short_description>
+                <p>Для многодетных семей, непрерывно проживающих не менее 5 лет
+                    по месту подачи заявления, если их дети:
+                </p>
+                <ul>
+                    <li>несовершеннолетние;</li>
+                    <li>стали совершеннолетними в период с 17.06.2011 по
+                        10.12.2011;
+                    </li>
+                    <li>не старше 25 лет, обучаются по очной форме обучения и
+                        не состоят в браке.
+                    </li>
+                </ul>
+            </short_description>
+            <kb_id>605</kb_id>
+            <max_days>30</max_days>
+            <max_work_days>3</max_work_days>
+            <ogv>5</ogv>
+            <related_komplekses>
+                <item>1</item>
+            </related_komplekses>
+            <dependencies>
+                <item>1</item>
+            </dependencies>
+        </item>
+    </Service>
+    <Document>
+        <item>
+            <id>1</id>
+            <name>Заявление о рождении, форма №1</name>
+            <o_count_method>per_service</o_count_method>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>2</id>
+            <name>Документ, удостоверяющий личность заявителя</name>
+            <description>
+                <p>Предоставляется в любом случае. Копия снимается со следующих
+                    страниц паспорта (даже если они пустые):
+                </p>
+                <ul>
+                    <li>со сведениями о личности;</li>
+                    <li>со сведениями о месте жительства (прописка)</li>
+                    <li>со сведениями о семейном положении;</li>
+                    <li>со сведениями о ранее выданных паспортах.</li>
+                </ul>
+                <p>С других страниц копия снимается, если они заполнены.</p>
+            </description>
+            <doc_class>2</doc_class>
+        </item>
+        <item>
+            <id>3</id>
+            <name>Документ, удостоверяющий личность второго родителя</name>
+            <description>
+                <p>Если родители состоят в браке или было установлено
+                    отцовство. Копия снимается со следующих страниц паспорта
+                    (даже если они пустые):
+                </p>
+                <ul>
+                    <li>со сведениями о личности;</li>
+                    <li>со сведениями о месте жительства (прописка)</li>
+                    <li>со сведениями о семейном положении;</li>
+                    <li>со сведениями о ранее выданных паспортах.</li>
+                </ul>
+                <p>С других страниц копия снимается, если они заполнены.</p>
+            </description>
+            <doc_class>3</doc_class>
+        </item>
+        <item>
+            <id>4</id>
+            <name>Свидетельство о заключении брака</name>
+            <description>Если родители состоят в зарегистрированном браке.
+            </description>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>5</id>
+            <name>Медицинское свидетельство о рождении, форма №103/У</name>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>6</id>
+            <name>Согласие на обработку персональных данных</name>
+            <description>Если подаются документы или информация о другом лице
+                (не заявителе; например, о втором родителе). Подписывается
+                лично лицом, от которого такое согласие берется (субъект
+                персональных данных). Требуется одно такое согласие на каждый
+                орган, куда подаются документы.
+            </description>
+            <o_count_method>per_ogv</o_count_method>
+            <o_supply_type>no_return</o_supply_type>
+            <doc_class>4</doc_class>
+        </item>
+        <item>
+            <id>7</id>
+            <name>Доверенность на передачу согласия на обработку ПДн</name>
+            <description>Предоставляется вместе с согласием на обработку ПДн от
+                другого лица (не заявителя). Подписывается лично субъектом
+                персональных данных. Требуются копии такой доверенности по
+                числу согласий на обработку ПДн, т. е. в каждый орган, куда
+                подаются документы.
+            </description>
+            <c_count_method>per_ogv</c_count_method>
+            <doc_class>4</doc_class>
+        </item>
+        <item>
+            <id>8</id>
+            <name>Заявление о регистрации по месту жительства, форма №6</name>
+            <description>Форма заявления предоставляется консультантом МФЦ.
+            </description>
+            <o_count_method>per_service</o_count_method>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>9</id>
+            <name>Свидетельство о рождении</name>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>10</id>
+            <name>Документ о праве на жилое помещение</name>
+            <description>Договор соцнайма, свидетельство о государственной
+                регистрации права и т. д Если документ прошел государственную
+                регистрацию, можно предоставить только его реквизиты. Вместо
+                оригинала возможно предоставление нотариально удостоверенной
+                копии.
+            </description>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>11</id>
+            <name>Домовая книга</name>
+            <description>При наличии</description>
+            <o_supply_type>return_with_result</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>12</id>
+            <name>Заявление о назначении ежемесячного пособия на ребенка</name>
+            <description>
+                <p>В заявлении указываются:</p>
+                <ul>
+                    <li>
+                        <p>сведения о родителе (законном представителе)
+                            ребенка:
+                        </p>
+                        <ul>
+                            <li>ФИО, дата и место рождения;</li>
+                            <li>адрес места жительства, места фактического
+                                проживания;
+                            </li>
+                            <li>паспортные данные;</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <p>сведения о детях:</p>
+                        <ul>
+                            <li>ФИО;</li>
+                            <li>дата рождения;</li>
+                        </ul>
+                    </li>
+                    <li>номер филиала банка и номер банковского счета.</li>
+                </ul>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>13</id>
+            <name>Объяснительная</name>
+            <description>Пишется прямо в заявлении о назначении пособия, если с
+                начала текущего года или с момента рождения последнего ребенка
+                (если он родился в текущем году) заявитель сменил место
+                жительства (определяется по штампу о прописке в паспорте).
+                Нужно указать в объяснительной предыдущие места регистрации.
+                Вместо объяснительной можно приложить к заявлению справку из
+                УСЗН (срок действия — 30 дней) с предыдущего места жительства.
+            </description>
+            <is_a_paper_document>0</is_a_paper_document>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>14</id>
+            <name>Свидетельство о регистрации по месту пребывания</name>
+            <description>Если в паспорте нет штампов о регистрации по месту
+                жительства и нет другого документа, подтверждающего совместное
+                проживание с ребенком.
+            </description>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>15</id>
+            <name>Свидетельство об усыновлении</name>
+            <description>Предоставляется, если ребенок был усыновлен.
+            </description>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>16</id>
+            <name>Справка о рождении, форма №25</name>
+            <description>
+                <p>Предоставляется одинокой матерью.</p>
+                <p>Справка не требуется, если в графе «отец» свидетельства о
+                    рождении ребенка стоит прочерк.
+                </p>
+            </description>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>17</id>
+            <name>Свидетельство о расторжении брака</name>
+            <description>Если родители ранее состояли в законном браке.
+            </description>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>18</id>
+            <name>Свидетельство об установлении отцовства</name>
+            <description>При наличии факта установления отцовства.
+            </description>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>19</id>
+            <name>Трудовая книжка</name>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>20</id>
+            <name>Справка о доходах с места работы</name>
+            <description>Сведения предоставляются за 3 последних месяца. Срок
+                действия справки — 30 дней.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>21</id>
+            <name>Книга учета расходов и доходов</name>
+            <description>Предоставляется ИП, применяющими патентную систему
+                налогообложения.
+            </description>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>22</id>
+            <name>Налоговая декларация</name>
+            <description>Предоставляется ИП, не применяющими патентную систему
+                налогообложения. Должна содержать отметку ФНС о приеме.
+            </description>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>23</id>
+            <name>Сведения о свидетельстве о регистрации в качестве ИП</name>
+            <description>Предоставляются ИП в свободной форме. Возможно
+                предоставление и самого свидетельства о регистрации в качестве
+                ИП.
+            </description>
+            <is_a_paper_document>0</is_a_paper_document>
+            <doc_class>6</doc_class>
+        </item>
+        <item>
+            <id>24</id>
+            <name>Свидетельство о регистрации по месту жительства</name>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>25</id>
+            <name>Справка о составе семьи</name>
+            <description>Предоставляется по желанию для подтверждения
+                совместного проживания родителя и ребенка. Срок действия — 30
+                дней.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <o_count_method>per_service</o_count_method>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>26</id>
+            <name>Документ, подтверждающий совместное проживание с ребенком
+            </name>
+            <description>
+                <p>Таким документом может быть:</p>
+                <ul>
+                    <li>справка участкового полицейского;</li>
+                    <li>справка коменданта общежития;</li>
+                    <li>справка из местной администрации.</li>
+                </ul>
+                <p>Срок действия всех справок — 30 дней.</p>
+            </description>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>27</id>
+            <name>Реквизиты номера лицевого счета заявителя в кредитном
+                учреждении
+            </name>
+            <description>
+                <p>Указываются в заявлении. Счет должен быть открыт на
+                    территории Республики, в одном из следующих банков:
+                    «Сбербанк», «Алмазэргиэнбанк», «Россельхозбанк».
+                    «Нерюнгрибанк».«Газпромбанк». «ФИА-банк».
+                </p>
+                <p>Обязательно наличие номера лицевого счета и номера филиала
+                    банка.
+                </p>
+                <p>О смене паспортных данных, имени (если будут) заявитель,
+                    обязан уведомить банк до дня перечисления ближайшей
+                    выплаты.
+                </p>
+            </description>
+            <is_a_paper_document>0</is_a_paper_document>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>28</id>
+            <name>Простая доверенность</name>
+            <description>При обращении представителя.</description>
+            <doc_class>3</doc_class>
+        </item>
+        <item>
+            <id>29</id>
+            <name>Нотариально удостоверенная доверенность</name>
+            <description>При обращении представителя.</description>
+            <doc_class>3</doc_class>
+        </item>
+        <item>
+            <id>30</id>
+            <name>Акт органа опеки и попечительства</name>
+            <description>При обращении опекуна (попечителя).</description>
+            <doc_class>3</doc_class>
+        </item>
+        <item>
+            <id>31</id>
+            <name>Справка Пенсионного фонда о размере пенсии</name>
+            <description>Должна содержать сведения о размере пенсии за
+                последние 3 месяца. Предоставляется по желанию.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>3</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>32</id>
+            <name>Справка из центра занятости населения</name>
+            <description>
+                <p>Может содержать сведения о выплате пособия по безработице за
+                    последние 3 месяца, либо сведения о невыплате такого
+                    пособия.
+                </p>
+                <p>Срок действия — 30 дней. Предоставляется по желанию.</p>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>33</id>
+            <name>Справка ФССП о неполучении алиментов</name>
+            <description>Срок действия справки — 30 дней. Предоставляется по
+                желанию
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>34</id>
+            <name>Справка о размере алиментов</name>
+            <description>
+                <p>Срок действия справки — 30 дней.</p>
+                <p>В справке должен быть отражен размер полученных алиментов за
+                    последние три месяца.
+                </p>
+                <p>Если размер алиментов выражен в доле от зарплаты —
+                    потребуется также справка о размере зарплаты.
+                </p>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>35</id>
+            <name>Документ, удостоверяющий личность с отметкой о выдаче вида на
+                жительство
+            </name>
+            <description>Если получатель услуг является иностранным гражданином
+                или лицом без гражданства, постоянно проживающим на территории
+                Российской Федерации
+            </description>
+            <doc_class>8</doc_class>
+        </item>
+        <item>
+            <id>36</id>
+            <name>Разрешение на временное проживание</name>
+            <description>Если получатель услуги является иностранным
+                гражданином или лицом без гражданства, временно проживающим на
+                территории Российской Федерации.
+            </description>
+            <doc_class>8</doc_class>
+        </item>
+        <item>
+            <id>37</id>
+            <name>Удостоверение беженца</name>
+            <description>Предоставляется беженцами.</description>
+            <doc_class>8</doc_class>
+        </item>
+        <item>
+            <id>38</id>
+            <name>Документ, подтверждающий факт рождения ребенка</name>
+            <description>
+                <p>Если ребенок родился на территории иностранного
+                    государства.
+                </p>
+                <p>Выдается компетентным органом иностранного государства.
+                    Должно быть установленным образом легализовано для
+                    использования на территории России и переведено.
+                </p>
+            </description>
+            <doc_class>8</doc_class>
+        </item>
+        <item>
+            <id>39</id>
+            <name>Свидетельство о рождении ребенка, выданное консульским
+                учреждением РФ за пределами территории РФ
+            </name>
+            <description>При рождении ребенка на территории иностранного
+                государства.
+            </description>
+            <doc_class>8</doc_class>
+        </item>
+        <item>
+            <id>40</id>
+            <name>Заявление о выдаче нагрудного знака и удостоверения
+                многодетной семьи
+            </name>
+            <description>Форма утв. Указом Президента РС(Я) от 05.07.2013 года
+                №2162.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>41</id>
+            <name>Фотография 3х4</name>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>9</doc_class>
+        </item>
+        <item>
+            <id>42</id>
+            <name>Документ о перемене имени</name>
+            <description>
+                <p>Таким документом может быть:</p>
+                <ul>
+                    <li>свидетельство о заключении брака;</li>
+                    <li>свидетельство о расторжении брака;</li>
+                    <li>свидетельство о перемене имени.</li>
+                </ul>
+            </description>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>43</id>
+            <name>Свидетельство о смерти либо решение суда об объявлении
+                гражданина умершим
+            </name>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>44</id>
+            <name>Решение суда о признании гражданина недееспособным,
+                ограниченно дееспособным
+            </name>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>45</id>
+            <name>Решение суда об ограничении родительских прав, о лишении
+                родительских прав, об отмене усыновления
+            </name>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>46</id>
+            <name>Заявление о назначении единовременного пособия при рождении
+                ребенка
+            </name>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>47</id>
+            <name>Справка о рождении, форма №24</name>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>5</doc_class>
+        </item><item>
+            <id>48</id>
+            <name>Справка из воинской части о прохождении службы по призыву
+            </name>
+            <description>
+                <p>Предоставляется при прохождении отцом ребенка службы по
+                    призыву. Предоставляется по желанию.
+                </p>
+                <p>От родителя, с которым брак был расторгнут и с которым
+                    ребенок не проживает книжка не требуется
+                </p>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>49</id>
+            <name>Заявление о включении в список нуждающихся в получении
+                земельного участка
+            </name>
+            <description>
+                <p>При заполнении графы «Предполагаемая площадь» исходить из
+                    следующих показателей:
+                </p>
+                <ul>
+                    <li>под личное подсобное хозяйство: 1000—3000 кв. м.;</li>
+                    <li>под сайылычное хозяйство: 1500—10000 кв. м.;</li>
+                    <li>под садоводство и огородничество: 100—2500 кв. м.;</li>
+                    <li>под дачное строительство: 100—4000 кв. м.;</li>
+                    <li>под ИЖС: 800—2500 кв. м.;</li>
+                    <li>вид разрешенного использования, испрашиваемое право на
+                        земельный участок.
+                    </li>
+                </ul>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>1</doc_class>
+        </item>
+        <item>
+            <id>50</id>
+            <name>Паспорт ребенка</name>
+            <description>Предоставляется на каждого ребенка в семье в возрасте
+                от 14 лет.
+            </description>
+            <doc_class>2</doc_class>
+        </item>
+        <item>
+            <id>51</id>
+            <name>Решение об усыновлении, судебное решение и иные документы об
+                усыновлении, признании отцовства
+            </name>
+            <description>Если в семье есть усыновленные, удочеренные дети.
+            </description>
+            <doc_class>5</doc_class>
+        </item>
+        <item>
+            <id>52</id>
+            <name>Справка органа местного самоуправления о постановке на учет в
+                качестве нуждающегося в жилом помещении по договору соцнайма
+            </name>
+            <description>Для подтверждения права первоочердного получения
+                земельного участка.
+            </description>
+            <doc_class>7</doc_class>
+        </item>
+        <item>
+            <id>53</id>
+            <name>Справка о реализации гражданином права на бесплатное
+                приобретение земельного участка по основаниям и в порядке,
+                установленным земельным законодательством
+            </name>
+            <description>Если один из супругов зарегистрирован в другом
+                муниципальном образовании. По желанию заявителя.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>54</id>
+            <name>Справка органа местного самоуправления о том, что супруг
+                (супруга) не стоит на регистрационном учете
+            </name>
+            <description>Если один из супругов зарегистрирован в другом
+                муниципальном образовании. По желанию заявителя.
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>55</id>
+            <name>Справка с прежнего места работы о неполучении пособия по
+                месту работы на момент увольнения
+            </name>
+            <description>Предоставляется, если один из родителей (оба родителя)
+                работал с момента рождения ребенка до момента обращения за
+                пособием
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>56</id>
+            <name>Справка с места учебы</name>
+            <description>
+                <p>Предоставляется на каждого родителя, обучающегося в
+                    учреждении высшего или среднего образования. Срок действия
+                    справки — 30 дней.
+                </p>
+                <p>От родителя, с которым брак был расторгнут и с которым
+                    ребенок не проживает книжка не требуется
+                </p>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+        <item>
+            <id>57</id>
+            <name>Справка из ТО ФСС РС(Я) об отсутствии сведений о регистрации
+                в качестве страхователя и о неполучении единовременного пособия
+                при рождении ребенка
+            </name>
+            <description>
+                <p>Предоставляется ИП, нотариусами, адвокатами по желанию.
+                </p>
+                <p>От родителя, с которым брак был расторгнут и с которым
+                    ребенок не проживает книжка не требуется
+                </p>
+            </description>
+            <o_supply_type>no_return</o_supply_type>
+            <n_copies>0</n_copies>
+            <doc_class>7</doc_class>
+            <o_count_method>per_service</o_count_method>
+        </item>
+    </Document>
+    <DocumentToService>
+        <!-- Birth registration -->
+        <item>
+            <id>1</id>
+            <document>1</document>
+            <service>1</service>
+        </item>
+        <item>
+            <id>2</id>
+            <document>2</document>
+            <service>1</service>
+            <description>Предоставляется в любом случае</description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>3</id>
+            <document>3</document>
+            <service>1</service>
+            <description>Предоставляется в любом случае</description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>4</id>
+            <document>4</document>
+            <service>1</service>
+            <description>Предоставляется в любом случае.</description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>5</id>
+            <document>5</document>
+            <service>1</service>
+        </item>
+        <item>
+            <id>6</id>
+            <document>6</document>
+            <service>1</service>
+        </item>
+        <item>
+            <id>7</id>
+            <document>7</document>
+            <service>1</service>
+        </item>
+        <!-- Resident registration -->
+        <item>
+            <id>8</id>
+            <document>8</document>
+            <service>2</service>
+            <kompleks>1</kompleks>
+            <description>Заявление подписывается законным представителем
+                (родителем, опекуном) ребенка.
+            </description>
+        </item>
+        <item>
+            <id>9</id>
+            <document>9</document>
+            <service>2</service>
+            <kompleks>1</kompleks>
+            <o_supply_type>return_with_result</o_supply_type>
+            <n_copies>0</n_copies>
+        </item>
+        <item>
+            <id>10</id>
+            <document>2</document>
+            <service>2</service>
+            <kompleks>1</kompleks>
+            <description>Паспорт родителя (опекуна)</description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>11</id>
+            <document>10</document>
+            <service>2</service>
+        </item>
+        <item>
+            <id>12</id>
+            <document>11</document>
+            <service>2</service>
+        </item>
+        <!-- Monthly child welfare -->
+        <item>
+            <id>13</id>
+            <document>12</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>14</id>
+            <document>14</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>15</id>
+            <document>2</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>16</id>
+            <document>3</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>17</id>
+            <document>14</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>18</id>
+            <document>6</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>19</id>
+            <document>7</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>20</id>
+            <document>9</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>21</id>
+            <document>15</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>22</id>
+            <document>16</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>23</id>
+            <document>4</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>24</id>
+            <document>17</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>25</id>
+            <document>18</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>26</id>
+            <document>19</document>
+            <service>3</service>
+            <description>
+                <p>Должна содержать запись об увольнении с последнего места
+                    работы.
+                </p>
+                <p>Предоставляется родителем (или обоими родителями), если он
+                    не работает, трудоспособный, нигде не обучается по очной
+                    форме.
+                </p>
+                <p>Также предоставляется ИП.</p>
+                <p>Копии снимаются со страниц со сведениями о личности, а также
+                    со всех страниц за период с момента рождения ребенка.
+                </p>
+                <p>Если книжка не может быть предоставлена (например, утеряна
+                    или никогда не оформлялась), заявитель пишет объяснительную
+                    на бланке заявления.
+                </p>
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>27</id>
+            <document>20</document>
+            <service>3</service>
+            <description>
+                <p>Предоставляется каждым работающим членом семьи.</p>
+                <p>Можно заменить эту справку 2-НДФЛ.</p>
+            </description>
+        </item>
+        <item>
+            <id>28</id>
+            <document>21</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>29</id>
+            <document>22</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>30</id>
+            <document>24</document>
+            <service>3</service>
+            <description>Свидетельство, оформленное на ребенка.
+                Предоставляется, если адрес, указанный в свидетельстве
+                совпадает с адресом, указанным у родителя в паспорте.
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>31</id>
+            <document>25</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>32</id>
+            <document>26</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>33</id>
+            <document>27</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>34</id>
+            <document>28</document>
+            <service>3</service>
+            <description>Предоставляется, если в заявлении указаны реквизиты
+                банковского счета получателя услуги.
+            </description>
+        </item>
+        <item>
+            <id>35</id>
+            <document>29</document>
+            <service>3</service>
+            <description>Предоставляется, если в заявлении указаны реквизиты
+                банковского счета представителя.
+            </description>
+        </item>
+        <item>
+            <id>36</id>
+            <document>30</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>37</id>
+            <document>31</document>
+            <service>3</service>
+            <description>Предоставляется на каждого члена семьи, получающего
+                пенсию по старости, по инвалидности, по потере кормильца.
+            </description>
+        </item>
+        <item>
+            <id>38</id>
+            <document>32</document>
+            <service>3</service>
+            <description>Предоставляется родителем (или обоими родителями),
+                стоящим на учете в центре занятости в качестве безработного.
+            </description>
+        </item>
+        <item>
+            <id>39</id>
+            <document>33</document>
+            <service>3</service>
+            <description>Предоставляется, если родители в разводе, а ребенок не
+                получает алименты
+            </description>
+        </item>
+        <item>
+            <id>40</id>
+            <document>34</document>
+            <service>3</service>
+            <description>Предоставляется, если родители в разводе, а ребенок
+                получает алименты
+            </description>
+        </item>
+        <item>
+            <id>41</id>
+            <document>35</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>43</id>
+            <document>36</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>44</id>
+            <document>37</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>45</id>
+            <document>38</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>46</id>
+            <document>39</document>
+            <service>3</service>
+        </item>
+        <item>
+            <id>47</id>
+            <document>56</document>
+            <service>3</service>
+        </item>
+        <!-- Long family breastplate and license -->
+        <item>
+            <id>48</id>
+            <document>40</document>
+            <service>4</service>
+        </item>
+        <item>
+            <id>49</id>
+            <document>2</document>
+            <service>4</service>
+            <description>
+                <p>Таким документом может быть:</p>
+                <ul>
+                    <li>паспорт гражданина РФ;</li>
+                    <li>паспорт моряка;</li>
+                    <li>военный билет;</li>
+                    <li>дипломатический паспорт гражданина РФ;</li>
+                    <li>служебный паспорт;</li>
+                    <li>паспорт гражданина СССР;</li>
+                    <li>временное удостоверение личности гражданина РФ по форме
+                        №2-П.
+                    </li>
+                </ul>
+            </description>
+        </item>
+        <item>
+            <id>50</id>
+            <document>41</document>
+            <service>4</service>
+            <description>На фотографии должен быть изображен будущий владелец
+                удостоверения.
+            </description>
+        </item>
+        <item>
+            <id>51</id>
+            <document>28</document>
+            <service>4</service>
+        </item>
+        <item>
+            <id>52</id>
+            <document>9</document>
+            <service>4</service>
+            <description>Предоставляется на каждого ребенка в семье младше 18
+                лет.
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>53</id>
+            <document>15</document>
+            <service>4</service>
+            <description>Предоставляется на каждого усыновленного ребенка в
+                семье младше 18 лет.
+            </description>
+        </item>
+        <item>
+            <id>54</id>
+            <document>42</document>
+            <service>4</service>
+            <description>Предоставляется, если получатель услуги менял фамилию,
+                имя, отчество с момент рождения последнего ребенка.
+            </description>
+        </item>
+        <item>
+            <id>55</id>
+            <document>43</document>
+            <service>4</service>
+            <description>При обращении отца, если мать умерла или признана
+                судом умершей
+            </description>
+        </item>
+        <item>
+            <id>56</id>
+            <document>44</document>
+            <service>4</service>
+            <description>При обращении отца, если мать была признана судом
+                недееспособной или ограниченно дееспособной.
+            </description>
+        </item>
+        <item>
+            <id>57</id>
+            <document>45</document>
+            <service>4</service>
+            <description>При обращении отца, если мать была лишена родительских
+                прав либо в ее отношении отменено решение об усыновлении.
+            </description>
+        </item>
+        <!-- One-time child birth welfare -->
+        <item>
+            <id>58</id>
+            <document>46</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>59</id>
+            <document>2</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>60</id>
+            <document>3</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>61</id>
+            <document>14</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>62</id>
+            <document>6</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>63</id>
+            <document>7</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>64</id>
+            <document>9</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>65</id>
+            <document>47</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>66</id>
+            <document>16</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>67</id>
+            <document>4</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>68</id>
+            <document>17</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>69</id>
+            <document>18</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>70</id>
+            <document>19</document>
+            <service>5</service>
+            <description>
+                <p>Предоставляется родителем (или обоими родителями), если он
+                    не работает, трудоспособный, нигде не обучается по очной
+                    форме и не служит в Вооруженных силах по призыву.
+                </p>
+                <p>Копии снимаются со страниц со сведениями о личности, а также
+                    со всех страниц за период с момента рождения ребенка.
+                </p>
+                <p>Если книжка не может быть предоставлена (например, утеряна
+                    или никогда не оформлялась), заявитель пишет объяснительную
+                    на бланке заявления.
+                </p>
+                <p>От родителя, с которым брак был расторгнут и с которым
+                    ребенок не проживает книжка не требуется
+                </p>
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>71</id>
+            <document>56</document>
+            <service>5</service>
+            <description>От родителя, с которым брак был расторгнут и с которым
+                ребенок не проживает справка не требуется
+            </description>
+        </item>
+        <item>
+            <id>72</id>
+            <document>23</document>
+            <service>5</service>
+            <description>От родителя, с которым брак был расторгнут и с которым
+                ребенок не проживает книжка не требуется
+            </description>
+        </item>
+        <item>
+            <id>73</id>
+            <document>24</document>
+            <service>5</service>
+            <description>Свидетельство, оформленное на ребенка.
+                Предоставляется, если адрес, указанный в свидетельстве
+                совпадает с адресом, указанным у родителя в паспорте.
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>74</id>
+            <document>25</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>75</id>
+            <document>26</document>
+            <service>5</service>
+            <description>
+                <p>Таким документом может быть:</p>
+                <ul>
+                    <li>свидетельство о регистрации по месту пребывания (на
+                        ребенка);
+                    </li>
+                    <li>справка участкового полицейского;</li>
+                    <li>справка коменданта общежития;</li>
+                    <li>справка из местной администрации.</li>
+                </ul>
+                <p>Срок действия всех справок — 30 дней.</p>
+            </description>
+        </item>
+        <item>
+            <id>76</id>
+            <document>48</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>77</id>
+            <document>27</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>78</id>
+            <document>28</document>
+            <service>5</service>
+            <description>Предоставляется, если в заявлении указаны реквизиты
+                банковского счета получателя услуги.
+            </description>
+        </item>
+        <item>
+            <id>79</id>
+            <document>29</document>
+            <service>5</service>
+            <description>Предоставляется, если в заявлении указаны реквизиты
+                банковского счета представителя.
+            </description>
+        </item>
+        <item>
+            <id>80</id>
+            <document>35</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>81</id>
+            <document>36</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>82</id>
+            <document>37</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>83</id>
+            <document>55</document>
+            <service>5</service>
+        </item>
+        <item>
+            <id>84</id>
+            <document>57</document>
+            <service>5</service>
+        </item>
+        <!-- Land for a long family -->
+        <item>
+            <id>85</id>
+            <document>49</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>86</id>
+            <document>2</document>
+            <service>6</service>
+            <description>Копии снимаются со страниц о личности, регистрации по
+                месту жительства, семейном положении.
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>87</id>
+            <document>3</document>
+            <service>6</service>
+            <description>Копии снимаются со страниц о личности, регистрации по
+                месту жительства, семейном положении.
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>88</id>
+            <document>29</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>89</id>
+            <document>9</document>
+            <service>6</service>
+            <description>Предоставляется на каждого ребенка в семье в возрасте
+                до 14 лет.
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>\
+            <id>90</id>
+            <document>50</document>
+            <service>6</service>
+            <description>При достижении ребенком возраста 16 лет, дополнительно
+                предоставляется копия страницы о семейном положении.
+            </description>
+        </item>
+        <item>
+            <id>91</id>
+            <document>4</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>92</id>
+            <document>51</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>93</id>
+            <document>52</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>94</id>
+            <document>56</document>
+            <service>6</service>
+            <description>От каждого ребенка, обучающегося по очной форме
+                обучения. Срок действия справки — 30 дней.
+            </description>
+            <override_description>1</override_description>
+        </item>
+        <item>
+            <id>95</id>
+            <document>52</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>96</id>
+            <document>53</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>97</id>
+            <document>54</document>
+            <service>6</service>
+        </item>
+        <item>
+            <id>98</id>
+            <document>25</document>
+            <service>6</service>
+            <description>По желанию заявителя.</description>
+            <override_description>1</override_description>
+        </item>
+    </DocumentToService>
+</test_data.xml>

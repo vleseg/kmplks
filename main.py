@@ -25,7 +25,7 @@ from jinja2 import Environment, FileSystemLoader
 import webapp2
 from webapp2_extras import sessions
 # Project imports
-from db_tools import bulk_load, insert_or_update
+from db_tools import initialize_datastore, insert_or_update
 from model import Kompleks, Service, DocumentToService
 
 ENV = Environment(autoescape=True,
@@ -437,30 +437,15 @@ class AdminHandler(BaseHandler):
         self.render()
 
     def post(self):
-        load_mode = self.request.get('mode')
-        if load_mode == 'init':
-            taskqueue.add(url='/admin/worker', params={'mode': 'init'})
-        elif load_mode == 'patch':
-            xml = self.request.get('xml')
-            taskqueue.add(
-                url='/admin/worker', params={'mode': 'patch', 'xml': xml})
-        elif load_mode is None:
-            raise KompleksException('bulk load mode not specified')
-        else:
-            raise KompleksException(
-                'unknown bulk load mode: {}'.format(load_mode))
+        action = self.request.get('action')
+        if action == 'init-db':
+            taskqueue.add(url='/admin/datastore_init')
         self.redirect('/admin')
 
 
 class AdminWorker(webapp2.RequestHandler):
     def post(self):
-        load_mode = self.request.get('mode')
-
-        if load_mode == 'init':
-            bulk_load(load_mode='init')
-        else:  # load_mode == 'patch'
-            xml = self.request.get('xml')
-            bulk_load(load_mode='patch', xml=xml)
+        initialize_datastore()
 
 
 config = {'webapp2_extras.sessions': {
@@ -468,7 +453,7 @@ config = {'webapp2_extras.sessions': {
     'session_max_age': 3600 * 24
 }}
 app = webapp2.WSGIApplication([
-    ('/admin/worker', AdminWorker),
+    ('/admin/datastore_init', AdminWorker),
     ('/admin', AdminHandler),
     ('/services', ServiceChoiceHandler),
     ('/result', ResultHandler),
