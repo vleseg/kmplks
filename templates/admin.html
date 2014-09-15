@@ -2,7 +2,8 @@
 {% block title %}Администрирование{% endblock %}
 {% block head %}Администрирование{% endblock %}
 {% block content %}
-    <form action="/admin" method="post" class="form-horizontal col-lg-10">
+    <form action={{ uri_for('admin') }} method="post"
+          class="form-horizontal col-lg-10">
         <div class="form-group">
             <div class="radio">
                 <label>
@@ -14,12 +15,11 @@
                     </small>
                 </label>
             </div>
-            <div class="radio disabled text-muted">
+            <div class="radio">
                 <label>
-                    <input id="edit-db" name="action" value="edit-db"
-                           type="radio" disabled/>
+                    <input id="edit-db-option" name="action" value="edit-db"
+                           type="radio"/>
                     Редактировать БД
-                    <small><i>(еще недоступно)</i></small>
                 </label>
             </div>
         </div>

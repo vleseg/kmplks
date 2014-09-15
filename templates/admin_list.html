@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Администрирование{% endblock %}
+{% block head %}
+    Список объектов:
+    <span id="list-name-pl"><small>УСЛУГИ</small></span>
+{% endblock %}
+{% block content %}
+    <ul class="nav nav-pills nav-stacked col-md-2">
+    {% for p in lists %}
+        <li{% if current_list == 'Service' %} class="active" {% endif %}>
+            <a href="#{{ p }}" data-toggle="pill">
+            {{ lists[p]._name_plural }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+    <div class="tab-content col-md-10">
+    {% for p in lists %}
+        <div class="tab-pane
+                    {% if current_list == 'Service' %}}active{% endif %}"
+             id="{{ p }}"></div>
+    {% endfor %}
+    </div>
+{% endblock %}

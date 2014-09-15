@@ -9,8 +9,9 @@
         {% for kompleks in komplekses %}
             <tr>
                 <td>
-                    <a href="/?id={{ kompleks.id }}">
-                    {{ kompleks.name }}</a>
+                    <a href={{ uri_for('start', id=kompleks.id) }}>
+                        {{ kompleks.name }}
+                    </a>
                 </td>
                 <td>
                     {% for mfc in kompleks.mfcs %}

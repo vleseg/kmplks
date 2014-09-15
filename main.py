@@ -55,6 +55,7 @@ def to_url(value):
 
 CFG['JINJA2_ENV'].tests['list'] = is_list
 CFG['JINJA2_ENV'].filters['to_url'] = to_url
+CFG['JINJA2_ENV'].globals['uri_for'] = webapp2.uri_for
 
 
 def from_urlsafe(urlsafe, multi=False, key_only=False):
@@ -441,8 +442,29 @@ class AdminHandler(BaseHandler):
     def post(self):
         action = self.request.get('action')
         if action == 'init-db':
-            taskqueue.add(url='/admin/datastore_init')
-        self.redirect('/admin')
+            taskqueue.add(url=webapp2.uri_for('datastore-init'))
+            self.redirect(webapp2.uri_for('admin'))
+        elif action == 'edit-db':
+            self.redirect(webapp2.uri_for('admin-list'))
+
+
+class AdminList(BaseHandler):
+    template_filename = "admin_list.html"
+
+    def get(self):
+        lists = CFG['RUSSIAN']
+        for key, value in lists.items():
+            if value is None:
+                del lists[key]
+
+        self.context['lists'] = lists
+
+        self.render()
+
+
+class ApiHandler(webapp2.RedirectHandler):
+    def get(self):
+        pass
 
 
 class AdminWorker(webapp2.RequestHandler):
@@ -454,11 +476,24 @@ config = {'webapp2_extras.sessions': {
     'secret_key': 'O12ZXGyXkE32Fz0kGWd5',
     'session_max_age': 3600 * 24
 }}
-app = webapp2.WSGIApplication([
-    ('/admin/datastore_init', AdminWorker),
-    ('/admin', AdminHandler),
-    ('/services', ServiceChoiceHandler),
-    ('/result', ResultHandler),
-    ('/prerequisites', PrerequisiteChoiceHandler),
-    ('/', KompleksHandler),
-], debug=True, config=config)
+
+api_routes = [
+    webapp2.Route('/admin/api/list', ApiHandler, name='api-list'),
+    webapp2.Route('/admin/api/entity', ApiHandler, name='api-entity')
+]
+
+routes = [
+    webapp2.Route('/', handler=KompleksHandler, name='start'),
+    webapp2.Route('/prerequisites', handler=PrerequisiteChoiceHandler,
+                  name='prerequisites'),
+    webapp2.Route('/services', handler=ServiceChoiceHandler,
+                  name='services'),
+    webapp2.Route('/result', handler=ResultHandler, name='result'),
+    webapp2.Route('/admin', handler=AdminHandler, name='admin'),
+    webapp2.Route('/admin/datastore-init', handler=AdminWorker,
+                  name='datastore-init'),
+    webapp2.Route('/admin/list', handler=AdminList, name='admin-list')
+]
+routes.extend(api_routes)
+
+app = webapp2.WSGIApplication(routes, debug=True, config=config)

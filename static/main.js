@@ -176,21 +176,17 @@ if (dependencyGraph) {
     });
 }
 
-// Bootstrap accordion panel icons behaviour.
+// Various Bootstrap behaviour snippets go here.
 $(document).ready(function () {
-   $('div.panel-group div.panel-collapse')
-       .on("shown.bs.collapse hidden.bs.collapse", function () {
+    // Accordion panel icons behaviour.
+    $('div.panel-group div.panel-collapse')
+       .on("show.bs.collapse hidden.bs.collapse", function () {
         $(this).prev().find("i.glyphicon")
             .toggleClass('glyphicon-chevron-down glyphicon-chevron-right')
-   })
-});
-
-// Handlers for admin page buttons.
-$(document).ready(function () {
-   $('button#admin-btn-init').click(function () {
-       ;
-   });
-   $('button#admin-btn-patch').click(function () {
-       ;
-   })
+        });
+    $('div.tab-pane').on("shown.bs.tab", function(e) {
+        // erase content on previous tab (if any)
+        if (e.relatedTarget)
+            e.relatedTarget.empty()
+    })
 });

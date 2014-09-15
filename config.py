@@ -101,7 +101,8 @@ CFG = {
                 '_false': u'Нет'
             },
             'doc_class': u'Класс документа'
-        }
+        },
+        'DocumentToService': None
         # DocumentToService is never treated as a distinct property in admin
         # context.
     }

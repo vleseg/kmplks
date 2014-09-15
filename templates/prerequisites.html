@@ -9,7 +9,7 @@
 {% block content %}
     <p class="lead">Если какие-то из этих условий уже удовлетворены —
         отметьте:</p>
-    <form action="/prerequisites" method="post">
+    <form action="{{ uri_for('prerequisites') }}" method="post">
         <table class="table">
             <tbody>
             {% for p in prerequisites %}
@@ -25,6 +25,6 @@
             {% endfor  %}
             </tbody>
         </table>
-        {{ navigation('/', '/prerequsistes') }}
+        {{ navigation(uri_for('start'), with_submit=True) }}
     </form>
 {% endblock content %}
