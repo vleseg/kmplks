@@ -178,7 +178,6 @@
             </related_komplekses>
             <dependencies>
                 <item>1</item>
-                <item>2</item>
             </dependencies>
         </item>
         <item>
@@ -725,7 +724,7 @@
                     призыву. Предоставляется по желанию.
                 </p>
                 <p>От родителя, с которым брак был расторгнут и с которым
-                    ребенок не проживает книжка не требуется
+                    ребенок не проживает справка не требуется
                 </p>
             </description>
             <o_supply_type>no_return</o_supply_type>
@@ -834,7 +833,7 @@
                     справки — 30 дней.
                 </p>
                 <p>От родителя, с которым брак был расторгнут и с которым
-                    ребенок не проживает книжка не требуется
+                    ребенок не проживает справа не требуется
                 </p>
             </description>
             <o_supply_type>no_return</o_supply_type>
@@ -852,7 +851,7 @@
                 <p>Предоставляется ИП, нотариусами, адвокатами по желанию.
                 </p>
                 <p>От родителя, с которым брак был расторгнут и с которым
-                    ребенок не проживает книжка не требуется
+                    ребенок не проживает справка не требуется
                 </p>
             </description>
             <o_supply_type>no_return</o_supply_type>
@@ -927,8 +926,6 @@
             <document>2</document>
             <service>2</service>
             <kompleks>1</kompleks>
-            <description>Паспорт родителя (опекуна)</description>
-            <override_description>1</override_description>
         </item>
         <item>
             <id>11</id>
@@ -1339,7 +1336,7 @@
             <document>23</document>
             <service>5</service>
             <description>От родителя, с которым брак был расторгнут и с которым
-                ребенок не проживает книжка не требуется
+                ребенок не проживает свидетельство не требуется
             </description>
         </item>
         <item>
