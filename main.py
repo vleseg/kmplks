@@ -17,24 +17,26 @@
 from collections import OrderedDict
 from itertools import chain
 import json
-import os
 # Third-party imports
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
-from jinja2 import Environment, FileSystemLoader
 import webapp2
 from webapp2_extras import sessions
 # Project imports
-from db_tools import initialize_datastore, insert_or_update
-from model import Kompleks, Service, DocumentToService
-
-ENV = Environment(autoescape=True,
-                  loader=FileSystemLoader(
-                      os.path.join(os.path.dirname(__file__), 'templates')))
+from config import CFG
+from db_tools import initialize_datastore, iter_existing_kinds
+import models
 
 
-class KompleksException(BaseException):
+class KompleksError(BaseException):
     pass
+
+# Startup checks.
+# Does config.py's 'KEY_HR_PROPERTY' has values for all models?
+for k in iter_existing_kinds():
+    if k.__name__ not in CFG['KEY_HR_PROPERTY']:
+        raise KompleksError("Key human readable property for kind '{}' not "
+                            "found in app config.".format(k.__name__))
 
 
 # Custom jinja2 filters and tests.
@@ -51,8 +53,8 @@ def to_url(value):
     kb_pattern = 'http://mfcportal/yakutiya/services/default.aspx?element={}'
     return kb_pattern.format(value)
 
-ENV.tests['list'] = is_list
-ENV.filters['to_url'] = to_url
+CFG['JINJA2_ENV'].tests['list'] = is_list
+CFG['JINJA2_ENV'].filters['to_url'] = to_url
 
 
 def from_urlsafe(urlsafe, multi=False, key_only=False):
@@ -123,7 +125,7 @@ class BaseHandler(webapp2.RequestHandler):
 
         A convenience method.
         """
-        template = ENV.get_template(self.template_filename)
+        template = CFG['JINJA2_ENV'].get_template(self.template_filename)
         self.response.out.write(template.render(**self.context))
 
     def get_session_data(self, keys, obligatory=True):
@@ -213,7 +215,7 @@ class KompleksHandler(BaseHandler):
             self.store_services_in_session(kompleks_id)
             self.redirect('/prerequisites')
 
-        k_iter = Kompleks.query().iter()
+        k_iter = models.Kompleks.query().iter()
 
         # Constructing context.
         self.context['komplekses'] = (self.prepare(k) for k in k_iter)
@@ -237,7 +239,7 @@ class KompleksHandler(BaseHandler):
         related_ids = []
         kompleks = from_urlsafe(kompleks_id)
 
-        for service in Service.query().iter():
+        for service in models.Service.query().iter():
             if kompleks.key in service.containing_komplekses:
                 contained_ids.append(service.urlsafe())
             elif kompleks.key in service.related_komplekses:
@@ -390,8 +392,8 @@ class ResultHandler(BaseHandler):
 
         # dts == DocumentToService instance.
         for service in services:
-            for dts in DocumentToService.query(
-                    DocumentToService.service == service.key):
+            for dts in models.DocumentToService.query(
+                    models.DocumentToService.service == service.key):
                 doc_id = dts.document.urlsafe()
                 # A service may map to different sets of documents -- depending
                 # on the kompleks, that was picked in the very beginning.

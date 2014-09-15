@@ -2,11 +2,7 @@
 # TODO: update UML schema and description in Evernote correspondingly
 # Third-party imports
 from google.appengine.ext import ndb
-
-
-ORIGINAL_SUPPLY_TYPE = ('demonstrate', 'return_with_result', 'no_return')
-COUNT_METHOD = ('one_for_all', 'per_service', 'per_ogv')
-ANCESTOR = ndb.Key('app', 'kompleks')
+from config import CFG
 
 
 class KompleksModelError(BaseException):
@@ -168,11 +164,11 @@ class Document(BaseModel):
     description = ndb.TextProperty(
         default=u'Предоставляется в любом случае')
     o_count_method = ndb.StringProperty(
-        default='one_for_all', choices=COUNT_METHOD)
+        default='one_for_all', choices=CFG['COUNT_METHOD'])
     c_count_method = ndb.StringProperty(
-        default='per_service', choices=COUNT_METHOD)
+        default='per_service', choices=CFG['COUNT_METHOD'])
     o_supply_type = ndb.StringProperty(
-        default='demonstrate', choices=ORIGINAL_SUPPLY_TYPE)
+        default='demonstrate', choices=CFG['ORIGINAL_SUPPLY_TYPE'])
     n_originals = ndb.IntegerProperty(default=1)
     n_copies = ndb.IntegerProperty(default=1)
     is_a_paper_document = ndb.BooleanProperty(default=True)
@@ -267,10 +263,8 @@ class Document(BaseModel):
 
         :type dts_items: list[DocumentToService]
         """
-        output_values = dict(zip(ORIGINAL_SUPPLY_TYPE, [
-            u'Возвращается после приема документов',
-            u'Возвращается после предоставления услуги',
-            u'Не возвращается']))
+        ost = CFG['ORIGINAL_SUPPLY_TYPE']
+        output_values = CFG['RUSSIAN']['_enum']['ORIGINAL_SUPPLY_TYPE']
 
         # Gathering together o_supply_type property values from Document and
         # its bound DocumentToService entities.
@@ -278,7 +272,7 @@ class Document(BaseModel):
             dts.o_supply_type for dts in dts_items if dts.o_supply_type]
         o_supply_types.append(self.o_supply_type)
 
-        rank_ost = lambda s: ORIGINAL_SUPPLY_TYPE.index(s)
+        rank_ost = lambda s: ost.index(s)
         strongest_ost = max(o_supply_types, key=rank_ost)
 
         return output_values[strongest_ost]
@@ -313,7 +307,7 @@ class DocumentToService(BaseModel):
     description = ndb.TextProperty()
     n_originals = ndb.IntegerProperty()
     n_copies = ndb.IntegerProperty()
-    o_supply_type = ndb.StringProperty(choices=ORIGINAL_SUPPLY_TYPE)
+    o_supply_type = ndb.StringProperty(choices=CFG['ORIGINAL_SUPPLY_TYPE'])
     override_description = ndb.BooleanProperty(default=False)
 
     # Relations

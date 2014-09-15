@@ -4,9 +4,8 @@ from google.appengine.api.app_identity import get_application_id
 from google.appengine.ext import ndb
 from lxml import etree
 # Project imports
-import model
-
-PATH_TO_INIT_FILE = "init/init_data.xml"
+from config import CFG
+import models
 
 
 class DbToolsException(BaseException):
@@ -61,7 +60,7 @@ class NodeReader(object):
 def by_property(entity_kind, property_, value, key_only=True):
     qry_params = {}
     if get_application_id() != 'testbed-test':
-        qry_params['ancestor'] = model.ANCESTOR
+        qry_params['ancestor'] = CFG['ANCESTOR']
 
     entity = entity_kind.query(**qry_params).filter(property_ == value).get()
 
@@ -76,24 +75,24 @@ def by_property(entity_kind, property_, value, key_only=True):
 
 def get_kind(raw_kind):
     if isinstance(raw_kind, basestring):
-        return getattr(model, raw_kind)
+        return getattr(models, raw_kind)
     else:
         return raw_kind
 
 
 def insert_or_update(entity_kind, entity_properties):
     if get_application_id() != 'testbed-test':
-        entity_properties['parent'] = model.ANCESTOR
+        entity_properties['parent'] = CFG['ANCESTOR']
 
     entity_kind(**entity_properties).put()
 
 
 def iter_existing_kinds():
-    for name in model.__dict__:
-        obj = getattr(model, name)
+    for name in models.__dict__:
+        obj = getattr(models, name)
 
         try:
-            if issubclass(obj, model.BaseModel) and obj is not model.BaseModel:
+            if issubclass(obj, models.BaseModel) and obj is not models.BaseModel:
                 yield obj
         except TypeError:
             pass
@@ -105,12 +104,12 @@ def initialize_datastore(path_to_xml=None):
             ndb.delete_multi(kind.query().iter(keys_only=True))  # clean up
 
         path_to_xml = os.path.join(
-            os.path.dirname(__file__), PATH_TO_INIT_FILE)
+            os.path.dirname(__file__), CFG["PATH_TO_INIT_FILE"])
 
     p = etree.XMLParser(remove_comments=True)
 
     for kind_node in etree.parse(path_to_xml, parser=p).getroot():
-        entity_kind = getattr(model, kind_node.tag)
+        entity_kind = getattr(models, kind_node.tag)
 
         for item_node in kind_node:
             entity_properties = {}
