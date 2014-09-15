@@ -925,7 +925,9 @@
             <id>10</id>
             <document>2</document>
             <service>2</service>
+            <description>Предоставляется в любом случае</description>
             <kompleks>1</kompleks>
+            <override_description>1</override_description>
         </item>
         <item>
             <id>11</id>
