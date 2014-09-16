@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Выбор предусловий{% endblock %}
 {% block js %}
-{#    Disabled, since it provokes strange errors        #}
-{#    var toBeChecked = {{ prereqs_satisfied|safe }};   #}
-    var dependencyGraph = {{ dependency_graph|safe }};
+    <script>var dependencyGraph = {{ dependency_graph|safe }};</script>
 {% endblock %}
 {% block head %}{{ kompleks.name }}: <small>ПРЕДУСЛОВИЯ</small>{% endblock %}
 {% block content %}

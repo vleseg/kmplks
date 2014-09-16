@@ -25,9 +25,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap -->
-    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Additional styles -->
-    <link href="static/styles.css" rel="stylesheet"/>
+    <link href="/static/styles.css" rel="stylesheet"/>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -37,13 +37,13 @@
     <![endif]-->
 
     <!-- jQuery -->
-    <script src="static/jquery-1.11.1.min.js"></script>
+    <script src="/static/jquery-1.11.1.min.js"></script>
     <!-- Bootstrap js -->
-    <script src="static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
     <!-- Template specific variable initialization -->
-    <script>{% block js %}{% endblock %}</script>
+    {% block js %}{% endblock %}
     <!-- Main project script -->
-    <script src="static/main.js"></script>
+    <script src="/static/main.js"></script>
 
     <title>{% block title %}{% endblock %} — Kompleks</title>
 </head>

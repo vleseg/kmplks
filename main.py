@@ -24,7 +24,7 @@ import webapp2
 from webapp2_extras import sessions
 # Project imports
 from config import CFG
-from db_tools import initialize_datastore, iter_existing_kinds
+from db_tools import initialize_datastore, iter_existing_kinds, get_kind
 import models
 
 
@@ -34,9 +34,9 @@ class KompleksError(BaseException):
 # Startup checks.
 # Does config.py's 'KEY_HR_PROPERTY' has values for all models?
 for k in iter_existing_kinds():
-    if k.__name__ not in CFG['KEY_HR_PROPERTY']:
-        raise KompleksError("Key human readable property for kind '{}' not "
-                            "found in app config.".format(k.__name__))
+    if k.__name__ not in CFG['MODEL_DISPLAY_PARAMS']:
+        raise KompleksError("Display parameters for kind '{}' not found in app "
+                            "config.".format(k.__name__))
 
 
 # Custom jinja2 filters and tests.
@@ -53,7 +53,10 @@ def to_url(value):
     kb_pattern = 'http://mfcportal/yakutiya/services/default.aspx?element={}'
     return kb_pattern.format(value)
 
-CFG['JINJA2_ENV'].tests['list'] = is_list
+CFG['JINJA2_ENV'].tests.update({
+    'list': is_list,
+    'None': lambda x: x is None
+})
 CFG['JINJA2_ENV'].filters['to_url'] = to_url
 CFG['JINJA2_ENV'].globals['uri_for'] = webapp2.uri_for
 
@@ -452,19 +455,34 @@ class AdminList(BaseHandler):
     template_filename = "admin_list.html"
 
     def get(self):
-        lists = CFG['RUSSIAN']
-        for key, value in lists.items():
-            if value is None:
-                del lists[key]
-
-        self.context['lists'] = lists
+        self.context['lists'] = []
+        mds = CFG['MODEL_DISPLAY_PARAMS']
+        s_lambda = lambda item: item[1].get('order')
+        f_lambda = lambda item: item[1] is not None
+        for key, value in sorted(
+                filter(f_lambda, mds.items()), key=s_lambda):
+            value['name'] = key
+            self.context['lists'].append(value)
 
         self.render()
 
 
 class ApiHandler(webapp2.RedirectHandler):
-    def get(self):
-        pass
+    def get(self, cmd):
+        if cmd == 'list':
+            kind_str = self.request.get('kind')
+            kind = get_kind(kind_str)
+
+            repr_field = CFG['MODEL_DISPLAY_PARAMS'].get(kind_str)['repr_field']
+
+            map_fields = {repr_field: 'value', '_urlsafe': 'id'}
+
+            sorted_items = sorted(
+                kind.query().fetch(), key=lambda item: item.id)
+            d = [e.to_dict(map_fields) for e in sorted_items]
+
+            self.response.headers.add('Content-Type', 'application/json')
+            self.response.out.write(json.dumps(d))
 
 
 class AdminWorker(webapp2.RequestHandler):
@@ -477,11 +495,6 @@ config = {'webapp2_extras.sessions': {
     'session_max_age': 3600 * 24
 }}
 
-api_routes = [
-    webapp2.Route('/admin/api/list', ApiHandler, name='api-list'),
-    webapp2.Route('/admin/api/entity', ApiHandler, name='api-entity')
-]
-
 routes = [
     webapp2.Route('/', handler=KompleksHandler, name='start'),
     webapp2.Route('/prerequisites', handler=PrerequisiteChoiceHandler,
@@ -492,8 +505,8 @@ routes = [
     webapp2.Route('/admin', handler=AdminHandler, name='admin'),
     webapp2.Route('/admin/datastore-init', handler=AdminWorker,
                   name='datastore-init'),
-    webapp2.Route('/admin/list', handler=AdminList, name='admin-list')
+    webapp2.Route('/admin/list', handler=AdminList, name='admin-list'),
+    webapp2.Route('/admin/api/<cmd>', ApiHandler, name='admin-api')
 ]
-routes.extend(api_routes)
 
 app = webapp2.WSGIApplication(routes, debug=True, config=config)

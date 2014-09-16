@@ -38,7 +38,7 @@
 {% endmacro %}
 {% block title %}Выбор услуг{% endblock %}
 {% block js %}
-    var dependencyGraph = {{ dependency_graph|safe }};
+    <script>var dependencyGraph = {{ dependency_graph|safe }};</script>
 {% endblock %}
 {% block head %}
     {{ kompleks.name }}: <small>УСЛУГИ</small>

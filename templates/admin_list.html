@@ -2,23 +2,28 @@
 {% block title %}Администрирование{% endblock %}
 {% block head %}
     Список объектов:
-    <span id="list-name-pl"><small>УСЛУГИ</small></span>
+    <span id="list-name-pl"><small></small></span>
 {% endblock %}
 {% block content %}
-    <ul class="nav nav-pills nav-stacked col-md-2">
-    {% for p in lists %}
-        <li{% if current_list == 'Service' %} class="active" {% endif %}>
-            <a href="#{{ p }}" data-toggle="pill">
-            {{ lists[p]._name_plural }}
+    <ul class="nav nav-tabs" role="tablist" id="tabs">
+    {% for list_ in lists %}
+        <li>
+            <a href="#{{ list_.name }}" data-toggle="tab" role="tab">
+            {{ list_.ru_name_plural }}
             </a>
         </li>
     {% endfor %}
     </ul>
-    <div class="tab-content col-md-10">
-    {% for p in lists %}
-        <div class="tab-pane
-                    {% if current_list == 'Service' %}}active{% endif %}"
-             id="{{ p }}"></div>
+    <div class="tab-content">
+        <div id="loading" class="well text-center">
+            <img src="/static/ajax-loader.gif" alt="Загрузка..."/>
+        </div>
+    {% for list_ in lists %}
+        <div class="tab-pane col-md-10" id="{{ list_.name }}">
+            <div class="tab-pane-items list-group">
+                {# data fetched via ajax #}
+            </div>
+        </div>
     {% endfor %}
     </div>
 {% endblock %}
