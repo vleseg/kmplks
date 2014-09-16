@@ -15,7 +15,6 @@ class BaseModel(ndb.Model):
     Base class for models in Kompleks app. Inherit new models from it.
     """
     id = ndb.IntegerProperty(required=True)
-    sort_key = ndb.IntegerProperty(required=True)
 
     def to_dict(self, map_fields=None):
         result = {}
@@ -50,6 +49,7 @@ class DocClass(BaseModel):
     may serve as a unifying characteristic for a set of documents.
     """
     value = ndb.StringProperty(required=True)
+    sort_key = ndb.IntegerProperty(required=True)
 
 
 class MFC(BaseModel):
