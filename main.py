@@ -25,6 +25,7 @@ from webapp2_extras import sessions
 # Project imports
 from config import CFG
 from db_tools import initialize_datastore, iter_existing_kinds, get_kind
+from db_tools import iter_property_names
 import models
 
 
@@ -34,9 +35,18 @@ class KompleksError(BaseException):
 # Startup checks.
 # Does config.py's 'KEY_HR_PROPERTY' has values for all models?
 for k in iter_existing_kinds():
-    if k.__name__ not in CFG['MODEL_DISPLAY_PARAMS']:
+    mdp = CFG['MODEL_DISPLAY_PARAMS']
+
+    if k.__name__ not in mdp:
         raise KompleksError("Display parameters for kind '{}' not found in app "
                             "config.".format(k.__name__))
+    for p_name in iter_property_names(k):
+        mdp_k = mdp.get(k.__name__)
+
+        if mdp_k is not None and p_name not in mdp_k['ru_name_prop']:
+            raise KompleksError(
+                "Display parameters for kind '{}' in app config do not contain "
+                "data for property '{}'".format(k.__name__, p_name))
 
 
 # Custom jinja2 filters and tests.
@@ -457,10 +467,9 @@ class AdminList(BaseHandler):
     def get(self):
         self.context['lists'] = []
         mds = CFG['MODEL_DISPLAY_PARAMS']
-        s_lambda = lambda item: item[1].get('order')
-        f_lambda = lambda item: item[1] is not None
-        for key, value in sorted(
-                filter(f_lambda, mds.items()), key=s_lambda):
+        s_lambda = lambda item: mds.index(item)
+        f_lambda = lambda item: mds[item] is not None
+        for key, value in sorted(filter(f_lambda, mds), key=s_lambda):
             value['name'] = key
             self.context['lists'].append(value)
 

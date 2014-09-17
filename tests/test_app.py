@@ -142,6 +142,7 @@ class AppTest(KompleksTestCase):
 
         self.assertEqual(res_fields.status_int, 200)
 
+        # TODO: finish
 
 
     @classmethod

@@ -103,10 +103,20 @@ def iter_existing_kinds():
         obj = getattr(models, name)
 
         try:
-            if issubclass(obj, models.BaseModel) and obj is not models.BaseModel:
+            if issubclass(
+                    obj, models.BaseModel) and obj is not models.BaseModel:
                 yield obj
         except TypeError:
             pass
+
+
+def iter_property_names(kind):
+    kind = get_kind(kind)
+
+    for name in get_kind(kind).__dict__:
+        if not name.startswith('_') and isinstance(
+                getattr(kind, name), ndb.model.Property):
+            yield name
 
 
 def initialize_datastore(path_to_xml=None):

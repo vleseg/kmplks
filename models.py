@@ -297,10 +297,10 @@ class Document(BaseModel):
             dts.o_supply_type for dts in dts_items if dts.o_supply_type]
         o_supply_types.append(self.o_supply_type)
 
-        rank_ost = lambda s: ost[s].get('weight')
+        rank_ost = lambda s: ost.index(s)
         strongest_ost = max(o_supply_types, key=rank_ost)
 
-        return ost[strongest_ost].get('ru')
+        return ost[strongest_ost]
 
 
 class DocumentToService(BaseModel):
