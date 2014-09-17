@@ -19,17 +19,21 @@ class BaseModel(ndb.Model):
     def to_dict(self, map_fields=None):
         result = {}
         to_dict_kwargs = {'exclude': None, 'include': None}
-        map_fields = dict(map_fields)  # so that we can safely remove _urlsafe
 
         if map_fields is not None:
+            # dict has to be copied, since it is often reused (e. g. when
+            # fetching lists of entities)
+            map_fields = dict(map_fields)
             if '_urlsafe' in map_fields:
                 result[map_fields.pop('_urlsafe')] = self.urlsafe()
             if len(map_fields) > 0:
                 to_dict_kwargs['include'] = map_fields.keys()
+            else:
+                map_fields = None
 
-        prefetch = super(BaseModel, self)._to_dict(**to_dict_kwargs)
+        prefetch = self._to_dict(**to_dict_kwargs)
 
-        if map_fields is not None:  # FIXME: might cause troubles when None
+        if map_fields is not None:
             for key, value in prefetch.items():
                 result[map_fields.get(key)] = value
         else:

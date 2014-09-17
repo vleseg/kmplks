@@ -4,9 +4,10 @@ import os
 import unittest
 # Third-party imports
 from google.appengine.ext import testbed
+import json
 import webtest
 # Project imports
-from db_tools import initialize_datastore
+from db_tools import initialize_datastore, by_property
 from main import app
 
 
@@ -18,6 +19,10 @@ class KompleksTestCase(unittest.TestCase):
         if sub in new_s:
             raise AssertionError(
                 "'{}' occurs more than once in '{}'".format(sub, s))
+
+    def assertAllIn(self, seq, s):
+        for sub in seq:
+            self.assertIn(sub, s)
 
     def assertAllInAndUnique(self, seq, s):
         for sub in seq:
@@ -98,6 +103,46 @@ class AppTest(KompleksTestCase):
             u'Заявление о регистрации по месту жительства, форма №6',
             u'Заявление о назначении ежемесячного пособия на ребенка'
         ), result_page.testbody)
+
+    def test_api_list(self):
+        # Authentication.
+        # admin_login_form = self.testapp.get('/admin').form
+        # admin_login_form['admin'] = True
+        # admin_login_form.submit()
+
+        res = self.testapp.get('/admin/api/list?kind=Service')
+
+        self.assertEqual(res.status_int, 200)
+
+        res_list = json.loads(res.body)
+
+        # Test schema (fields presence)
+        services = [
+            u'Государственная регистрация рождения ребенка',
+            u'Регистрация по месту жительства',
+            u'Ежемесячное пособие на ребенка',
+            u'Выдача нагрудного знака и удостоверения многодетной семьи',
+            u'Единовременное пособие при рождении ребенка',
+            u'Предоставление земельного участка многодетной семье'
+        ]
+
+        self.assertItemsEqual(('value', 'id'), res_list[0])
+        self.assertEqual(len(res_list), 6)
+
+        self.assertItemsEqual(services, [item['value'] for item in res_list])
+
+    def test_api_entity(self):
+        entity = by_property('Service',
+                             'name',
+                             u'Государственная регистрация рождения ребенка',
+                             key_only=False)
+        urlsafe = entity.urlsafe()
+
+        res_fields = self.testapp.get('/admin/api/entity?id={}'.format(urlsafe))
+
+        self.assertEqual(res_fields.status_int, 200)
+
+
 
     @classmethod
     def tearDownClass(cls):

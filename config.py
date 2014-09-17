@@ -91,7 +91,7 @@ CFG = {
             'ru_name': u'Услуга',
             'ru_name_plural': u'Услуги',
             'ru_name_prop': {
-               'name': u'Название',
+                'name': u'Название',
                 'short_description':
                     u'Краткое описание условий предоставления услуги',
                 'kb_id': u'ID в Базе знаний МФЦ',

@@ -483,6 +483,10 @@ class ApiHandler(webapp2.RedirectHandler):
 
             self.response.headers.add('Content-Type', 'application/json')
             self.response.out.write(json.dumps(d))
+        elif cmd == "entity":
+            pass
+        else:
+            self.abort(404)
 
 
 class AdminWorker(webapp2.RequestHandler):
@@ -506,7 +510,7 @@ routes = [
     webapp2.Route('/admin/datastore-init', handler=AdminWorker,
                   name='datastore-init'),
     webapp2.Route('/admin/list', handler=AdminList, name='admin-list'),
-    webapp2.Route('/admin/api/<cmd>', ApiHandler, name='admin-api')
+    webapp2.Route('/admin/api/<cmd>', handler=ApiHandler, name='admin-api')
 ]
 
 app = webapp2.WSGIApplication(routes, debug=True, config=config)

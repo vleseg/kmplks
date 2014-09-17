@@ -62,6 +62,13 @@ def by_property(entity_kind, property_, value, key_only=True):
     if get_application_id() != 'testbed-test':
         qry_params['ancestor'] = CFG['ANCESTOR']
 
+    # In case entity_kind is passed as string.
+    entity_kind = get_kind(entity_kind)
+
+    # In case property_ is passed as string.
+    if isinstance(property_, basestring):
+        property_ = getattr(entity_kind, property_)
+
     entity = entity_kind.query(**qry_params).filter(property_ == value).get()
 
     if entity is None:
@@ -75,7 +82,11 @@ def by_property(entity_kind, property_, value, key_only=True):
 
 def get_kind(raw_kind):
     if isinstance(raw_kind, basestring):
-        return getattr(models, raw_kind)
+        try:
+            return getattr(models, raw_kind)
+        except AttributeError:
+            raise DbToolsException("Entity kind does not exist: {}".format(
+                raw_kind))
     else:
         return raw_kind
 

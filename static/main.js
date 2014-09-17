@@ -228,7 +228,7 @@ $(document).ready(function () {
                         text: item.value
                     }).appendTo(listItem);
 
-                    // remove link and icon
+                    // delete link and icon
                     $('<a/>', {
                         // TODO: think how uri_for can be used here
                         href: '/admin/delete?id=' + item.id,
@@ -244,8 +244,8 @@ $(document).ready(function () {
                     class: 'alert alert-danger',
                     role: 'alert'
                 });
-                jQuery('<h4/>', {text: 'Ошибка!'}).appendTo(msg);
-                jQuery('<p/>', {
+                $('<h4/>', {text: 'Ошибка!'}).appendTo(msg);
+                $('<p/>', {
                     'text': 'Во время получения списка произошла ошибка: ' +
                         status + ', ' + error + '.'
                 }).appendTo(msg);
