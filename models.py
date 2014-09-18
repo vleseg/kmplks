@@ -1,8 +1,10 @@
 # coding=utf-8
 # TODO: update UML schema and description in Evernote correspondingly
-# Third-party imports
 from __future__ import unicode_literals
+from sys import modules
+# Third-party imports
 from google.appengine.ext import ndb
+# Project-specific imports
 from config import CFG
 
 
@@ -15,6 +17,12 @@ class BaseModel(ndb.Model):
     Base class for models in Kompleks app. Inherit new models from it.
     """
     id = ndb.IntegerProperty(required=True)
+
+    @classmethod
+    def iter_property_names(cls, exclude=None):
+        for prop in cls._properties:
+            if exclude is not None and prop not in exclude:
+                yield prop
 
     def _attach_labels_and_types(self, d):
         new_d = dict.fromkeys(d.keys(), None)
@@ -393,3 +401,34 @@ class DocumentToService(BaseModel):
     document = ndb.KeyProperty(Document, required=True)
     service = ndb.KeyProperty(Service, required=True)
     kompleks = ndb.KeyProperty(Kompleks)
+
+this_module = modules[__name__]
+
+
+def from_urlsafe(urlsafe, multi=False, key_only=False):
+    if multi:
+        return [from_urlsafe(e, key_only=key_only) for e in urlsafe]
+    if key_only:
+        return ndb.Key(urlsafe=urlsafe)
+    return ndb.Key(urlsafe=urlsafe).get()
+
+
+def iter_datastore_kinds():
+    for name in this_module.__dict__:
+        obj = getattr(this_module, name)
+        try:
+            if issubclass(obj, BaseModel) and obj is not BaseModel:
+                yield obj
+        except TypeError:  # current object is not a class
+            pass
+
+
+def get_kind(raw_kind):
+    if isinstance(raw_kind, (str, unicode)):
+        try:
+            return getattr(this_module, raw_kind)
+        except AttributeError:
+            raise KompleksModelError(
+                "Entity kind does not exist: '{}'".format(raw_kind))
+    else:  # a kind as-is
+        return raw_kind

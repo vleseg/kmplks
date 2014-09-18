@@ -15,8 +15,8 @@ class DbToolsException(BaseException):
 class NodeReader(object):
     """
     Has to be initialized with XML node (etree.Element). Use it to retrieve
-    node attrs or contents -- as plain text, serialized XHTML or None, if it
-    is not a leaf node.
+    node contents -- as plain text, serialized XHTML or None, if it is not a
+    leaf node.
     """
     def __init__(self, node):
         self.node = node
@@ -63,10 +63,10 @@ def by_property(entity_kind, property_, value, key_only=True):
         qry_params['ancestor'] = CFG['ANCESTOR']
 
     # In case entity_kind is passed as string.
-    entity_kind = get_kind(entity_kind)
+    entity_kind = models.get_kind(entity_kind)
 
     # In case property_ is passed as string.
-    if isinstance(property_, basestring):
+    if isinstance(property_, (str, unicode)):
         property_ = getattr(entity_kind, property_)
 
     entity = entity_kind.query(**qry_params).filter(property_ == value).get()
@@ -80,17 +80,6 @@ def by_property(entity_kind, property_, value, key_only=True):
     return entity
 
 
-def get_kind(raw_kind):
-    if isinstance(raw_kind, basestring):
-        try:
-            return getattr(models, raw_kind)
-        except AttributeError:
-            raise DbToolsException("Entity kind does not exist: {}".format(
-                raw_kind))
-    else:
-        return raw_kind
-
-
 def insert_or_update(entity_kind, entity_properties):
     if get_application_id() != 'testbed-test':
         entity_properties['parent'] = CFG['ANCESTOR']
@@ -98,30 +87,9 @@ def insert_or_update(entity_kind, entity_properties):
     entity_kind(**entity_properties).put()
 
 
-def iter_existing_kinds():
-    for name in models.__dict__:
-        obj = getattr(models, name)
-
-        try:
-            if issubclass(
-                    obj, models.BaseModel) and obj is not models.BaseModel:
-                yield obj
-        except TypeError:
-            pass
-
-
-def iter_property_names(kind):
-    kind = get_kind(kind)
-
-    for name in get_kind(kind).__dict__:
-        if not name.startswith('_') and isinstance(
-                getattr(kind, name), ndb.model.Property):
-            yield name
-
-
 def initialize_datastore(path_to_xml=None):
     if path_to_xml is None:  # not test mode; use init/init_data.xml
-        for kind in iter_existing_kinds():
+        for kind in models.iter_datastore_kinds():
             ndb.delete_multi(kind.query().iter(keys_only=True))  # clean up
 
         path_to_xml = os.path.join(
@@ -145,7 +113,7 @@ def initialize_datastore(path_to_xml=None):
                 elif property_class.__class__.__name__ == 'BooleanProperty':
                     value_to_store = reader.get_bool()
                 elif property_class.__class__.__name__ == 'KeyProperty':
-                    referred_kind = get_kind(property_class._kind)
+                    referred_kind = models.get_kind(property_class._kind)
                     req_params = {
                         'entity_kind': referred_kind,
                         'property_': referred_kind.id

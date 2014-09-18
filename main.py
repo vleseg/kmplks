@@ -24,29 +24,37 @@ import webapp2
 from webapp2_extras import sessions
 # Project imports
 from config import CFG
-from db_tools import initialize_datastore, iter_existing_kinds, get_kind
-from db_tools import iter_property_names
+from db_tools import initialize_datastore
 import models
 
 
 class KompleksError(BaseException):
     pass
 
+
+class SessionHandlingError(KompleksError):
+    pass
+
+
 # Startup checks.
-# Does config.py's 'KEY_HR_PROPERTY' has values for all models?
-for k in iter_existing_kinds():
+# Does config.py's 'MODEL_DISPLAY_PARAMS' has values for all models and all
+# its properties?
+for kind in models.iter_datastore_kinds():
     mdp = CFG['MODEL_DISPLAY_PARAMS']
+    kind_name = kind.__name__
 
-    if k.__name__ not in mdp:
-        raise KompleksError("Display parameters for kind '{}' not found in app "
-                            "config.".format(k.__name__))
-    for p_name in iter_property_names(k):
-        mdp_k = mdp.get(k.__name__)
+    if kind_name not in mdp:
+        raise KompleksError(
+            "Display parameters for kind '{}' not found in app config."
+            .format(kind_name))
+    for p_name in kind.iter_property_names(exclude=('id',)):
+        mdp_for_kind = mdp.get(kind_name)
 
-        if mdp_k is not None and p_name not in mdp_k['ru_name_prop']:
+        if (mdp_for_kind is not None and
+                p_name not in mdp_for_kind['ru_name_prop']):
             raise KompleksError(
                 "Display parameters for kind '{}' in app config do not contain "
-                "data for property '{}'".format(k.__name__, p_name))
+                "data for property '{}'".format(kind_name, p_name))
 
 
 # Custom jinja2 filters and tests.
@@ -71,15 +79,6 @@ CFG['JINJA2_ENV'].filters['to_url'] = to_url
 CFG['JINJA2_ENV'].globals['uri_for'] = webapp2.uri_for
 
 
-def from_urlsafe(urlsafe, multi=False, key_only=False):
-    if multi:
-        return [from_urlsafe(e, key_only=key_only) for e in urlsafe]
-
-    if key_only:
-        return ndb.Key(urlsafe=urlsafe)
-    return ndb.Key(urlsafe=urlsafe).get()
-
-
 class BaseHandler(webapp2.RequestHandler):
     """
     Base class for all handlers in this app. All session handling logic and
@@ -99,7 +98,8 @@ class BaseHandler(webapp2.RequestHandler):
         Wraps default dispatcher with session handling routine.
         """
         # Get a session store for this request.
-        self.session_store = sessions.get_store(request=self.request)
+        self.session_store = sessions.get_store(
+            request=self.request, key=CFG['ANCESTOR'])
 
         try:
             # Dispatch the request.
@@ -127,20 +127,10 @@ class BaseHandler(webapp2.RequestHandler):
         :type key: str
         """
         if value is None:
-            raise ValueError(
-                "attempted to store a None value by key '{}'".format(key))
+            raise SessionHandlingError(
+                "Attempt to put a None value by key '{}' in session store."
+                .format(key))
         self.session[key] = value
-        while self.session.get(key) != value:
-            pass
-
-    def render(self):
-        """
-        Renders template and context together.
-
-        A convenience method.
-        """
-        template = CFG['JINJA2_ENV'].get_template(self.template_filename)
-        self.response.out.write(template.render(**self.context))
 
     def get_session_data(self, keys, obligatory=True):
         """
@@ -176,6 +166,16 @@ class BaseHandler(webapp2.RequestHandler):
                 data[key] = value
 
         return data
+
+    def render(self):
+        """
+        Renders template and context together.
+
+        A convenience method.
+        """
+        template = CFG['JINJA2_ENV'].get_template(self.template_filename)
+        self.response.out.write(template.render(**self.context))
+
 
     @staticmethod
     def construct_service_graph(services):
@@ -251,7 +251,7 @@ class KompleksHandler(BaseHandler):
         # Services, that are related to the kompleks (see model.Service docs
         # for better understanding).
         related_ids = []
-        kompleks = from_urlsafe(kompleks_id)
+        kompleks = models.from_urlsafe(kompleks_id)
 
         for service in models.Service.query().iter():
             if kompleks.key in service.containing_komplekses:
@@ -288,8 +288,8 @@ class PrerequisiteChoiceHandler(BaseHandler):
         session_data = self.get_session_data(
             ['kompleks_id', 'contained_ids', 'related_ids'])
 
-        kompleks = from_urlsafe(session_data['kompleks_id'])
-        services = from_urlsafe(
+        kompleks = models.from_urlsafe(session_data['kompleks_id'])
+        services = models.from_urlsafe(
             chain(session_data['contained_ids'], session_data['related_ids']),
             multi=True)
 
@@ -350,11 +350,11 @@ class ServiceChoiceHandler(BaseHandler):
         # session, # retrieve services, that were checked and submitted the
         # last time.
         contained_ids = set(d['contained_ids']) - set(d['prereqs_satisfied'])
-        contained_services = from_urlsafe(contained_ids, multi=True)
-        related_services = from_urlsafe(d['related_ids'], multi=True)
+        contained_services = models.from_urlsafe(contained_ids, multi=True)
+        related_services = models.from_urlsafe(d['related_ids'], multi=True)
 
         # Constructing context.
-        self.context["kompleks"] = from_urlsafe(d['kompleks_id'])
+        self.context["kompleks"] = models.from_urlsafe(d['kompleks_id'])
         self.context["contained_services"] = map(self.prepare,
                                                  contained_services)
         self.context["related_services"] = map(self.prepare,
@@ -398,8 +398,8 @@ class ResultHandler(BaseHandler):
     def get(self):
         d = self.get_session_data(['kompleks_id', 'service_ids'])
 
-        kompleks = from_urlsafe(d['kompleks_id'])
-        services = from_urlsafe(d['service_ids'], multi=True)
+        kompleks = models.from_urlsafe(d['kompleks_id'])
+        services = models.from_urlsafe(d['service_ids'], multi=True)
 
         # document id to DocumentToService instances mapping.
         doc_id_to_dts = {}
@@ -429,7 +429,7 @@ class ResultHandler(BaseHandler):
     @staticmethod
     def prepare(item):
         doc_id, dts_items = item
-        document = from_urlsafe(doc_id)
+        document = models.from_urlsafe(doc_id)
         result = {'name': document.name,
                   'description': document.precompile_description(dts_items),
                   '_class': document.doc_class.get().sort_key,
@@ -482,7 +482,7 @@ class ApiHandler(webapp2.RedirectHandler):
 
         if cmd == 'list':
             kind_str = self.request.get('kind')
-            kind = get_kind(kind_str)
+            kind = models.get_kind(kind_str)
 
             repr_field = CFG['MODEL_DISPLAY_PARAMS'].get(kind_str)['repr_field']
 
@@ -498,7 +498,7 @@ class ApiHandler(webapp2.RedirectHandler):
             if id_ is None:
                 self.abort(404)
 
-            entity = from_urlsafe(id_)
+            entity = models.from_urlsafe(id_)
             mdp_for_kind = CFG['MODEL_DISPLAY_PARAMS'].get(
                 entity.__class__.__name__)
             d = entity.to_dict(exclude=['id'], w_labels_and_types=True)
