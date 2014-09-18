@@ -478,6 +478,8 @@ class AdminList(BaseHandler):
 
 class ApiHandler(webapp2.RedirectHandler):
     def get(self, cmd):
+        self.response.headers.add('Content-Type', 'application/json')
+
         if cmd == 'list':
             kind_str = self.request.get('kind')
             kind = get_kind(kind_str)
@@ -490,12 +492,24 @@ class ApiHandler(webapp2.RedirectHandler):
                 kind.query().fetch(), key=lambda item: item.id)
             d = [e.to_dict(map_fields) for e in sorted_items]
 
-            self.response.headers.add('Content-Type', 'application/json')
             self.response.out.write(json.dumps(d))
         elif cmd == "entity":
-            pass
+            id_ = self.request.get('id')
+            if id_ is None:
+                self.abort(404)
+
+            entity = from_urlsafe(id_)
+            mdp_for_kind = CFG['MODEL_DISPLAY_PARAMS'].get(
+                entity.__class__.__name__)
+            d = entity.to_dict(exclude=['id'], w_labels_and_types=True)
+
+            d['_id'] = id_
+            d['_use_as_name'] = mdp_for_kind.get('repr_field')
+            d['_kind'] = mdp_for_kind.get('ru_name')
+
+            self.response.out.write(json.dumps(d))
         else:
-            self.abort(404)
+            self.abort(501)
 
 
 class AdminWorker(webapp2.RequestHandler):

@@ -16,9 +16,59 @@ class BaseModel(ndb.Model):
     """
     id = ndb.IntegerProperty(required=True)
 
-    def to_dict(self, map_fields=None):
+    def _attach_labels_and_types(self, d):
+        new_d = dict.fromkeys(d.keys(), None)
+        mdp = CFG['MODEL_DISPLAY_PARAMS']
+        kind = self.__class__
+        prop_type_to_json_type = {
+            'StringProperty': 'plain', 'TextProperty': 'plain_or_html',
+            'IntegerProperty': 'int'
+        }
+
+        for prop_name, value in d.items():
+            if value is None:
+                del new_d[prop_name]
+                continue
+
+            mdp_for_prop = mdp.get(kind.__name__)['ru_name_prop'].get(prop_name)
+            new_item = {'value': value}
+            if isinstance(mdp_for_prop, basestring):
+                new_item['label'] = mdp_for_prop
+            else:  # e. g. boolean
+                new_item['label'] = mdp_for_prop['_name']
+
+            prop = getattr(kind, prop_name)
+            prop_type = prop.__class__.__name__
+
+            if prop_type in prop_type_to_json_type:
+                new_item['type'] = prop_type_to_json_type[prop_type]
+            elif prop_type == 'KeyProperty':
+                if prop._repeated:
+                    new_item['type'] = 'multi_entity'
+                    try:
+                        r_entity = value[0].get()
+                    except IndexError:  # no references in list
+                        del new_d[prop_name]
+                        continue
+                else:
+                    new_item['type'] = 'entity'
+                    r_entity = value.get()
+                r_kind_name = r_entity.__class__.__name__
+                field_to_use = mdp.get(r_kind_name)['repr_field']
+                new_item['kind'] = r_kind_name
+                new_item['value'] = getattr(r_entity, field_to_use)
+            elif prop_type == 'BooleanProperty':
+                new_item['type'] = 'bool'
+                new_item['true_text'] = mdp_for_prop['_true']
+                new_item['false_text'] = mdp_for_prop['_false']
+
+            new_d[prop_name] = new_item
+
+        return new_d
+
+    def to_dict(self, map_fields=None, exclude=None, w_labels_and_types=False):
         result = {}
-        to_dict_kwargs = {'exclude': None, 'include': None}
+        to_dict_kwargs = {'exclude': exclude, 'include': None}
 
         if map_fields is not None:
             # dict has to be copied, since it is often reused (e. g. when
@@ -39,7 +89,10 @@ class BaseModel(ndb.Model):
         else:
             result.update(prefetch)
 
-        return result
+        if w_labels_and_types:
+            return self._attach_labels_and_types(result)
+        else:
+            return result
 
     def urlsafe(self):
         return self.key.urlsafe()
