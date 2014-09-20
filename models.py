@@ -113,8 +113,9 @@ class DocClass(BaseModel):
     Purpose of a document, issuing OGV, it's nature or any other trait, that
     may serve as a unifying characteristic for a set of documents.
     """
-    value = ndb.StringProperty(required=True)
-    sort_key = ndb.IntegerProperty(required=True)
+    value = ndb.StringProperty(required=True, verbose_name=u'Значение')
+    sort_key = ndb.IntegerProperty(
+        required=True, verbose_name=u'Ключ сортировки')
 
 
 class MFC(BaseModel):
@@ -127,7 +128,7 @@ class MFC(BaseModel):
         village), where MFC operates, so that RCTO operator could always tell
         if a caller is able to apply for a kompleks in his/her area.
     """
-    name = ndb.StringProperty(required=True)
+    name = ndb.StringProperty(required=True, verbose_name="Название")
 
 
 class OGV(BaseModel):
@@ -141,8 +142,8 @@ class OGV(BaseModel):
     short_name: Abbreviation of OGV's official name. This property must store a
         shortening, well-known among common people.
     """
-    name = ndb.StringProperty(required=True)
-    short_name = ndb.StringProperty(required=True)
+    name = ndb.StringProperty(required=True, verbose_name=u"Полное название")
+    short_name = ndb.StringProperty(required=True, verbose_name=u'Сокращение')
 
 
 class Kompleks(BaseModel):
@@ -160,10 +161,13 @@ class Kompleks(BaseModel):
         situation or a citizen category.
     mfcs: MFCs, where the kompleks is available.
     """
-    name = ndb.StringProperty(required=True)
+    name = ndb.StringProperty(required=True, verbose_name=u'Название')
 
     # Relationships
-    mfcs = ndb.KeyProperty(MFC, repeated=True)
+    mfcs = ndb.KeyProperty(
+        MFC, repeated=True,
+        verbose_name=u"В каких МФЦ доступна комплесная услуга?"
+    )
 
 
 class Service(BaseModel):
@@ -201,19 +205,35 @@ class Service(BaseModel):
         can be omitted only if a condition described in
         prerequisite_description is met.
     """
-    name = ndb.StringProperty(required=True)
-    short_description = ndb.TextProperty(required=True)
-    kb_id = ndb.IntegerProperty(required=True)
-    prerequisite_description = ndb.StringProperty()
-    max_days = ndb.IntegerProperty(required=True)
-    max_work_days = ndb.IntegerProperty(required=True)
-    terms_description = ndb.StringProperty()
+    name = ndb.StringProperty(required=True, verbose_name=u'Название')
+    short_description = ndb.TextProperty(
+        required=True, verbose_name=u'Краткое описание')
+    kb_id = ndb.IntegerProperty(
+        required=True, verbose_name=u'ID в Базе знаний МФЦ')
+    prerequisite_description = ndb.StringProperty(
+        verbose_name=u'При каком условии надобность в услуге отпадает?')
+    max_days = ndb.IntegerProperty(
+        required=True, verbose_name=u'Максимальный срок (календарные дни)')
+    max_work_days = ndb.IntegerProperty(
+        required=True, verbose_name=u'Максимальный срок (рабочие дни)')
+    terms_description = ndb.StringProperty(
+        verbose_name=u'Примечание к срокам предоставления услуги')
 
     # Relationships
-    ogv = ndb.KeyProperty(OGV, required=True)
-    containing_komplekses = ndb.KeyProperty(Kompleks, repeated=True)
-    related_komplekses = ndb.KeyProperty(Kompleks, repeated=True)
-    dependencies = ndb.KeyProperty(kind="Service", repeated=True)
+    ogv = ndb.KeyProperty(
+        OGV, required=True, verbose_name=u'Ответственное ведомство')
+    containing_komplekses = ndb.KeyProperty(
+        Kompleks, repeated=True,
+        verbose_name=u'Комплексы, в которые входит услуга'
+    )
+    related_komplekses = ndb.KeyProperty(
+        Kompleks, repeated=True,
+        verbose_name=u'Комплексы, к которым услугу можно отнести'
+    )
+    dependencies = ndb.KeyProperty(
+        kind="Service", repeated=True,
+        verbose_name="Какие услуги нужно получить предварительно?"
+    )
 
 
 class Document(BaseModel):
@@ -249,17 +269,27 @@ class Document(BaseModel):
     """
     name = ndb.StringProperty(required=True)
     description = ndb.TextProperty(
-        default=u'Предоставляется в любом случае')
+        default=u'Предоставляется в любом случае',
+        verbose_name=u'Условия предоставления'
+    )
     o_count_method = ndb.StringProperty(
-        default='one_for_all', choices=CFG['COUNT_METHOD'].keys())
+        default='one_for_all', choices=CFG['COUNT_METHOD'].keys(),
+        verbose_name=u'Метод подсчета оригиналов'
+    )
     c_count_method = ndb.StringProperty(
-        default='per_service', choices=CFG['COUNT_METHOD'].keys())
+        default='per_service', choices=CFG['COUNT_METHOD'].keys(),
+        verbose_name=u'Метод подсчета копий'
+    )
     o_supply_type = ndb.StringProperty(
-        default='demonstrate', choices=CFG['ORIGINAL_SUPPLY_TYPE'].keys())
-    n_originals = ndb.IntegerProperty(default=1)
-    n_copies = ndb.IntegerProperty(default=1)
-    is_a_paper_document = ndb.BooleanProperty(default=True)
-    doc_class = ndb.KeyProperty(DocClass, required=True)
+        default='demonstrate', choices=CFG['ORIGINAL_SUPPLY_TYPE'].keys(),
+        verbose_name=u'Возвращается ли оригинал заявителю?'
+        )
+    n_originals = ndb.IntegerProperty(default=1, verbose_name=u'Оригиналы')
+    n_copies = ndb.IntegerProperty(default=1, verbose_name=u'Копии')
+    is_a_paper_document = ndb.BooleanProperty(
+        default=True, verbose_name=u'Это физический документ?')
+    doc_class = ndb.KeyProperty(
+        DocClass, required=True, verbose_name="Класс документа")
 
     def precompile_description(self, dts_items):
         """
