@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 from sys import modules
 # Third-party imports
+from google.appengine.api.app_identity import get_application_id
 from google.appengine.ext import ndb
 # Project-specific imports
 from config import CFG
@@ -25,7 +26,36 @@ class BaseModel(ndb.Model):
     _name = None
     _repr_field = None
 
-    id = ndb.IntegerProperty(required=True)
+    id = ndb.IntegerProperty(required=True, verbose_name='ID')
+
+    @classmethod
+    def by_property(cls, property_, value, key_only=True):
+        qry_params = {}
+        # Check if in test mode
+        if get_application_id() != 'testbed-test':
+            qry_params['ancestor'] = CFG['ANCESTOR']
+
+        # In case property_ is passed as string.
+        if isinstance(property_, (str, unicode)):
+            property_ = getattr(cls, property_)
+
+        entity = cls.query(**qry_params).filter(property_ == value).get()
+
+        if entity is None:
+            raise KompleksModelError(
+                'Entity with {} == {} was not found for entity_kind {}'.format(
+                    property_, str(value).encode('utf-8'), cls.__name__))
+        elif key_only:
+            return entity.key
+        return entity
+
+    @classmethod
+    def insert_or_update(cls, entity_properties):
+        # Check if in test mode
+        if get_application_id() != 'testbed-test':
+            entity_properties['parent'] = CFG['ANCESTOR']
+
+        cls(**entity_properties).put()
 
     @classmethod
     def iter_property_names(cls, exclude=None):
@@ -34,7 +64,7 @@ class BaseModel(ndb.Model):
                 yield prop
 
     @classmethod
-    def objectify_property(cls, prop_name):
+    def objectify_property(cls, prop_name, entity=None):
         prop = cls._properties[prop_name]
         objectified = {'name': prop_name, 'label': prop._verbose_name}
         prop_cls_name = prop.__class__.__name__
@@ -60,7 +90,6 @@ class BaseModel(ndb.Model):
         objectified['type'] = prop_cls_name
         return objectified
 
-
     def as_tuple(self, *args):
         result = []
 
@@ -69,7 +98,6 @@ class BaseModel(ndb.Model):
                 result.append(self.urlsafe())
             else:
                 result.append(getattr(self, arg))
-
         return result
 
     def urlsafe(self):

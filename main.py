@@ -465,15 +465,16 @@ class ApiHandler(webapp2.RequestHandler):
 
             if '/entities' in self.request.uri:
                 res_obj = {
-                    'name': kind._name[0],
-                    'name_plural': kind._name[1],
+                    'kind': kind._name[0],
+                    'kind_plural': kind._name[1],
                     'items': [{'id': i, 'value': v} for i, v in items]
                 }
 
                 self.response.out.write(json.dumps(res_obj))
             elif '/fields' in self.request.uri:
                 res_obj = {
-                    'name': kind._name[0],
+                    'kind': kind._name[0],
+                    'kind_plural': kind._name[1],
                     'fields': [kind.objectify_property(p) for p in
                                kind.iter_property_names()]
                 }
@@ -482,7 +483,16 @@ class ApiHandler(webapp2.RequestHandler):
             else:
                 self.response.set_status(300)
         elif 'entity_id' in kwargs:
-            pass  # TODO: implement this
+            entity = models.from_urlsafe(kwargs['entity_id'])
+            kind = entity.__class__
+
+            res_obj = {
+                'kind': kind._name[0],
+                'kind_plural': kind._name[1],
+                'fields':
+                    [entity.objectify_property(p, entity=entity) for
+                     p in kind.iter_property_names()]
+            }
         else:
             self.response.set_status(300)
 

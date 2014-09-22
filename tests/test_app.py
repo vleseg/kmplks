@@ -7,8 +7,9 @@ from google.appengine.ext import testbed
 import json
 import webtest
 # Project imports
-from db_tools import initialize_datastore, by_property
+from db_tools import initialize_datastore
 from main import app
+from models import Document
 
 
 class KompleksTestCase(unittest.TestCase):
@@ -110,9 +111,8 @@ class AppTest(KompleksTestCase):
         self.assertEqual(response.status_int, 200)
         response_obj = json.loads(response.body)
 
-        self.assertAllIn(['name', 'name_plural', 'items'], response_obj.keys())
-        self.assertEqual(response_obj['name'], u'Услуга')
-        self.assertEqual(response_obj['name_plural'], u'Услуги')
+        self.assertEqual(response_obj['kind'], u'Услуга')
+        self.assertEqual(response_obj['kind_plural'], u'Услуги')
         self.assertEqual(len(response_obj['items']), 6)
 
     def test_api_fields(self):
@@ -121,8 +121,10 @@ class AppTest(KompleksTestCase):
         self.assertEqual(response.status_int, 200)
         response_obj = json.loads(response.body)
 
-        self.assertEqual(response_obj['name'], u'Услуга')
+        self.assertEqual(response_obj['kind'], u'Услуга')
+        self.assertEqual(response_obj['kind_plural'], u'Услуги')
         self.assertAllIn(response_obj['fields'], [
+            {'name': 'id', 'type': 'int', 'label': u'ID'},
             {'name': 'name', 'type': 'plain', 'label': u'Название'},
             {'name': 'short_description', 'type': 'rich',
              'label': u'Краткое описание'},
@@ -145,6 +147,46 @@ class AppTest(KompleksTestCase):
              'label': u'Комплексы, к которым услугу можно отнести'},
             {'name': 'dependencies', 'type': 'multi_ref', 'kind': 'Service',
              'label': u'Какие услуги нужно получить предварительно?'}
+        ])
+
+    def test_api_entity(self):
+        test_doc = Document.by_property(
+            'name', u'Заявление о регистрации по месту жительства, форма №6',
+            key_only=False)
+
+        response = self.testapp.get(
+            '/admin/api/entities/' + test_doc.urlsafe())
+
+        self.assertEqual(response.status_int, 200)
+        response_obj = json.loads(response.body)
+
+        self.assertEqual(response_obj['kind'], u'Услуга')
+        self.assertEqual(response_obj['kind_plural'], u'Услуги')
+        self.assertEqual(
+            response_obj['label'],
+            u'Заявление о регистрации по месту жительства, форма №6')
+        self.assertAllIn(response_obj['fields'], [
+            {'name': 'id', 'type': 'int', 'label': u'ID'},
+            {'name': 'name', 'type': 'plain', 'label': u'Название',
+             'value': u'Заявление о регистрации по месту жительства, форма №6'},
+            {'name': 'description', 'type': 'rich',
+             'label': u'Условия предоставления',
+             'value': u'Форма заявления предоставляется консультантом МФЦ.'},
+            {'name': 'o_count_method', 'type': 'enum',
+             'label': u'Метод подсчета оригиналов', 'value': 'per_service'},
+            {'name': 'c_count_method', 'type': 'enum',
+             'label': u'Метод подсчета копий', 'value': 'per_service'},
+            {'name': 'n_originals', 'type': 'int',
+             'label': u'Количество оригиналов', 'value': 1},
+            {'name': 'n_copies', 'type': 'int', 'label': u'Количество копий',
+             'value': 0},
+            {'name': 'o_supply_type', 'type': 'enum',
+             'label': u'Возвращается ли оригинал заявителю?',
+             'value': 'no_return'},
+            {'name': 'is_a_paper_document', 'type': 'bool',
+             'label': u'Это физический документ?', 'value': True},
+            {'name': 'doc_class', 'type': 'ref', 'label': u'Класс документа',
+             'value': u'Свидетельства ЗАГС', 'kind': 'DocClass'}
         ])
 
     @classmethod
