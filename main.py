@@ -472,7 +472,13 @@ class ApiHandler(webapp2.RequestHandler):
 
                 self.response.out.write(json.dumps(res_obj))
             elif '/fields' in self.request.uri:
-                pass  # TODO: implement this
+                res_obj = {
+                    'name': kind._name[0],
+                    'fields': [kind.objectify_property(p) for p in
+                               kind.iter_property_names()]
+                }
+
+                self.response.out.write(json.dumps(res_obj))
             else:
                 self.response.set_status(300)
         elif 'entity_id' in kwargs:

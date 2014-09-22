@@ -33,6 +33,34 @@ class BaseModel(ndb.Model):
             if exclude is not None and prop not in exclude:
                 yield prop
 
+    @classmethod
+    def objectify_property(cls, prop_name):
+        prop = cls._properties[prop_name]
+        objectified = {'name': prop_name, 'label': prop._verbose_name}
+        prop_cls_name = prop.__class__.__name__
+
+        if prop._choices is not None:
+            prop_cls_name = 'enum'
+            objectified['values'] = prop._choices  # TODO: replace with Russian
+        elif prop_cls_name == 'StringProperty':
+            prop_cls_name = 'plain'
+        elif prop_cls_name == 'TextProperty':
+            prop_cls_name = 'rich'
+        elif prop_cls_name == 'IntegerProperty':
+            prop_cls_name = 'int'
+        elif prop_cls_name == 'KeyProperty':
+            objectified['kind'] = prop.name
+            if prop._repeated:
+                prop_cls_name = 'multi_ref'
+            else:
+                prop_cls_name = 'ref'
+        elif prop_cls_name == 'BooleanProperty':
+            prop_cls_name = 'bool'
+
+        objectified['type'] = prop_cls_name
+        return objectified
+
+
     def as_tuple(self, *args):
         result = []
 

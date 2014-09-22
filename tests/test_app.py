@@ -115,9 +115,37 @@ class AppTest(KompleksTestCase):
         self.assertEqual(response_obj['name_plural'], u'Услуги')
         self.assertEqual(len(response_obj['items']), 6)
 
+    def test_api_fields(self):
+        response = self.testapp.get('/admin/api/Service/fields')
 
-    def test_api_entity(self):
-        pass
+        self.assertEqual(response.status_int, 200)
+        response_obj = json.loads(response.body)
+
+        self.assertEqual(response_obj['name'], u'Услуга')
+        self.assertAllIn(response_obj['fields'], [
+            {'name': 'name', 'type': 'plain', 'label': u'Название'},
+            {'name': 'short_description', 'type': 'rich',
+             'label': u'Краткое описание'},
+            {'name': 'kb_id', 'type': 'int', 'label': u'ID в Базе знаний МФЦ'},
+            {'name': 'prerequisite_description', 'type': 'plain',
+             'label': u'При каком условии надобность в услуге отпадает?'},
+            {'name': 'max_days', 'type': 'int',
+             'label': u'Максимальный срок (календарные дни)'},
+            {'name': 'max_work_days', 'type': 'int',
+             'label': u'Максимальный срок (рабочие дни)'},
+            {'name': 'terms_description', 'type': 'plain',
+             'label': u'Примечание к срокам предоставления услуги'},
+            {'name': 'ogv', 'type': 'ref', 'kind': 'OGV',
+             'label': u'Ответственное ведомство'},
+            {'name': 'containing_komplekses', 'type': 'multi_ref',
+             'kind': 'Kompleks',
+             'label': u'Комплексы, в которые входит услуга'},
+            {'name': 'related_komplekses', 'type': 'multi_ref',
+             'kind': 'Kompleks',
+             'label': u'Комплексы, к которым услугу можно отнести'},
+            {'name': 'dependencies', 'type': 'multi_ref', 'kind': 'Service',
+             'label': u'Какие услуги нужно получить предварительно?'}
+        ])
 
     @classmethod
     def tearDownClass(cls):
