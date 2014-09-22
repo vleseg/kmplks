@@ -15,7 +15,16 @@ class KompleksModelError(BaseException):
 class BaseModel(ndb.Model):
     """
     Base class for models in Kompleks app. Inherit new models from it.
+
+    _name: Verbose name of the model to be used in user interface, two-element
+        tuple. First element is singular form, second is plural.
+    _repr_field: Property, which value will be used as representation of the
+        entity (i. e. human-readable primary key).
     """
+    # Meta
+    _name = None
+    _repr_field = None
+
     id = ndb.IntegerProperty(required=True)
 
     @classmethod
@@ -24,83 +33,16 @@ class BaseModel(ndb.Model):
             if exclude is not None and prop not in exclude:
                 yield prop
 
-    def _attach_labels_and_types(self, d):
-        new_d = dict.fromkeys(d.keys(), None)
-        mdp = CFG['MODEL_DISPLAY_PARAMS']
-        kind = self.__class__
-        prop_type_to_json_type = {
-            'StringProperty': 'plain', 'TextProperty': 'plain_or_html',
-            'IntegerProperty': 'int'
-        }
+    def as_tuple(self, *args):
+        result = []
 
-        for prop_name, value in d.items():
-            if value is None:
-                del new_d[prop_name]
-                continue
-
-            mdp_for_prop = mdp.get(kind.__name__)['ru_name_prop'].get(prop_name)
-            new_item = {'value': value}
-            if isinstance(mdp_for_prop, basestring):
-                new_item['label'] = mdp_for_prop
-            else:  # e. g. boolean
-                new_item['label'] = mdp_for_prop['_name']
-
-            prop = getattr(kind, prop_name)
-            prop_type = prop.__class__.__name__
-
-            if prop_type in prop_type_to_json_type:
-                new_item['type'] = prop_type_to_json_type[prop_type]
-            elif prop_type == 'KeyProperty':
-                if prop._repeated:
-                    new_item['type'] = 'multi_entity'
-                    try:
-                        r_entity = value[0].get()
-                    except IndexError:  # no references in list
-                        del new_d[prop_name]
-                        continue
-                else:
-                    new_item['type'] = 'entity'
-                    r_entity = value.get()
-                r_kind_name = r_entity.__class__.__name__
-                field_to_use = mdp.get(r_kind_name)['repr_field']
-                new_item['kind'] = r_kind_name
-                new_item['value'] = getattr(r_entity, field_to_use)
-            elif prop_type == 'BooleanProperty':
-                new_item['type'] = 'bool'
-                new_item['true_text'] = mdp_for_prop['_true']
-                new_item['false_text'] = mdp_for_prop['_false']
-
-            new_d[prop_name] = new_item
-
-        return new_d
-
-    def to_dict(self, map_fields=None, exclude=None, w_labels_and_types=False):
-        result = {}
-        to_dict_kwargs = {'exclude': exclude, 'include': None}
-
-        if map_fields is not None:
-            # dict has to be copied, since it is often reused (e. g. when
-            # fetching lists of entities)
-            map_fields = dict(map_fields)
-            if '_urlsafe' in map_fields:
-                result[map_fields.pop('_urlsafe')] = self.urlsafe()
-            if len(map_fields) > 0:
-                to_dict_kwargs['include'] = map_fields.keys()
+        for arg in args:
+            if arg == '_urlsafe':
+                result.append(self.urlsafe())
             else:
-                map_fields = None
+                result.append(getattr(self, arg))
 
-        prefetch = self._to_dict(**to_dict_kwargs)
-
-        if map_fields is not None:
-            for key, value in prefetch.items():
-                result[map_fields.get(key)] = value
-        else:
-            result.update(prefetch)
-
-        if w_labels_and_types:
-            return self._attach_labels_and_types(result)
-        else:
-            return result
+        return result
 
     def urlsafe(self):
         return self.key.urlsafe()
@@ -113,6 +55,10 @@ class DocClass(BaseModel):
     Purpose of a document, issuing OGV, it's nature or any other trait, that
     may serve as a unifying characteristic for a set of documents.
     """
+    # Meta
+    _name = (u'Класс документа', u'Классы документов')
+    _repr_field = 'value'
+
     value = ndb.StringProperty(required=True, verbose_name=u'Значение')
     sort_key = ndb.IntegerProperty(
         required=True, verbose_name=u'Ключ сортировки')
@@ -128,6 +74,10 @@ class MFC(BaseModel):
         village), where MFC operates, so that RCTO operator could always tell
         if a caller is able to apply for a kompleks in his/her area.
     """
+    # Meta
+    _name = (u'МФЦ', u'МФЦ')
+    _repr_field = 'name'
+
     name = ndb.StringProperty(required=True, verbose_name="Название")
 
 
@@ -142,6 +92,10 @@ class OGV(BaseModel):
     short_name: Abbreviation of OGV's official name. This property must store a
         shortening, well-known among common people.
     """
+    # Meta
+    _name = (u'Ведомство', u'Ведомства')
+    _repr_field = 'name'
+
     name = ndb.StringProperty(required=True, verbose_name=u"Полное название")
     short_name = ndb.StringProperty(required=True, verbose_name=u'Сокращение')
 
@@ -161,6 +115,10 @@ class Kompleks(BaseModel):
         situation or a citizen category.
     mfcs: MFCs, where the kompleks is available.
     """
+    # Meta
+    _name = (u'Комлпексная услуга', u'Комплексные услуги')
+    _repr_field = 'name'
+
     name = ndb.StringProperty(required=True, verbose_name=u'Название')
 
     # Relationships
@@ -205,6 +163,10 @@ class Service(BaseModel):
         can be omitted only if a condition described in
         prerequisite_description is met.
     """
+    # Meta
+    _name = (u'Услуга', u'Услуги')
+    _repr_field = 'name'
+
     name = ndb.StringProperty(required=True, verbose_name=u'Название')
     short_description = ndb.TextProperty(
         required=True, verbose_name=u'Краткое описание')
@@ -267,6 +229,10 @@ class Document(BaseModel):
 
     doc_class: Class of the document.
     """
+    # Meta
+    _name = (u'Документ', u'Документы')
+    _repr_field = 'name'
+
     name = ndb.StringProperty(required=True)
     description = ndb.TextProperty(
         default=u'Предоставляется в любом случае',

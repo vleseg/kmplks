@@ -2,14 +2,14 @@
 {% block title %}Администрирование{% endblock %}
 {% block head %}
     Список объектов:
-    <span id="list-name-pl"><small></small></span>
+    <small><span id="list-name-pl"></span></small>
 {% endblock %}
 {% block content %}
     <ul class="nav nav-tabs" role="tablist" id="tabs">
-    {% for list_ in lists %}
+    {% for kind in kinds %}
         <li>
-            <a href="#{{ list_.name }}" data-toggle="tab" role="tab">
-            {{ list_.ru_name_plural }}
+            <a href="#{{ kind.name }}" data-toggle="tab" role="tab">
+            {{ kind.verbose_name }}
             </a>
         </li>
     {% endfor %}
@@ -18,8 +18,8 @@
         <div id="loading" class="well text-center">
             <img src="/static/ajax-loader.gif" alt="Загрузка..."/>
         </div>
-    {% for list_ in lists %}
-        <div class="tab-pane col-md-10" id="{{ list_.name }}">
+    {% for kind in kinds %}
+        <div class="tab-pane col-md-10" id="{{ kind.name }}">
             <div class="tab-pane-items list-group">
                 {# data fetched via ajax #}
             </div>

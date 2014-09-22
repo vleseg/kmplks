@@ -26,6 +26,7 @@ from webapp2_extras import sessions
 from config import CFG
 from db_tools import initialize_datastore
 import models
+from rest import RESTTree
 
 
 class KompleksError(BaseException):
@@ -34,27 +35,6 @@ class KompleksError(BaseException):
 
 class SessionHandlingError(KompleksError):
     pass
-
-
-# Startup checks.
-# Does config.py's 'MODEL_DISPLAY_PARAMS' has values for all models and all
-# its properties?
-for kind in models.iter_datastore_kinds():
-    mdp = CFG['MODEL_DISPLAY_PARAMS']
-    kind_name = kind.__name__
-
-    if kind_name not in mdp:
-        raise KompleksError(
-            "Display parameters for kind '{}' not found in app config."
-            .format(kind_name))
-    for p_name in kind.iter_property_names(exclude=('id',)):
-        mdp_for_kind = mdp.get(kind_name)
-
-        if (mdp_for_kind is not None and
-                p_name not in mdp_for_kind['ru_name_prop']):
-            raise KompleksError(
-                "Display parameters for kind '{}' in app config do not contain "
-                "data for property '{}'".format(kind_name, p_name))
 
 
 # Custom jinja2 filters and tests.
@@ -465,51 +445,40 @@ class AdminList(BaseHandler):
     template_filename = "admin_list.html"
 
     def get(self):
-        self.context['lists'] = []
-        mds = CFG['MODEL_DISPLAY_PARAMS']
-        s_lambda = lambda item: mds.index(item)
-        f_lambda = lambda item: mds[item] is not None
-        for key, value in sorted(filter(f_lambda, mds), key=s_lambda):
-            value['name'] = key
-            self.context['lists'].append(value)
+        self.context['kinds'] = []
+        for kind in models.iter_datastore_kinds():
+            if kind._name is not None:
+                self.context['kinds'].append({'name': kind.__name__,
+                                              'verbose_name': kind._name[1]})
 
         self.render()
 
 
-class ApiHandler(webapp2.RedirectHandler):
-    def get(self, cmd):
+class ApiHandler(webapp2.RequestHandler):
+    def get(self, **kwargs):
         self.response.headers.add('Content-Type', 'application/json')
 
-        if cmd == 'list':
-            kind_str = self.request.get('kind')
-            kind = models.get_kind(kind_str)
+        if 'kind_name' in kwargs:
+            kind = models.get_kind(kwargs['kind_name'])
+            items = map(lambda e: e.as_tuple('_urlsafe', kind._repr_field),
+                        kind.query().iter())
 
-            repr_field = CFG['MODEL_DISPLAY_PARAMS'].get(kind_str)['repr_field']
+            if '/entities' in self.request.uri:
+                res_obj = {
+                    'name': kind._name[0],
+                    'name_plural': kind._name[1],
+                    'items': [{'id': i, 'value': v} for i, v in items]
+                }
 
-            map_fields = {repr_field: 'value', '_urlsafe': 'id'}
-
-            sorted_items = sorted(
-                kind.query().fetch(), key=lambda item: item.id)
-            d = [e.to_dict(map_fields) for e in sorted_items]
-
-            self.response.out.write(json.dumps(d))
-        elif cmd == "entity":
-            id_ = self.request.get('id')
-            if id_ is None:
-                self.abort(404)
-
-            entity = models.from_urlsafe(id_)
-            mdp_for_kind = CFG['MODEL_DISPLAY_PARAMS'].get(
-                entity.__class__.__name__)
-            d = entity.to_dict(exclude=['id'], w_labels_and_types=True)
-
-            d['_id'] = id_
-            d['_use_as_name'] = mdp_for_kind.get('repr_field')
-            d['_kind'] = mdp_for_kind.get('ru_name')
-
-            self.response.out.write(json.dumps(d))
+                self.response.out.write(json.dumps(res_obj))
+            elif '/fields' in self.request.uri:
+                pass  # TODO: implement this
+            else:
+                self.response.set_status(300)
+        elif 'entity_id' in kwargs:
+            pass  # TODO: implement this
         else:
-            self.abort(501)
+            self.response.set_status(300)
 
 
 class AdminWorker(webapp2.RequestHandler):
@@ -532,8 +501,9 @@ routes = [
     webapp2.Route('/admin', handler=AdminHandler, name='admin'),
     webapp2.Route('/admin/datastore-init', handler=AdminWorker,
                   name='datastore-init'),
-    webapp2.Route('/admin/list', handler=AdminList, name='admin-list'),
-    webapp2.Route('/admin/api/<cmd>', handler=ApiHandler, name='admin-api')
+    webapp2.Route('/admin/list', handler=AdminList, name='admin-list')
 ]
+rest_tree = RESTTree(CFG['RAW_REST_TREE'])
+routes.extend(rest_tree.get_routes())
 
 app = webapp2.WSGIApplication(routes, debug=True, config=config)

@@ -105,7 +105,16 @@ class AppTest(KompleksTestCase):
         ), result_page.testbody)
 
     def test_api_list(self):
-        pass
+        response = self.testapp.get('/admin/api/Service/entities')
+
+        self.assertEqual(response.status_int, 200)
+        response_obj = json.loads(response.body)
+
+        self.assertAllIn(['name', 'name_plural', 'items'], response_obj.keys())
+        self.assertEqual(response_obj['name'], u'Услуга')
+        self.assertEqual(response_obj['name_plural'], u'Услуги')
+        self.assertEqual(len(response_obj['items']), 6)
+
 
     def test_api_entity(self):
         pass

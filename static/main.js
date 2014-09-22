@@ -193,30 +193,31 @@ $(document).ready(function () {
         $(this).prev().find("i.glyphicon")
             .toggleClass('glyphicon-chevron-down glyphicon-chevron-right')
         });
+
     // Admin list logic
-    if (window.location.href.indexOf('admin/list') > -1) {
+    if (window.location.href.indexOf('/admin/list') > -1) {
         $("a[data-toggle='tab']").on("shown.bs.tab", function(e) {
             var reqKind = $(this).attr('href').slice(1);
             var tabPaneContent = $('#' + reqKind).find('.tab-pane-items');
             $('#list-name-pl').find('small').text($(this).text().toUpperCase());
 
-            $.getJSON('/admin/api/list', {'kind': reqKind}, function (data) {
+            $.getJSON('/admin/api/' + reqKind + '/entities', function (data) {
                 tabPaneContent.empty();
 
                 // list container
-                var listContainer = jQuery(
+                var listContainer = $(
                     '<div/>', {class: 'list-group'}
                 ).appendTo(tabPaneContent);
 
                 // 'add new item' button
                 $('<a/>', {
-                    href: '/admin/create?kind=' + reqKind,
+                    href: '/admin/new?kind=' + reqKind,
                     class: 'list-group-item list-group-item-success',
                     text: '+ Создать'
                 }).insertBefore(listContainer);
 
                 // iterating data to fill list container
-                $.each(data, function (i, item) {
+                $.each(data['items'], function (i, item) {
                     var listItem = $('<div/>', {
                         class: 'list-group-item'
                     }).appendTo(listContainer);
