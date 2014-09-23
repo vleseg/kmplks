@@ -21,12 +21,11 @@ import json
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 import webapp2
-from webapp2_extras import sessions
-# Project imports
+from webapp2_extras import sessions, routes
+# Project-specific imports
 from config import CFG
 from db_tools import initialize_datastore
 import models
-from rest import RESTTree
 
 
 class KompleksError(BaseException):
@@ -455,15 +454,40 @@ class AdminList(BaseHandler):
 
 
 class ApiHandler(webapp2.RequestHandler):
+    @staticmethod
+    def make_res_obj_for_kind(kind, entity=None):
+        fields = []
+        choices_dict = {}
+        for p in kind.iter_property_names():
+            objectified = kind.objectify_property(p, entity=entity)
+            if 'choices' in objectified:
+                choices = objectified.pop('choices')
+                choices_name = objectified.pop('choices_name')
+                if choices is not None and choices_name not in choices_dict:
+                    choices_dict[choices_name] = choices
+            fields.append(objectified)
+
+        res_obj = {
+            'kind': kind._name[0],
+            'kind_plural': kind._name[1],
+            'fields': fields
+        }
+        if len(choices_dict) > 0:
+            res_obj['choices'] = choices_dict
+        if entity is not None:
+            res_obj['label'] = getattr(entity, entity._repr_field)
+
+        return res_obj
+
     def get(self, **kwargs):
         self.response.headers.add('Content-Type', 'application/json')
 
         if 'kind_name' in kwargs:
             kind = models.get_kind(kwargs['kind_name'])
-            items = map(lambda e: e.as_tuple('_urlsafe', kind._repr_field),
-                        kind.query().iter())
 
             if '/entities' in self.request.uri:
+                items = map(lambda e: e.as_tuple('_urlsafe', kind._repr_field),
+                            kind.query().iter())
                 res_obj = {
                     'kind': kind._name[0],
                     'kind_plural': kind._name[1],
@@ -472,12 +496,7 @@ class ApiHandler(webapp2.RequestHandler):
 
                 self.response.out.write(json.dumps(res_obj))
             elif '/fields' in self.request.uri:
-                res_obj = {
-                    'kind': kind._name[0],
-                    'kind_plural': kind._name[1],
-                    'fields': [kind.objectify_property(p) for p in
-                               kind.iter_property_names()]
-                }
+                res_obj = self.make_res_obj_for_kind(kind)
 
                 self.response.out.write(json.dumps(res_obj))
             else:
@@ -485,14 +504,9 @@ class ApiHandler(webapp2.RequestHandler):
         elif 'entity_id' in kwargs:
             entity = models.from_urlsafe(kwargs['entity_id'])
             kind = entity.__class__
+            res_obj = self.make_res_obj_for_kind(kind, entity=entity)
 
-            res_obj = {
-                'kind': kind._name[0],
-                'kind_plural': kind._name[1],
-                'fields':
-                    [entity.objectify_property(p, entity=entity) for
-                     p in kind.iter_property_names()]
-            }
+            self.response.out.write(json.dumps(res_obj))
         else:
             self.response.set_status(300)
 
@@ -507,7 +521,14 @@ config = {'webapp2_extras.sessions': {
     'session_max_age': 3600 * 24
 }}
 
-routes = [
+app_routes = [
+    routes.PathPrefixRoute('/admin/api', [
+        webapp2.Route('/<kind_name>/entities', handler='main.ApiHandler'),
+        webapp2.Route('/<kind_name>/fields', handler='main.ApiHandler'),
+        webapp2.Route('/entities/<entity_id>', handler='main.ApiHandler'),
+        webapp2.Route('/entities/<entity_id>/relatives',
+                      handler='main.ApiHandler')
+    ]),
     webapp2.Route('/', handler=KompleksHandler, name='start'),
     webapp2.Route('/prerequisites', handler=PrerequisiteChoiceHandler,
                   name='prerequisites'),
@@ -519,7 +540,5 @@ routes = [
                   name='datastore-init'),
     webapp2.Route('/admin/list', handler=AdminList, name='admin-list')
 ]
-rest_tree = RESTTree(CFG['RAW_REST_TREE'])
-routes.extend(rest_tree.get_routes())
 
-app = webapp2.WSGIApplication(routes, debug=True, config=config)
+app = webapp2.WSGIApplication(app_routes, debug=True, config=config)

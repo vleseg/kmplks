@@ -123,6 +123,7 @@ class AppTest(KompleksTestCase):
 
         self.assertEqual(response_obj['kind'], u'Услуга')
         self.assertEqual(response_obj['kind_plural'], u'Услуги')
+
         self.assertAllIn(response_obj['fields'], [
             {'name': 'id', 'type': 'int', 'label': u'ID'},
             {'name': 'name', 'type': 'plain', 'label': u'Название'},
@@ -160,13 +161,15 @@ class AppTest(KompleksTestCase):
         self.assertEqual(response.status_int, 200)
         response_obj = json.loads(response.body)
 
-        self.assertEqual(response_obj['kind'], u'Услуга')
-        self.assertEqual(response_obj['kind_plural'], u'Услуги')
+        self.assertAllIn(response_obj['choices'].keys(),
+                         ['COUNT_METHOD', 'ORIGINAL_SUPPLY_TYPE'])
+        self.assertEqual(response_obj['kind'], u'Документ')
+        self.assertEqual(response_obj['kind_plural'], u'Документы')
         self.assertEqual(
             response_obj['label'],
             u'Заявление о регистрации по месту жительства, форма №6')
         self.assertAllIn(response_obj['fields'], [
-            {'name': 'id', 'type': 'int', 'label': u'ID'},
+            {'name': 'id', 'type': 'int', 'label': u'ID', 'value': 8},
             {'name': 'name', 'type': 'plain', 'label': u'Название',
              'value': u'Заявление о регистрации по месту жительства, форма №6'},
             {'name': 'description', 'type': 'rich',
@@ -186,7 +189,7 @@ class AppTest(KompleksTestCase):
             {'name': 'is_a_paper_document', 'type': 'bool',
              'label': u'Это физический документ?', 'value': True},
             {'name': 'doc_class', 'type': 'ref', 'label': u'Класс документа',
-             'value': u'Свидетельства ЗАГС', 'kind': 'DocClass'}
+             'value': u'Заявления', 'kind': 'DocClass'}
         ])
 
     @classmethod

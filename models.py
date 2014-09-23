@@ -1,6 +1,7 @@
 # coding=utf-8
 # TODO: update UML schema and description in Evernote correspondingly
 from __future__ import unicode_literals
+from collections import OrderedDict
 from sys import modules
 # Third-party imports
 from google.appengine.api.app_identity import get_application_id
@@ -11,6 +12,37 @@ from config import CFG
 
 class KompleksModelError(BaseException):
     pass
+
+
+class Choices(object):
+    def __init__(self, raw):
+        self.keys_index = {}
+        self.d = raw
+
+        for key, value in raw.items():
+            self.keys_index[frozenset(value.keys())] = {
+                'name': key, 'items': value}
+
+    def __getitem__(self, item):
+        return self.d[item].keys()
+
+    def as_dict(self, name):
+        return self.d[name]
+
+    def name_by_value(self, value):
+        return self.keys_index[frozenset(value)].get('name')
+
+CHOICES = Choices({
+    'COUNT_METHOD': {
+    'one_for_all': u'Один экземпляр на комплекс',
+    'per_service': u'Один экземпляр на услугу',
+    'per_ogv': u'Один экземпляр на ведомство'
+},
+    'ORIGINAL_SUPPLY_TYPE': OrderedDict([
+    ('demonstrate', u'Возвращается после приема документов'),
+    ('return_with_result', u'Возвращается после предоставления услуги'),
+    ('no_return', u'Не возвращается')
+])})
 
 
 class BaseModel(ndb.Model):
@@ -62,16 +94,23 @@ class BaseModel(ndb.Model):
         for prop in cls._properties:
             if exclude is not None and prop not in exclude:
                 yield prop
+            elif exclude is None:
+                yield prop
 
     @classmethod
     def objectify_property(cls, prop_name, entity=None):
+        value = None
         prop = cls._properties[prop_name]
         objectified = {'name': prop_name, 'label': prop._verbose_name}
+        if entity is not None:
+            value = getattr(entity, prop_name)
         prop_cls_name = prop.__class__.__name__
 
         if prop._choices is not None:
             prop_cls_name = 'enum'
-            objectified['values'] = prop._choices  # TODO: replace with Russian
+            choices_name = CHOICES.name_by_value(prop._choices)
+            objectified['choices_name'] = choices_name
+            objectified["choices"] = CHOICES.as_dict(choices_name)
         elif prop_cls_name == 'StringProperty':
             prop_cls_name = 'plain'
         elif prop_cls_name == 'TextProperty':
@@ -79,16 +118,27 @@ class BaseModel(ndb.Model):
         elif prop_cls_name == 'IntegerProperty':
             prop_cls_name = 'int'
         elif prop_cls_name == 'KeyProperty':
-            objectified['kind'] = prop.name
-            if prop._repeated:
-                prop_cls_name = 'multi_ref'
-            else:
-                prop_cls_name = 'ref'
+            prop_cls_name = 'multi_ref' if prop._repeated else 'ref'
+            # Referred kind can be stored in KeyProperty as Model subclass of
+            # as string
+            try:
+                objectified['kind'] = prop._kind
+            except:
+                print prop
+            if entity is not None:
+                value = value[0] if prop._repeated else value
+                value = value.get().as_repr()
         elif prop_cls_name == 'BooleanProperty':
             prop_cls_name = 'bool'
 
+        if entity is not None:
+            objectified['value'] = value
         objectified['type'] = prop_cls_name
+
         return objectified
+
+    def as_repr(self):
+        return getattr(self, self._repr_field)
 
     def as_tuple(self, *args):
         result = []
@@ -98,6 +148,7 @@ class BaseModel(ndb.Model):
                 result.append(self.urlsafe())
             else:
                 result.append(getattr(self, arg))
+
         return result
 
     def urlsafe(self):
@@ -289,25 +340,26 @@ class Document(BaseModel):
     _name = (u'Документ', u'Документы')
     _repr_field = 'name'
 
-    name = ndb.StringProperty(required=True)
+    name = ndb.StringProperty(required=True, verbose_name=u'Название')
     description = ndb.TextProperty(
         default=u'Предоставляется в любом случае',
         verbose_name=u'Условия предоставления'
     )
     o_count_method = ndb.StringProperty(
-        default='one_for_all', choices=CFG['COUNT_METHOD'].keys(),
+        default='one_for_all', choices=CHOICES['COUNT_METHOD'],
         verbose_name=u'Метод подсчета оригиналов'
     )
     c_count_method = ndb.StringProperty(
-        default='per_service', choices=CFG['COUNT_METHOD'].keys(),
+        default='per_service', choices=CHOICES['COUNT_METHOD'],
         verbose_name=u'Метод подсчета копий'
     )
     o_supply_type = ndb.StringProperty(
-        default='demonstrate', choices=CFG['ORIGINAL_SUPPLY_TYPE'].keys(),
+        default='demonstrate', choices=CHOICES['ORIGINAL_SUPPLY_TYPE'],
         verbose_name=u'Возвращается ли оригинал заявителю?'
         )
-    n_originals = ndb.IntegerProperty(default=1, verbose_name=u'Оригиналы')
-    n_copies = ndb.IntegerProperty(default=1, verbose_name=u'Копии')
+    n_originals = ndb.IntegerProperty(
+        default=1, verbose_name=u'Количество оригиналов')
+    n_copies = ndb.IntegerProperty(default=1, verbose_name=u'Количество копий')
     is_a_paper_document = ndb.BooleanProperty(
         default=True, verbose_name=u'Это физический документ?')
     doc_class = ndb.KeyProperty(
@@ -402,7 +454,8 @@ class Document(BaseModel):
 
         :type dts_items: list[DocumentToService]
         """
-        ost = CFG['ORIGINAL_SUPPLY_TYPE']
+        ost_dict = CHOICES.as_dict('ORIGINAL_SUPPLY_TYPE')
+        ost = ost_dict.keys()
 
         # Gathering together o_supply_type property values from Document and
         # its bound DocumentToService entities.
@@ -413,7 +466,7 @@ class Document(BaseModel):
         rank_ost = lambda s: ost.index(s)
         strongest_ost = max(o_supply_types, key=rank_ost)
 
-        return ost[strongest_ost]
+        return ost_dict[strongest_ost]
 
 
 class DocumentToService(BaseModel):
@@ -445,8 +498,7 @@ class DocumentToService(BaseModel):
     description = ndb.TextProperty()
     n_originals = ndb.IntegerProperty()
     n_copies = ndb.IntegerProperty()
-    o_supply_type = ndb.StringProperty(choices=CFG[
-        'ORIGINAL_SUPPLY_TYPE'].keys())
+    o_supply_type = ndb.StringProperty(choices=CHOICES['ORIGINAL_SUPPLY_TYPE'])
     override_description = ndb.BooleanProperty(default=False)
 
     # Relations
