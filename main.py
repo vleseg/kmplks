@@ -24,7 +24,7 @@ import webapp2
 from webapp2_extras import sessions, routes
 # Project-specific imports
 from config import CFG
-from db_tools import initialize_datastore
+from datastore_init import initialize_datastore
 import models
 
 
@@ -458,14 +458,17 @@ class ApiHandler(webapp2.RequestHandler):
     def make_res_obj_for_kind(kind, entity=None):
         fields = []
         choices_dict = {}
-        for p in kind.iter_property_names():
-            objectified = kind.objectify_property(p, entity=entity)
-            if 'choices' in objectified:
-                choices = objectified.pop('choices')
-                choices_name = objectified.pop('choices_name')
-                if choices is not None and choices_name not in choices_dict:
-                    choices_dict[choices_name] = choices
-            fields.append(objectified)
+        try:
+            for p in kind.iter_properties(names_only=True):
+                objectified = kind.objectify_property(p, entity=entity)
+                if 'choices' in objectified:
+                    choices = objectified.pop('choices')
+                    choices_name = objectified.pop('choices_name')
+                    if choices is not None and choices_name not in choices_dict:
+                        choices_dict[choices_name] = choices
+                fields.append(objectified)
+        except:
+            pass
 
         res_obj = {
             'kind': kind._name[0],
@@ -503,10 +506,24 @@ class ApiHandler(webapp2.RequestHandler):
                 self.response.set_status(300)
         elif 'entity_id' in kwargs:
             entity = models.from_urlsafe(kwargs['entity_id'])
+            if entity is None:
+                self.abort(404)
+
             kind = entity.__class__
             res_obj = self.make_res_obj_for_kind(kind, entity=entity)
 
             self.response.out.write(json.dumps(res_obj))
+        else:
+            self.response.set_status(300)
+
+    def delete(self, **kwargs):
+        if 'entity_id' in kwargs:
+            if '/entities' in self.request.uri:
+                entity = models.from_urlsafe(kwargs['entity_id'])
+                entity.erase_reverse_references()
+                entity.key.delete()
+            else:
+                self.response.set_status(300)
         else:
             self.response.set_status(300)
 
@@ -523,11 +540,10 @@ config = {'webapp2_extras.sessions': {
 
 app_routes = [
     routes.PathPrefixRoute('/admin/api', [
-        webapp2.Route('/<kind_name>/entities', handler='main.ApiHandler'),
-        webapp2.Route('/<kind_name>/fields', handler='main.ApiHandler'),
-        webapp2.Route('/entities/<entity_id>', handler='main.ApiHandler'),
-        webapp2.Route('/entities/<entity_id>/relatives',
-                      handler='main.ApiHandler')
+        webapp2.Route('/<kind_name>/entities', handler=ApiHandler),
+        webapp2.Route('/<kind_name>/fields', handler=ApiHandler),
+        webapp2.Route('/entities/<entity_id>', handler=ApiHandler),
+        webapp2.Route('/entities/<entity_id>/relatives', handler=ApiHandler)
     ]),
     webapp2.Route('/', handler=KompleksHandler, name='start'),
     webapp2.Route('/prerequisites', handler=PrerequisiteChoiceHandler,

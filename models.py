@@ -8,6 +8,7 @@ from google.appengine.api.app_identity import get_application_id
 from google.appengine.ext import ndb
 # Project-specific imports
 from config import CFG
+from tools import insert_or_append, whoami
 
 
 class KompleksModelError(BaseException):
@@ -61,6 +62,23 @@ class BaseModel(ndb.Model):
     id = ndb.IntegerProperty(required=True, verbose_name='ID')
 
     @classmethod
+    def backref_info(cls):
+        def helper_iter():
+            for kind in iter_datastore_kinds():
+                for prop_name, prop in kind.iter_properties(names_only=False):
+                    yield kind, prop_name, prop
+
+        info = {}
+
+        for kind, prop_name, prop in helper_iter():
+            if whoami(prop) == 'KeyProperty':
+                if prop._kind == cls.__name__:
+                    insert_or_append(info, kind.__name__, prop_name)
+
+        return info
+
+
+    @classmethod
     def by_property(cls, property_, value, key_only=True):
         qry_params = {}
         # Check if in test mode
@@ -76,7 +94,7 @@ class BaseModel(ndb.Model):
         if entity is None:
             raise KompleksModelError(
                 'Entity with {} == {} was not found for entity_kind {}'.format(
-                    property_, str(value).encode('utf-8'), cls.__name__))
+                    property_, unicode(value), cls.__name__))
         elif key_only:
             return entity.key
         return entity
@@ -90,12 +108,13 @@ class BaseModel(ndb.Model):
         cls(**entity_properties).put()
 
     @classmethod
-    def iter_property_names(cls, exclude=None):
-        for prop in cls._properties:
-            if exclude is not None and prop not in exclude:
-                yield prop
-            elif exclude is None:
-                yield prop
+    def iter_properties(cls, names_only=True, exclude=None):
+        if exclude is None:
+            exclude = []
+
+        for prop_name, prop in cls._properties.iteritems():
+            if prop_name not in exclude:
+                yield prop_name if names_only else (prop_name, prop)
 
     @classmethod
     def objectify_property(cls, prop_name, entity=None):
@@ -104,7 +123,7 @@ class BaseModel(ndb.Model):
         objectified = {'name': prop_name, 'label': prop._verbose_name}
         if entity is not None:
             value = getattr(entity, prop_name)
-        prop_cls_name = prop.__class__.__name__
+        prop_cls_name = whoami(prop)
 
         if prop._choices is not None:
             prop_cls_name = 'enum'
@@ -150,6 +169,37 @@ class BaseModel(ndb.Model):
                 result.append(getattr(self, arg))
 
         return result
+
+    def backref_query(self, kind_name, property_name):
+        kind = get_kind(kind_name)
+        prop = getattr(kind, property_name)
+
+        return kind.query(prop == self.key)
+
+    def erase_reference_to_self(self, from_, prop_name):
+        prop = getattr(from_, prop_name)
+
+        if hasattr(prop, 'pop'):
+            i_to_pop = prop.index(self.key)
+            prop.pop(i_to_pop)
+        else:
+            del prop
+
+        from_.put()
+
+    def erase_reverse_references(self):
+        def helper_iter():
+            for kind_name, prop_names in self.backref_info().items():
+                for prop_name in prop_names:
+                    for backref_entity in self.backref_query(
+                            kind_name, prop_name).iter():
+                        yield backref_entity, prop_name
+
+        for backref_entity, prop_name in helper_iter():
+            if whoami(backref_entity) == 'DocumentToService':
+                backref_entity.key.delete()
+            else:
+                self.erase_reference_to_self(backref_entity, prop_name)
 
     def urlsafe(self):
         return self.key.urlsafe()

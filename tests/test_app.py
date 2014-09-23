@@ -3,13 +3,13 @@ from __future__ import unicode_literals
 import os
 import unittest
 # Third-party imports
-from google.appengine.ext import testbed
+from google.appengine.ext import ndb, testbed
 import json
 import webtest
 # Project imports
-from db_tools import initialize_datastore
+from datastore_init import initialize_datastore
 from main import app
-from models import Document
+from models import Document, Service, Kompleks, MFC
 
 
 class KompleksTestCase(unittest.TestCase):
@@ -46,6 +46,23 @@ class AppTest(KompleksTestCase):
                                          'test_data.xml')
         initialize_datastore(path_to_test_data)
 
+    # Misc testing
+    def test_backref_query(self):
+        backref_info = Kompleks.backref_info()
+        self.assertEqual(backref_info, {
+            'Service': ['containing_komplekses', 'related_komplekses'],
+            'DocumentToService': ['kompleks']})
+
+        test_srv = Service.by_property(
+            u'name', u'Государственная регистрация рождения ребенка',
+            key_only=False)
+
+        dts_items = list(test_srv.backref_query('DocumentToService', 'service'))
+
+        self.assertEqual(len(dts_items), 7)
+
+
+    # Testing handlers.
     def test_standard_routine(self):
         start_page = self.testapp.get('/')
         self.assertEqual(start_page.status_int, 200)
@@ -191,6 +208,45 @@ class AppTest(KompleksTestCase):
             {'name': 'doc_class', 'type': 'ref', 'label': u'Класс документа',
              'value': u'Заявления', 'kind': 'DocClass'}
         ])
+
+    def test_delete_entity(self):
+        services = Service.query().fetch()
+        srv_to_dts = [
+            {'object': s,
+             'len_before': len(
+                 s.backref_query('DocumentToService', 'service').fetch())} for
+            s in services
+        ]
+
+        test_doc = Document.by_property(
+            'name', u'Документ, удостоверяющий личность заявителя',
+            key_only=False)
+        test_mfc = MFC.by_property('name', u'МФЦ г. Нюрба', key_only=False)
+        testdoc_urlsafe = test_doc.urlsafe()
+        testmfc_urlsafe = test_mfc.urlsafe()
+
+        self.testapp.delete('/admin/api/entities/' + testdoc_urlsafe)
+        self.testapp.delete('/admin/api/entities/' + testmfc_urlsafe)
+
+        for item in srv_to_dts:
+            s = item['object']
+            self.assertEqual(
+                item['len_before'] - 1,
+                len(s.backref_query('DocumentToService', 'service').fetch()))
+
+        self.assertEqual(len(MFC.query().fetch()), 1)
+        birth_kompleks = Kompleks.by_property(
+            'name', u'Рождение ребенка', key_only=False)
+        self.assertEqual(len(birth_kompleks.mfcs), 1)
+
+        response_after = self.testapp.get(
+            '/admin/api/entities/' + testdoc_urlsafe, expect_errors=True)
+
+        self.assertEqual(response_after.status_int, 404)
+
+        # Restore datastore state
+        initialize_datastore()
+
 
     @classmethod
     def tearDownClass(cls):

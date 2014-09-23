@@ -5,6 +5,7 @@ from lxml import etree
 # Project imports
 from config import CFG
 import models
+from tools import whoami
 
 
 class DbToolsException(BaseException):
@@ -77,11 +78,11 @@ def initialize_datastore(path_to_xml=None):
                 property_class = getattr(entity_kind, property_name)
                 reader = NodeReader(property_node)
 
-                if property_class.__class__.__name__ == 'IntegerProperty':
+                if whoami(property_class) == 'IntegerProperty':
                     value_to_store = reader.get_int()
-                elif property_class.__class__.__name__ == 'BooleanProperty':
+                elif whoami(property_class) == 'BooleanProperty':
                     value_to_store = reader.get_bool()
-                elif property_class.__class__.__name__ == 'KeyProperty':
+                elif whoami(property_class) == 'KeyProperty':
                     referred_kind = models.get_kind(property_class._kind)
                     req_params = {'property_': referred_kind.id}
                     if property_class._repeated:
