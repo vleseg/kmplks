@@ -209,6 +209,25 @@ class AppTest(KompleksTestCase):
              'value': u'Заявления', 'kind': 'DocClass'}
         ])
 
+    @classmethod
+    def tearDownClass(cls):
+        cls.testbed.deactivate()
+
+
+class DatastoreModTest(KompleksTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.testapp = webtest.TestApp(app)
+        cls.testbed = testbed.Testbed()
+        cls.testbed.activate()
+        cls.testbed.init_datastore_v3_stub()
+        cls.testbed.init_memcache_stub()
+        cls.path_to_test_data = os.path.join(
+            os.path.dirname(__file__), 'test_data.xml')
+
+    def setUp(self):
+        initialize_datastore(self.path_to_test_data)
+        
     def test_delete_entity(self):
         services = Service.query().fetch()
         srv_to_dts = [
@@ -243,10 +262,6 @@ class AppTest(KompleksTestCase):
             '/admin/api/entities/' + testdoc_urlsafe, expect_errors=True)
 
         self.assertEqual(response_after.status_int, 404)
-
-        # Restore datastore state
-        initialize_datastore()
-
 
     @classmethod
     def tearDownClass(cls):
