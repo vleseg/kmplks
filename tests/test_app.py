@@ -9,7 +9,7 @@ import webtest
 # Project imports
 from datastore_init import initialize_datastore
 from main import app
-from models import Document, Service, Kompleks, MFC
+from models import Document, Service, Kompleks, MFC, from_urlsafe
 
 
 class KompleksTestCase(unittest.TestCase):
@@ -93,11 +93,8 @@ class AppTest(KompleksTestCase):
             u'Выдача нагрудного знака и удостоверения многодетной семьи'
         ]
         self.assertEqual(services_page.status_int, 200)
-        try:
-            self.assertNotIn(u'Государственная регистрация рождения ребенка',
-                             services_page.testbody)
-        except:
-            pass
+        self.assertNotIn(u'Государственная регистрация рождения ребенка',
+                         services_page.testbody)
         self.assertAllInAndUnique(srv_names + [u'Рождение ребенка'],
                                   services_page.testbody)
 
@@ -262,6 +259,63 @@ class DatastoreModTest(KompleksTestCase):
             '/admin/api/entities/' + testdoc_urlsafe, expect_errors=True)
 
         self.assertEqual(response_after.status_int, 404)
+
+    def test_modify_entity(self):
+        test_srv = Service.by_property(
+            'name', u'Предоставление земельного участка многодетной семье',
+            key_only=False
+        )
+        test_srv.prerequisite_description = u"это нужно будет удалить"
+        test_srv.put()
+        test_srv_urlsafe = test_srv.urlsafe()
+        required_srv_urlsafe = Service.by_property(
+            'name', u'Регистрация по месту жительства', key_only=False
+        ).urlsafe()
+        kmplks_to_remove_urlsafe = Kompleks.by_property(
+            'name', u'Рождение ребенка', key_only=False).urlsafe()
+
+        req_data = [
+            {
+                'name': 'description',
+                'value': u'тест тест тест'
+            },
+            {
+                'name': "dependencies",
+                'edits': {
+                    'values': [required_srv_urlsafe],
+                    'method': 'add'
+                }
+            },
+            {
+                'name': 'related_komplekses',
+                'edits': {
+                    'values': [kmplks_to_remove_urlsafe],
+                    'method': 'subtract'
+                }
+            },
+            {
+                'name': 'prerequisite_description',
+                'value': None
+            }
+        ]
+        req_url = '/admin/api/entities/' + test_srv_urlsafe
+        response = self.testapp.put_json(req_url, req_data)
+
+        self.assertEqual(response.status_int, 200)
+
+        test_srv = from_urlsafe(test_srv_urlsafe)
+
+        self.assertEqual(test_srv.prerequisite_description, None)
+        self.assertNotIn(
+            from_urlsafe(kmplks_to_remove_urlsafe, key_only=True),
+            test_srv.related_komplekses
+        )
+        self.assertIn(
+            from_urlsafe(required_srv_urlsafe, key_only=True),
+            test_srv.dependencies
+        )
+        self.assertEqual(test_srv.description, u'тест тест тест')
+
 
     @classmethod
     def tearDownClass(cls):
