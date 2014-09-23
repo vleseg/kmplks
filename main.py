@@ -527,6 +527,19 @@ class ApiHandler(webapp2.RequestHandler):
         else:
             self.response.set_status(300)
 
+    def put(self, **kwargs):
+        if 'entity_id' in kwargs:
+            if '/entities' in self.request.uri:
+                entity = models.from_urlsafe(kwargs['entity_id'])
+                req_body = json.loads(self.request.body)
+                for modification in req_body:
+                    entity.decode_and_apply_mod(modification)
+                entity.put()
+            else:
+                self.response.set_status(300)
+        else:
+            self.response.set_status(300)
+
 
 class AdminWorker(webapp2.RequestHandler):
     def post(self):

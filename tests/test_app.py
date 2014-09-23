@@ -224,7 +224,7 @@ class DatastoreModTest(KompleksTestCase):
 
     def setUp(self):
         initialize_datastore(self.path_to_test_data)
-        
+
     def test_delete_entity(self):
         services = Service.query().fetch()
         srv_to_dts = [
@@ -276,22 +276,26 @@ class DatastoreModTest(KompleksTestCase):
 
         req_data = [
             {
-                'name': 'description',
+                'name': 'short_description',
                 'value': u'тест тест тест'
             },
             {
                 'name': "dependencies",
-                'edits': {
-                    'values': [required_srv_urlsafe],
-                    'method': 'add'
-                }
+                'edits': [
+                    {
+                        'values': [required_srv_urlsafe],
+                        'method': 'add'
+                    }
+                ]
             },
             {
                 'name': 'related_komplekses',
-                'edits': {
-                    'values': [kmplks_to_remove_urlsafe],
-                    'method': 'subtract'
-                }
+                'edits': [
+                    {
+                        'values': [kmplks_to_remove_urlsafe],
+                        'method': 'subtract'
+                    }
+                ]
             },
             {
                 'name': 'prerequisite_description',
@@ -314,8 +318,7 @@ class DatastoreModTest(KompleksTestCase):
             from_urlsafe(required_srv_urlsafe, key_only=True),
             test_srv.dependencies
         )
-        self.assertEqual(test_srv.description, u'тест тест тест')
-
+        self.assertEqual(test_srv.short_description, u'тест тест тест')
 
     @classmethod
     def tearDownClass(cls):

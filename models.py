@@ -156,6 +156,15 @@ class BaseModel(ndb.Model):
 
         return objectified
 
+    @staticmethod
+    def modify_reference( prop, values, method):
+        if method == 'add':
+            for v in values:
+                prop.append(v)
+        elif method == 'subtract':
+            for i in (prop.index(v) for v in values):
+                prop.pop(i)
+
     def as_repr(self):
         return getattr(self, self._repr_field)
 
@@ -176,14 +185,26 @@ class BaseModel(ndb.Model):
 
         return kind.query(prop == self.key)
 
+    def decode_and_apply_mod(self, raw_mod):
+        prop_name = raw_mod['name']
+        prop = getattr(self, prop_name)
+
+        if 'edits' in raw_mod:
+            for edit in raw_mod['edits']:
+                value = [
+                    from_urlsafe(v, key_only=True) for v in edit['values']]
+                self.modify_reference(
+                    prop, value, method=edit['method'])
+            return
+        self.populate(**{prop_name: raw_mod['value']})
+
     def erase_reference_to_self(self, from_, prop_name):
         prop = getattr(from_, prop_name)
 
         if hasattr(prop, 'pop'):
-            i_to_pop = prop.index(self.key)
-            prop.pop(i_to_pop)
+            prop.pop(prop.index(self.key))
         else:
-            del prop
+            from_.populate(**{prop_name: None})
 
         from_.put()
 
