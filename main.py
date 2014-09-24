@@ -527,13 +527,27 @@ class ApiHandler(webapp2.RequestHandler):
         else:
             self.response.set_status(300)
 
+    def post(self, **kwargs):
+        self.response.headers.add('Content-Type', 'application/json')
+
+        if 'kind_name' in kwargs:
+            if '/entities' in self.request.uri:
+                req_body = json.loads(self.request.body)
+                kind = models.get_kind(kwargs['kind_name'])
+                entity = kind()
+                for field in req_body:
+                    entity.decode_and_set_property(field)
+                id_ = entity.put().urlsafe()
+
+                self.response.out.write(json.dumps({'id': id_}))
+
     def put(self, **kwargs):
         if 'entity_id' in kwargs:
             if '/entities' in self.request.uri:
                 entity = models.from_urlsafe(kwargs['entity_id'])
                 req_body = json.loads(self.request.body)
                 for modification in req_body:
-                    entity.decode_and_apply_mod(modification)
+                    entity.decode_and_set_property(modification)
                 entity.put()
             else:
                 self.response.set_status(300)

@@ -185,18 +185,27 @@ class BaseModel(ndb.Model):
 
         return kind.query(prop == self.key)
 
-    def decode_and_apply_mod(self, raw_mod):
-        prop_name = raw_mod['name']
+    def decode_and_set_property(self, raw_value):
+        prop_name = raw_value['name']
         prop = getattr(self, prop_name)
+        prop_cls = self._properties[prop_name]
 
-        if 'edits' in raw_mod:
-            for edit in raw_mod['edits']:
+        if 'edits' in raw_value:
+            for edit in raw_value['edits']:
                 value = [
                     from_urlsafe(v, key_only=True) for v in edit['values']]
                 self.modify_reference(
                     prop, value, method=edit['method'])
             return
-        self.populate(**{prop_name: raw_mod['value']})
+
+        value = raw_value['value']
+        if whoami(prop_cls) == 'KeyProperty' and value is not None:
+            if not prop_cls._repeated:
+                value = from_urlsafe(value, key_only=True)
+            else:
+                value = [from_urlsafe(v, key_only=True) for v in value]
+
+        self.populate(**{prop_name: value})
 
     def erase_reference_to_self(self, from_, prop_name):
         prop = getattr(from_, prop_name)

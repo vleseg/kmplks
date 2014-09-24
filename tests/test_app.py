@@ -304,8 +304,8 @@ class DatastoreModTest(KompleksTestCase):
              u'Регистрация по месту жительства')
         ]
         kmplks = Kompleks.by_property(
-            'name', u'Рождение ребенка', key_only=False)
-        ogv = OGV.by_property('short_name', u'УЗАГС', key_only=False)
+            'name', u'Рождение ребенка', key_only=True)
+        ogv = OGV.by_property('short_name', u'УЗАГС', key_only=True)
 
         req_data = [
             {'name': 'id', 'value': 100500},
@@ -326,7 +326,7 @@ class DatastoreModTest(KompleksTestCase):
             {'name': 'dependencies',
              'value': [d.urlsafe() for d in dependencies]}
         ]
-        req_url = '/admin/api/entities'
+        req_url = '/admin/api/Service/entities'
 
         response = self.testapp.post_json(req_url, req_data)
         self.assertEqual(response.status_int, 200)
@@ -341,7 +341,7 @@ class DatastoreModTest(KompleksTestCase):
         )
         self.assertEqual(test_srv.kb_id, 100500)
         self.assertEqual(
-            test_srv.prerequisite_descrption,
+            test_srv.prerequisite_description,
             u'Тестовое описание условий, при которых нужда в тестовой услуге '
             u'отпадает'
         )
@@ -353,7 +353,7 @@ class DatastoreModTest(KompleksTestCase):
         )
         self.assertEqual(test_srv.ogv, ogv)
         self.assertEqual(test_srv.containing_komplekses, [kmplks])
-        self.assertAllIn(test_srv.dependencies, [dependencies])
+        self.assertAllIn(test_srv.dependencies, dependencies)
 
     @classmethod
     def tearDownClass(cls):
