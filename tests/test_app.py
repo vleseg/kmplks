@@ -9,7 +9,7 @@ import webtest
 # Project imports
 from datastore_init import initialize_datastore
 from main import app
-from models import Document, Service, Kompleks, MFC, from_urlsafe
+from models import Document, Service, Kompleks, MFC, from_urlsafe, OGV
 
 
 class KompleksTestCase(unittest.TestCase):
@@ -33,7 +33,7 @@ class KompleksTestCase(unittest.TestCase):
         for sub in seq:
             self.assertNotIn(sub, s)
 
-
+@unittest.skip
 class AppTest(KompleksTestCase):
     @classmethod
     def setUpClass(cls):
@@ -265,60 +265,95 @@ class DatastoreModTest(KompleksTestCase):
             'name', u'Предоставление земельного участка многодетной семье',
             key_only=False
         )
+        required_srv = Service.by_property(
+            'name', u'Регистрация по месту жительства', key_only=False
+        )
+        kmplks_to_remove = Kompleks.by_property(
+            'name', u'Рождение ребенка', key_only=False)
+
         test_srv.prerequisite_description = u"это нужно будет удалить"
         test_srv.put()
-        test_srv_urlsafe = test_srv.urlsafe()
-        required_srv_urlsafe = Service.by_property(
-            'name', u'Регистрация по месту жительства', key_only=False
-        ).urlsafe()
-        kmplks_to_remove_urlsafe = Kompleks.by_property(
-            'name', u'Рождение ребенка', key_only=False).urlsafe()
 
         req_data = [
-            {
-                'name': 'short_description',
-                'value': u'тест тест тест'
-            },
-            {
-                'name': "dependencies",
-                'edits': [
-                    {
-                        'values': [required_srv_urlsafe],
-                        'method': 'add'
-                    }
-                ]
-            },
-            {
-                'name': 'related_komplekses',
-                'edits': [
-                    {
-                        'values': [kmplks_to_remove_urlsafe],
-                        'method': 'subtract'
-                    }
-                ]
-            },
-            {
-                'name': 'prerequisite_description',
-                'value': None
-            }
-        ]
-        req_url = '/admin/api/entities/' + test_srv_urlsafe
-        response = self.testapp.put_json(req_url, req_data)
+            {'name': 'short_description', 'value': u'тест тест тест'},
+            {'name': "dependencies", 'edits': [
+                {'values': [required_srv.urlsafe()], 'method': 'add'}]},
+            {'name': 'related_komplekses', 'edits': [
+                {'values': [kmplks_to_remove.urlsafe()],
+                 'method': 'subtract'}]},
+            {'name': 'prerequisite_description', 'value': None}]
+        req_url = '/admin/api/entities/' + test_srv.urlsafe()
 
+        response = self.testapp.put_json(req_url, req_data)
         self.assertEqual(response.status_int, 200)
 
-        test_srv = from_urlsafe(test_srv_urlsafe)
+        test_srv = from_urlsafe(test_srv.urlsafe())
 
         self.assertEqual(test_srv.prerequisite_description, None)
         self.assertNotIn(
-            from_urlsafe(kmplks_to_remove_urlsafe, key_only=True),
-            test_srv.related_komplekses
-        )
-        self.assertIn(
-            from_urlsafe(required_srv_urlsafe, key_only=True),
-            test_srv.dependencies
-        )
+            from_urlsafe(kmplks_to_remove.urlsafe(),key_only=True),
+            test_srv.related_komplekses)
+        self.assertIn(from_urlsafe(required_srv.urlsafe(), key_only=True),
+                      test_srv.dependencies)
         self.assertEqual(test_srv.short_description, u'тест тест тест')
+
+    def test_new_entity(self):
+        dependencies = [
+            Service.by_property('name', n, key_only=True) for n in
+            (u'Государственная регистрация рождения ребенка',
+             u'Регистрация по месту жительства')
+        ]
+        kmplks = Kompleks.by_property(
+            'name', u'Рождение ребенка', key_only=False)
+        ogv = OGV.by_property('short_name', u'УЗАГС', key_only=False)
+
+        req_data = [
+            {'name': 'id', 'value': 100500},
+            {'name': 'name', 'value': u'Тестовая услуга'},
+            {'name': 'short_description',
+             'value': u'Короткое тестовое описание тестовой услуги'},
+            {'name': 'kb_id', 'value': 100500},
+            {'name': 'prerequisite_description',
+             'value': u'Тестовое описание условий, при которых нужда в '
+                      u'тестовой услуге отпадает'},
+            {'name': 'max_days', 'value': 10},
+            {'name': 'max_work_days', 'value': 100},
+            {'name': 'terms_description',
+             'value': u'Тестовый комментарий к срокам предоставления тестовой '
+                      u'услуги'},
+            {'name': 'ogv', 'value': ogv.urlsafe()},
+            {'name': 'containing_komplekses', 'value': [kmplks.urlsafe()]},
+            {'name': 'dependencies',
+             'value': [d.urlsafe() for d in dependencies]}
+        ]
+        req_url = '/admin/api/entities'
+
+        response = self.testapp.post_json(req_url, req_data)
+        self.assertEqual(response.status_int, 200)
+
+        test_srv = from_urlsafe(json.loads(response.body).get('id'))
+
+        self.assertEqual(test_srv.id, 100500)
+        self.assertEqual(test_srv.name, u'Тестовая услуга')
+        self.assertEqual(
+            test_srv.short_description,
+            u'Короткое тестовое описание тестовой услуги'
+        )
+        self.assertEqual(test_srv.kb_id, 100500)
+        self.assertEqual(
+            test_srv.prerequisite_descrption,
+            u'Тестовое описание условий, при которых нужда в тестовой услуге '
+            u'отпадает'
+        )
+        self.assertEqual(test_srv.max_days, 10)
+        self.assertEqual(test_srv.max_work_days, 100)
+        self.assertEqual(
+            test_srv.terms_description,
+            u'Тестовый комментарий к срокам предоставления тестовой услуги'
+        )
+        self.assertEqual(test_srv.ogv, ogv)
+        self.assertEqual(test_srv.containing_komplekses, [kmplks])
+        self.assertAllIn(test_srv.dependencies, [dependencies])
 
     @classmethod
     def tearDownClass(cls):
