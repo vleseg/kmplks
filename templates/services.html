@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "public_base.html" %}
 {% macro table_head() %}
     <tr>
         <th>&nbsp;</th>
@@ -37,7 +37,7 @@
     </tr>
 {% endmacro %}
 {% block title %}Выбор услуг{% endblock %}
-{% block js %}
+{% block template_js %}
     <script>var dependencyGraph = {{ dependency_graph|safe }};</script>
 {% endblock %}
 {% block head %}

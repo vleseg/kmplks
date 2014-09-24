@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'admin_base.html' %}
 {% block title %}Администрирование{% endblock %}
 {% block head %}
     Список объектов:
     <small><span id="list-name-pl"></span></small>
 {% endblock %}
 {% block content %}
-    <ul class="nav nav-tabs" role="tablist" id="tabs">
+    <ul class="nav nav-tabs" role="tablist" id="entities-list-multi">
     {% for kind in kinds %}
         <li>
             <a href="#{{ kind.name }}" data-toggle="tab" role="tab">
@@ -15,9 +15,6 @@
     {% endfor %}
     </ul>
     <div class="tab-content">
-        <div id="loading" class="well text-center">
-            <img src="/static/ajax-loader.gif" alt="Загрузка..."/>
-        </div>
     {% for kind in kinds %}
         <div class="tab-pane col-md-10" id="{{ kind.name }}">
             <div class="tab-pane-items list-group">
@@ -26,4 +23,5 @@
         </div>
     {% endfor %}
     </div>
+    {{ ajax_loader() }}
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% macro ajax_loader() %}
+    <div id="loading" class="text-center">
+        <img src="/static/ajax-loader.gif" alt="Загрузка..."/>
+    </div>
+{% endmacro %}
+{% block title_affix %}.Admin{% endblock %}
+{% block common_js %}
+    <script src="/static/admin.js"></script>
+{% endblock %}
+{% block navbar %}
+    <div class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ uri_for('start') }}">
+                    Kompleks
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

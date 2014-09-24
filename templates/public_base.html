@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{# Shared macros #}
+{% macro navigation(back, with_submit=true) %}
+        <input type="button" name="back" value="Назад" class="btn btn-lg"
+               onclick="window.location.href = '{{ back }}'"/>
+        {% if with_submit %}
+            <input type="submit" name="submit" value="Далее"
+                   class="btn btn-lg"/>
+        {% endif %}
+{% endmacro %}
+
+{% macro put_description(s) %}
+    {% if s.startswith('<div>') %}
+        {{ s|safe }}
+    {% else %}
+        <p>{{ s }}</p>
+    {% endif %}
+{% endmacro %}
+{# End shared macros #}
+{% block common_js %}
+    <script src="/static/main.js"></script>
+{% endblock %}
+{% block navbar %}
+    <div class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ uri_for('start') }}">
+                    Kompleks
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

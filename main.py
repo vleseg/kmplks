@@ -426,7 +426,7 @@ class ResultHandler(BaseHandler):
 
 
 class AdminHandler(BaseHandler):
-    template_filename = 'admin.html'
+    template_filename = 'admin_home.html'
 
     def get(self):
         self.render()
@@ -569,8 +569,7 @@ app_routes = [
     routes.PathPrefixRoute('/admin/api', [
         webapp2.Route('/<kind_name>/entities', handler=ApiHandler),
         webapp2.Route('/<kind_name>/fields', handler=ApiHandler),
-        webapp2.Route('/entities/<entity_id>', handler=ApiHandler),
-        webapp2.Route('/entities/<entity_id>/relatives', handler=ApiHandler)
+        webapp2.Route('/entities/<entity_id>', handler=ApiHandler)
     ]),
     webapp2.Route('/', handler=KompleksHandler, name='start'),
     webapp2.Route('/prerequisites', handler=PrerequisiteChoiceHandler,

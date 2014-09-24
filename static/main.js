@@ -1,15 +1,5 @@
 var dependencyGraph;
 
-// Ajax loading indicator show/hide
-$.ajaxSetup({
-    beforeSend:function(){
-        $("#loading").show();
-    },
-    complete:function(){
-        $("#loading").hide();
-    }
-});
-
 // Functools
 function reduce(iterable, start, callback) {
     $.each(iterable, function (key, value) {

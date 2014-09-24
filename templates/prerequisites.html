@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'public_base.html' %}
 {% block title %}Выбор предусловий{% endblock %}
-{% block js %}
+{% block template_js %}
     <script>var dependencyGraph = {{ dependency_graph|safe }};</script>
 {% endblock %}
 {% block head %}{{ kompleks.name }}: <small>ПРЕДУСЛОВИЯ</small>{% endblock %}
