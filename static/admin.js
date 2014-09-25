@@ -1,9 +1,14 @@
-function fetchList(kindName) {
-    $.getJSON('/admin/api/' + kindName + '/entities', function(data) {
-        return data;
-    }).fail(function (xhr, status, error) {
-        return {'status': status, 'error': error}
-    })
+function fetchAndRenderList(kindName, onSuccess, onFail) {
+    $.getJSON('/admin/api/' + kindName + '/entities', onSuccess)
+        .fail(function (xhr, status, error) {
+            onFail({'status': status, 'error': error})
+        })
+}
+
+function htmlFromBars(templateId, data) {
+    /* Compile Handlebars template and render html with data given. */
+    var template = Handlebars.compile($('#' + templateId).html());
+    return template(data)
 }
 
 // Ajax loading indicator show/hide
@@ -20,74 +25,31 @@ $(document).ready(function () {
     // Attack ajax loader to page.
     var ajax_loader_c = $('.ajax-loader-container');
     if (ajax_loader_c)
-        ajax_loader_c.append($("<img/>", {
-            'src': '/static/ajax-loader.gif',
-            'alt': 'Загрузка...'
-        }));
+        ajax_loader_c.append($(htmlFromBars('hbt-ajax-loader')));
 
     // Getting and building list of entities for a kind.
-    if ($('#entities-list-multi')) {
+    var listInTabs = $('#entities-in-tabs');
+    if (listInTabs) {
         $("a[data-toggle='tab']").on("shown.bs.tab", function(e) {
             // Verbose kind name must be duplicated in content header.
-            var textForHeader = $(this).text().toUpperCase();
-            $('#content-header').text(textForHeader);
-
             var reqKind = $(this).attr('href').slice(1);
-            var tabPaneContent = $('#' + reqKind).find('.tab-pane-items');
+            var reqKindVerbose = $(this).text().toUpperCase();
+            $('#content-header').text(reqKindVerbose);
 
-            $.getJSON('/admin/api/' + reqKind + '/entities', function (data) {
-                tabPaneContent.empty();
+            var tabPaneItems = $('#' + reqKind).find('.tab-pane-items');
 
-                // list container
-                var listContainer = $(
-                    '<div/>', {class: 'list-group'}
-                ).appendTo(tabPaneContent);
+            // Purge previously loaded content.
+            tabPaneItems.empty();
 
-                // 'add new item' button
-                $('<a/>', {
-                    href: '/admin/new?kind=' + reqKind,
-                    class: 'list-group-item list-group-item-success',
-                    text: '+ Создать'
-                }).insertBefore(listContainer);
-
-                // iterating data to fill list container
-                $.each(data['items'], function (i, item) {
-                    var listItem = $('<div/>', {
-                        class: 'list-group-item'
-                    }).appendTo(listContainer);
-
-                    // item link
-                    $('<a/>', {
-                        href: '/admin/entity?id=' + item.id,
-                        target: '_blank',
-                        text: item.value
-                    }).appendTo(listItem);
-
-                    // delete link and icon
-                    $('<a/>', {
-                        href: '/admin/delete?id=' + item.id,
-                        target: '_blank',
-                        class: 'pull-right',
-                        title: 'Удалить'
-                    }).append($('<i/>', {
-                        class: 'glyphicon glyphicon-remove text-danger'
-                    })).appendTo(listItem);
-                })
-            }).fail(function (xhr, status, error) {
-                var msg = jQuery('<div/>', {
-                    class: 'alert alert-danger',
-                    role: 'alert'
-                });
-                $('<h4/>', {text: 'Ошибка!'}).appendTo(msg);
-                $('<p/>', {
-                    'text': 'Во время получения списка произошла ошибка: ' +
-                        status + ', ' + error + '.'
-                }).appendTo(msg);
-
-                tabPaneContent.empty().append(msg);
+            fetchAndRenderList(reqKind, function (data) {
+                // On success render list.
+                tabPaneItems.html(htmlFromBars('hbt-list-in-tabs', data));
+            }, function (data) {
+                // On fail render error message.
+                tabPaneItems.html(htmlFromBars('hbt-list-fetch-error'), data)
             });
         });
 
-        $('#tabs').find('a[href=#Service]').tab('show')
+        listInTabs.find('a[href=#Service]').tab('show')
     }
 });

@@ -2,6 +2,39 @@
 {% block title_affix %}.Admin{% endblock %}
 {% block common_js %}
     <script src="/static/admin.js"></script>
+    {# Handlebars templates #}
+    {% raw %}
+        <!-- Ajax loader -->
+        <script id="hbt-ajax-loader" type="text/x-handlebars-template">
+            <img src="/static/ajax-loader.gif" alt="Загрузка..."/>
+        </script>
+        <!-- List of entities in Bootstrap nav tabs -->
+        <script id="hbt-list-in-tabs" type="text/x-handlebars-template">
+            <a href="/admin/api/{{kind}}"
+               class="list-group-item list-group-item-success">
+                + Создать
+            </a>
+            {{#each items}}
+            <div class="list-group-item">
+                <a href="/admin/entity?id={{id}}" target="_blank">{{value}}</a>
+                <a href="/admin/delete?id={{id}}" target="_blank"
+                   class="pull-right" title="Удалить">
+                    <i class="glyphicon glyphicon-remove text-danger"></i>
+                </a>
+            </div>
+            {{/each}}
+        </script>
+        <!-- Entity list fetch error message -->
+        <script id="hbt-list-fetch-error" type="text/x-handlebars-template">
+            <div class="alert alert-danger" role="alert">
+                <h4>Ошибка!</h4>
+                <p>
+                    Во время получения списка произошла ошибка: {{status}},
+                    {{error}}.
+                </p>
+            </div>
+        </script>
+    {% endraw %}
 {% endblock %}
 {% block navbar %}
     <div class="navbar navbar-inverse navbar-static-top">

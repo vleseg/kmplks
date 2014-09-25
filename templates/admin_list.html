@@ -5,7 +5,7 @@
     <small><span id="content-header"></span></small>
 {% endblock %}
 {% block content %}
-    <ul class="nav nav-tabs" role="tablist" id="entities-list-multi">
+    <ul class="nav nav-tabs" role="tablist" id="entities-in-tabs">
     {% for kind in kinds %}
         <li>
             <a href="#{{ kind.name }}" data-toggle="tab" role="tab">
@@ -16,11 +16,10 @@
     </ul>
     <div class="tab-content">
     {% for kind in kinds %}
-        <div class="tab-pane col-md-10" id="{{ kind.name }}">
-            <div class="tab-pane-items list-group ajax-loader-container">
-            </div>
+        <div class="tab-pane col-md-10 " id="{{ kind.name }}">
+            <div class="ajax-loader-container"></div>
             <div class="tab-pane-items list-group">
-                {# data fetched via ajax #}
+                {# GET /admin/api/entities #}
             </div>
         </div>
     {% endfor %}
