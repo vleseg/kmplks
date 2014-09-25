@@ -11,3 +11,10 @@ tr.disabled, tr.disabled a {
     -ms-user-select: none;
     user-select: none;
 }
+
+/* Admin CSS */
+.ajax-loader-container {
+    text-align: center;
+    padding: 1em;
+    display: none;  /* Must be hidden unless ajax request is fired  */
+}

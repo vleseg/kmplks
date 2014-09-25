@@ -2,7 +2,7 @@
 {% block title %}Администрирование{% endblock %}
 {% block head %}
     Список объектов:
-    <small><span id="list-name-pl"></span></small>
+    <small><span id="content-header"></span></small>
 {% endblock %}
 {% block content %}
     <ul class="nav nav-tabs" role="tablist" id="entities-list-multi">
@@ -17,11 +17,12 @@
     <div class="tab-content">
     {% for kind in kinds %}
         <div class="tab-pane col-md-10" id="{{ kind.name }}">
+            <div class="tab-pane-items list-group ajax-loader-container">
+            </div>
             <div class="tab-pane-items list-group">
                 {# data fetched via ajax #}
             </div>
         </div>
     {% endfor %}
     </div>
-    {{ ajax_loader() }}
 {% endblock %}

@@ -1,20 +1,39 @@
+function fetchList(kindName) {
+    $.getJSON('/admin/api/' + kindName + '/entities', function(data) {
+        return data;
+    }).fail(function (xhr, status, error) {
+        return {'status': status, 'error': error}
+    })
+}
+
 // Ajax loading indicator show/hide
 $.ajaxSetup({
     beforeSend:function(){
-        $("#loading").appendTo("#ajax_loader_container").show();
+        $(".ajax-loader-container").show();
     },
     complete:function(){
-        $("#loading").hide();
+        $(".ajax-loader-container").hide();
     }
 });
 
 $(document).ready(function () {
+    // Attack ajax loader to page.
+    var ajax_loader_c = $('.ajax-loader-container');
+    if (ajax_loader_c)
+        ajax_loader_c.append($("<img/>", {
+            'src': '/static/ajax-loader.gif',
+            'alt': 'Загрузка...'
+        }));
+
     // Getting and building list of entities for a kind.
-    if (window.location.href.indexOf('/admin/list') > -1) {
+    if ($('#entities-list-multi')) {
         $("a[data-toggle='tab']").on("shown.bs.tab", function(e) {
+            // Verbose kind name must be duplicated in content header.
+            var textForHeader = $(this).text().toUpperCase();
+            $('#content-header').text(textForHeader);
+
             var reqKind = $(this).attr('href').slice(1);
             var tabPaneContent = $('#' + reqKind).find('.tab-pane-items');
-            $('#list-name-pl').find('small').text($(this).text().toUpperCase());
 
             $.getJSON('/admin/api/' + reqKind + '/entities', function (data) {
                 tabPaneContent.empty();
@@ -66,7 +85,7 @@ $(document).ready(function () {
                 }).appendTo(msg);
 
                 tabPaneContent.empty().append(msg);
-            })
+            });
         });
 
         $('#tabs').find('a[href=#Service]').tab('show')
