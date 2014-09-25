@@ -18,3 +18,7 @@ tr.disabled, tr.disabled a {
     padding: 1em;
     display: none;  /* Must be hidden unless ajax request is fired  */
 }
+
+.glyphicon-remove {
+    cursor: pointer;
+}

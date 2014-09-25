@@ -522,6 +522,7 @@ class ApiHandler(webapp2.RequestHandler):
                 entity = models.from_urlsafe(kwargs['entity_id'])
                 entity.erase_reverse_references()
                 entity.key.delete()
+                self.response.set_status(204)
             else:
                 self.response.set_status(300)
         else:

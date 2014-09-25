@@ -1,3 +1,12 @@
+function deleteEntity(id, onSuccess, onFail) {
+    $.ajax({
+        type: 'DELETE',
+        url: '/admin/api/entities/' + id
+    })
+        .done(onSuccess)
+        .fail(onFail)
+}
+
 function fetchAndRenderList(kindName, onSuccess, onFail) {
     $.getJSON('/admin/api/' + kindName + '/entities', onSuccess)
         .fail(function (xhr, status, error) {
@@ -44,12 +53,60 @@ $(document).ready(function () {
             fetchAndRenderList(reqKind, function (data) {
                 // On success render list.
                 tabPaneItems.html(htmlFromBars('hbt-list-in-tabs', data));
-            }, function (data) {
-                // On fail render error message.
-                tabPaneItems.html(htmlFromBars('hbt-list-fetch-error'), data)
+                listInTabs.data({
+                    'kind': reqKind,
+                    'verboseKind': data['kind']
+                });
+            }, function (jqXHR, textStatus, errorThrown) {
+                // On error, show error message
+                htmlFromBars('hbt-error', {
+                    'status': textStatus,
+                    'error': errorThrown
+                })
             });
         });
 
         listInTabs.find('a[href=#Service]').tab('show')
     }
+
+    // Invoking entity delete modal
+    $("#delete-entity-modal").on("show.bs.modal", function(e) {
+        var invoker = $(e.relatedTarget);
+        var modal = $(e.target);
+        var resultModalBody =
+            $("#delete-entity-result-modal").find(".modal-body");
+
+        // If called from entities list page.
+        if (listInTabs) {
+            var isDocument = listInTabs.data('kind') == 'Document';
+            var verboseKind = listInTabs.data('verboseKind');
+            var repr = invoker.prev().text();
+            var prev_href = invoker.prev().attr('href');
+            var id = prev_href.slice(prev_href.indexOf('?id='), 4)
+        }
+
+        var relativesWarning = modal.find('#del-relatives-warning');
+        if (isDocument) relativesWarning.hide();
+        else relativesWarning.show();
+
+        modal.find('#del-entity-kind').text(verboseKind);
+        modal.find('#del-entity-repr').text(repr);
+
+        $('#confirm-delete-btn').click(function () {
+            var btn = $(this);
+            btn.button('loading');
+            btn.button('reset');
+            modal.hide();
+            deleteEntity(id, function () {
+                // On success, show 'successfully' deleted message.
+                resultModalBody.html(htmlFromBars('hbt-success'))
+            }, function (jqXHR, textStatus, errorThrown) {
+                // On error, show error message
+                resultModalBody.html(htmlFromBars('hbt-error', {
+                    'status': textStatus,
+                    'error': errorThrown
+                }))
+            });
+        })
+    })
 });
