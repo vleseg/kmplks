@@ -2,6 +2,10 @@ tr.disabled, tr.disabled a {
     color: #D3D3D3;
 }
 
+.h1 small {
+    text-transform: uppercase;
+}
+
 .panel-heading {
     cursor: pointer;
     -webkit-touch-callout: none;

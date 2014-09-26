@@ -2,21 +2,22 @@
 {% block title %}Администрирование{% endblock %}
 {% block head %}
     Список объектов:
-    <small><span id="content-header"></span></small>
+    <small><span id="ka-big-list-header"></span></small>
 {% endblock %}
 {% block content %}
-    <ul class="nav nav-tabs" role="tablist" id="entities-in-tabs">
+    <ul class="nav nav-tabs" role="tablist" id="ka-biglist-tab-labels">
     {% for kind in kinds %}
         <li>
-            <a href="#{{ kind.name }}" data-toggle="tab" role="tab">
+            <a href="#ka-biglist-tab-{{ kind.name }}" data-toggle="tab"
+               role="tab" data-kind="{{ kind.name }}">
             {{ kind.verbose_name }}
             </a>
         </li>
     {% endfor %}
     </ul>
-    <div class="tab-content">
+    <div class="tab-content" id="ka-biglist-tabs">
     {% for kind in kinds %}
-        <div class="tab-pane col-md-10 " id="{{ kind.name }}">
+        <div class="tab-pane col-md-10" id="ka-biglist-tab-{{ kind.name }}">
             <div class="ajax-loader-container"></div>
             <div class="tab-pane-items list-group">
                 {# GET /admin/api/entities #}
@@ -24,5 +25,5 @@
         </div>
     {% endfor %}
     </div>
-    {{ delete_entity_modal() }}
+{#    {{ delete_entity_modal() }}#}
 {% endblock %}

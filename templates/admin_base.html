@@ -1,52 +1,4 @@
 {% extends "base.html" %}
-{% macro delete_entity_modal() %}
-    <div class="modal fade" id="delete-entity-modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Удаление сущности</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-warning" id="del-relatives-warning">
-                        Удаление документа из этого списка приведет к его
-                        удалению из всех услуг!
-                    </div>
-                    <p>Вы уверены, что хотите удалить эту сущность?</p>
-                    <div class="alert alert-info">
-                        <p><b>Класс:</b> <span id="del-entity-kind"></span></p>
-                        <p>
-                            <b>Значение:</b> <span id="del-entity-repr"></span>
-                        </p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger"
-                            data-loading-text="Удаляю..."
-                            id="confirm-delete-btn">
-                        Удалить
-                    </button>
-                    <button type="button" class="btn btn-default"
-                            data-dismiss="modal">
-                        Не надо!
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="delete-entity-result-modal">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                {# Here be message #}
-            </div>
-            <div class="modal-footer">
-                <button type="button" data-dismiss="modal"
-                        class="btn btn-primary">
-                    Закрыть
-                </button>
-            </div>
-        </div>
-    </div>
-{% endmacro %}
 {% block title_affix %}.Admin{% endblock %}
 {% block common_js %}
     <script src="/static/admin.js"></script>
@@ -57,19 +9,26 @@
             <img src="/static/ajax-loader.gif" alt="Загрузка..."/>
         </script>
         <!-- List of entities in Bootstrap nav tabs -->
-        <script id="hbt-list-in-tabs" type="text/x-handlebars-template">
-            <a href="/admin/api/{{kind}}"
-               class="list-group-item list-group-item-success">
-                + Создать
+        <script id="hbt-biglist" type="text/x-handlebars-template">
+            <a href="#"
+               class="list-group-item list-group-item-success
+                      ka-biglist-new-item">
+                + Добавить
             </a>
             {{#each items}}
-            <div class="list-group-item">
-                <a href="/admin/entity?id={{id}}" target="_blank">{{value}}</a>
-                <a data-toggle="modal" class="pull-right" title="Удалить"
-                   data-target="#delete-entity-modal">
-                    <i class="glyphicon glyphicon-remove text-danger"></i>
-                </a>
-            </div>
+            <a href="#" data-id="{{id}}"
+               class="list-group-item ka-biglist-entry"
+               data-repr="{{value}}">
+                <span>{{value}}</span>
+                <span class="pull-right">
+                    <button class="btn btn-xs btn-primary
+                                   ka-biglist-delete-entity"
+                            title="Удалить">
+                        <span class="glyphicon glyphicon-remove">
+                        </span>
+                    </button>
+                </span>
+            </a>
             {{/each}}
         </script>
         <!-- Error message -->
@@ -84,9 +43,46 @@
         </script>
         <!-- Success message -->
         <script id="hbt-success" type="text/x-handlebars-template">
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-success" role="alert">
                 <h4>Отлично!</h4>
-                <p>Завершено успешно.</p>
+                <p>{{msg}}.</p>
+            </div>
+        </script>
+        <!-- Delete entity modal -->
+        <script id="hbt-delete-entity-modal" type="text/x-handlebars-template">
+            <div class="modal fade" id="ka-delete-entity-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Удаление сущности</h4>
+                        </div>
+                        <div class="modal-body">
+                            {{#if isDocument}}
+                            <div class="alert alert-warning"
+                                 id="del-relatives-warning">
+                                Удаление документа из этого списка приведет к
+                                его удалению из всех услуг!
+                            </div>
+                            {{/if}}
+                            <p>Вы уверены, что хотите удалить эту сущность?</p>
+                            <div class="alert alert-info">
+                                <p><b>Класс:</b> {{verboseKind}} </p>
+                                <p><b>Значение:</b> {{repr}} </p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger"
+                                    data-loading-text="Удаляю..."
+                                    id="ka-confirm-delete">
+                                Удалить
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal" id="ka-close-modal">
+                                Не надо!
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </script>
     {% endraw %}
