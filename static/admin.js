@@ -57,7 +57,7 @@ $(document).ready(function () {
                 var target = $(e.target);
                 var entry = target.closest('.ka-biglist-entry');
                 console.log(target, entry);
-                if (target.hasClass("ka-biglist-delete-entity")) {
+                if (target.hasClass("ka-biglist-delete")) {
                     var modalData = {
                         'id': entry.data('id'),
                         'verboseKind': verboseKind,
@@ -105,38 +105,6 @@ $(document).ready(function () {
 
         $('a[data-kind=Service]').click()
     }
-
-    // Invoking entity delete modal
-    $("#delete-entity-modal").on("show.bs.modal", function(e) {
-        var invoker = $(e.relatedTarget);
-        var modal = $(e.target);
-        var resultModalBody =
-            $("#delete-entity-result-modal").find(".modal-body");
-
-        var relativesWarning = modal.find('#del-relatives-warning');
-        if (isDocument) relativesWarning.hide();
-        else relativesWarning.show();
-
-        modal.find('#del-entity-kind').text(verboseKind);
-        modal.find('#del-entity-repr').text(repr);
-
-        $('#confirm-delete-btn').click(function () {
-            var btn = $(this);
-            btn.button('loading');
-            btn.button('reset');
-            modal.hide();
-            deleteEntity(id, function () {
-                // On success, show 'successfully' deleted message.
-                resultModalBody.html(fromBars('hbt-success'))
-            }, function (jqXHR, textStatus, errorThrown) {
-                // On error, show error message
-                resultModalBody.html(fromBars('hbt-error', {
-                    'status': textStatus,
-                    'error': errorThrown
-                }))
-            });
-        })
-    })
 });
 
 // Ajax loading indicator show/hide

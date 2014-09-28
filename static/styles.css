@@ -23,6 +23,15 @@ tr.disabled, tr.disabled a {
     display: none;  /* Must be hidden unless ajax request is fired  */
 }
 
-.glyphicon-remove {
+.ka-biglist-entry, .ka-biglist-new {
     cursor: pointer;
+}
+
+.ka-biglist-delete {
+    font-size: 1.4em;
+    color: lightgray;
+}
+
+.ka-biglist-delete:hover {
+    color: black;
 }

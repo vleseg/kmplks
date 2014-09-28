@@ -10,25 +10,17 @@
         </script>
         <!-- List of entities in Bootstrap nav tabs -->
         <script id="hbt-biglist" type="text/x-handlebars-template">
-            <a href="#"
-               class="list-group-item list-group-item-success
-                      ka-biglist-new-item">
+            <div class="list-group-item list-group-item-success
+                        ka-biglist-new">
                 + Добавить
-            </a>
+            </div>
             {{#each items}}
-            <a href="#" data-id="{{id}}"
-               class="list-group-item ka-biglist-entry"
-               data-repr="{{value}}">
-                <span>{{value}}</span>
-                <span class="pull-right">
-                    <button class="btn btn-xs btn-primary
-                                   ka-biglist-delete-entity"
-                            title="Удалить">
-                        <span class="glyphicon glyphicon-remove">
-                        </span>
-                    </button>
-                </span>
-            </a>
+            <div data-id="{{id}}" class="list-group-item ka-biglist-entry"
+                 data-repr="{{value}}">
+                {{value}}
+                <i class="glyphicon glyphicon-remove pull-right
+                          ka-biglist-delete"></i>
+            </div>
             {{/each}}
         </script>
         <!-- Error message -->
@@ -45,7 +37,7 @@
         <script id="hbt-success" type="text/x-handlebars-template">
             <div class="alert alert-success" role="alert">
                 <h4>Отлично!</h4>
-                <p>{{msg}}.</p>
+                <p>{{message}}.</p>
             </div>
         </script>
         <!-- Delete entity modal -->
@@ -65,7 +57,7 @@
                             </div>
                             {{/if}}
                             <p>Вы уверены, что хотите удалить эту сущность?</p>
-                            <div class="alert alert-info">
+                            <div class="">
                                 <p><b>Класс:</b> {{verboseKind}} </p>
                                 <p><b>Значение:</b> {{repr}} </p>
                             </div>
