@@ -23,7 +23,7 @@ h1 small {
     display: none;  /* Must be hidden unless ajax request is fired  */
 }
 
-.ka-biglist-entry, .ka-biglist-new {
+.ka-biglist-item, .ka-biglist-new {
     cursor: pointer;
 }
 

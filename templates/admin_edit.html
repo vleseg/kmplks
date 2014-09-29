@@ -1,0 +1,15 @@
+{% extends 'admin_base.html' %}
+{% block title %}Администрирование{% endblock %}
+{% block head %}
+    {% if action == 'new' %}Создание{% endif %}
+    {% if action == 'edit' %}Редактирование{% endif %}
+    <small><span id="ka-entity-repr"></span></small>
+{% endblock %}
+{% block content %}
+    <div class="ajax-loader-container"></div>
+    <form id="ka-entity-edit-form" data-action="{{ action }}"
+         data-to-fetch="{{ to_fetch }}" role="form">
+        {# GET /admin/api/entities/<entity_id>/ #}
+    </form>
+    {{ delete_entity_modal() }}
+{% endblock %}

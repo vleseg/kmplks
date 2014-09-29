@@ -454,6 +454,18 @@ class AdminList(BaseHandler):
         self.render()
 
 
+class AdminEdit(BaseHandler):
+    template_filename = "admin_edit.html"
+
+    def get(self):
+        action = 'new' if '/new' in self.request.uri else 'edit'
+        to_fetch = self.request.get('kind')
+        if len(to_fetch) == 0:
+            to_fetch = self.request.get('id')
+        self.context.update({'action': action, 'to_fetch': to_fetch})
+        self.render()
+
+
 class ApiHandler(webapp2.RequestHandler):
     @staticmethod
     def make_res_obj_for_kind(kind, entity=None):
@@ -584,7 +596,9 @@ app_routes = [
     webapp2.Route('/admin', handler=AdminHandler, name='admin'),
     webapp2.Route('/admin/datastore-init', handler=AdminWorker,
                   name='datastore-init'),
-    webapp2.Route('/admin/list', handler=AdminList, name='admin-list')
+    webapp2.Route('/admin/list', handler=AdminList, name='admin-list'),
+    webapp2.Route('/admin/edit', handler=AdminEdit, name='admin-edit'),
+    webapp2.Route('/admin/new', handler=AdminEdit, name='admin-new')
 ]
 
 app = webapp2.WSGIApplication(app_routes, debug=True, config=config)

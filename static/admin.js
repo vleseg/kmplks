@@ -1,7 +1,15 @@
+function FieldsRenderingRules() {
+    this.slots = {
+        'int': 1, 'ref': 1, 'multi_ref': 1, 'repr': 1, 'bool': 1, 'enum': 1,
+        'plain': 2, 'rich': 2
+    };
+}
+
+var FRR = new FieldsRenderingRules();
+
 function deleteEntity(id, onSuccess, onFail) {
     $.ajax({
-        type: 'DELETE',
-        url: '/admin/api/entities/' + id
+        type: 'DELETE', url: '/admin/api/entities/' + id
     })
         .done(onSuccess)
         .fail(function (xhr, status, error) {
@@ -16,21 +24,44 @@ function fetchAndRenderList(kindName, onSuccess, onFail) {
         })
 }
 
+function fetchAndRenderFields(action, toFetch, onSuccess, onFail) {
+    var uriFragment;
+
+    if (action == 'edit')
+        uriFragment = 'entities/' + toFetch;
+    else if (action == 'new')
+        uriFragment = toFetch + '/fields';
+    else
+        throw new Error("Invalid action type: " + action);
+
+    $.getJSON('/admin/api/' + uriFragment, onSuccess)
+        .fail(function (xhr, status, error) {
+            onFail({'status': status, 'error': error})
+        })
+}
+
 function fromBars(templateId, data) {
     /* Compile Handlebars template and render html with data given. */
     var template = Handlebars.compile($('#' + templateId).html());
+
     return template(data)
+}
+
+function renderField(field) {
+    var hbtName = 'hbt-' + field.type.replace(/_/g, '-');
+
+    return fromBars(hbtName, field)
 }
 
 $(document).ready(function () {
     // Attack ajax loader to page.
     var ajaxLoaderCntnr = $('.ajax-loader-container');
-    if (ajaxLoaderCntnr)
+    if (ajaxLoaderCntnr.length > 0)
         ajaxLoaderCntnr.append($(fromBars('hbt-ajax-loader')));
 
-    // Getting and building list of entities for a kind.
+    // Get and build big list of entities for the kind.
     var bigListTabLabelsCntnr = $('#ka-biglist-tab-labels');
-    if (bigListTabLabelsCntnr) {
+    if (bigListTabLabelsCntnr.length > 0) {
         bigListTabLabelsCntnr.find('a').on('shown.bs.tab', function (e) {
             var kind = $(e.target).data('kind');
             var verboseKind;
@@ -45,37 +76,32 @@ $(document).ready(function () {
                 // On success compile template and render list.
                 itemsCntnr.html(fromBars('hbt-biglist', data));
                 verboseKind = data['kind']
-            }, function (status, error) {
-                itemsCntnr.html(fromBars('hbt-error', {
-                    'status': status,
-                    'error': error
-                }))
+            }, function (errorData) {
+                itemsCntnr.html(fromBars('hbt-error', errorData))
             });
 
             itemsCntnr.on('click', function (e) {
-                e.preventDefault();
+//                e.preventDefault();
                 var target = $(e.target);
-                var entry = target.closest('.ka-biglist-entry');
+                var entry = target.closest('.ka-biglist-item');
 
                 // If 'delete' icon/button is clicked, show 'delete entity
                 // confirmation' modal.
                 if (target.hasClass("ka-biglist-delete")) {
                     var modalData = {
-                        'kind': kind,
-                        'id': entry.data('id'),
-                        'verboseKind': verboseKind,
-                        'repr': entry.data('repr'),
+                        'kind': kind, 'id': entry.data('id'),
+                        'verboseKind': verboseKind, 'repr': entry.data('repr')
                     };
                     $('#ka-delete-entity-modal').data(modalData).modal()
                 }
                 // If 'add new item' link is clicked open edit form for new
                 // entity
-                else if (target.closest('.ka-biglist-new')) {
+                else if (target.hasClass('ka-biglist-new')) {
                     window.open('/admin/new?kind=' + kind, '_blank')
                 }
                 // If list item was clicked go to edit form for corresponding
                 // entity
-                else if (target.closest('.ka-biglist-entry')) {
+                else if (target.hasClass('ka-biglist-item')) {
                     var id = entry.data('id');
                     window.open('/admin/edit?id=' + id, '_blank');
                     e.stopPropagation();
@@ -86,9 +112,42 @@ $(document).ready(function () {
         $('a[data-kind=Service]').click()
     }
 
-    // Delete entity modal logic
+    // Entity edit page logic.
+    var entityEditForm = $('#ka-entity-edit-form');
+    if (entityEditForm.length > 0) {
+        var action = entityEditForm.data('action');
+        var toFetch = entityEditForm.data('toFetch');
+        var fields;
+
+        fetchAndRenderFields(action, toFetch, function (data) {
+            // On success fetch and render fields and their content (if any).
+            console.log(data);
+
+            var freeSlots = 0;
+            var currentRow;
+
+            $.each(data.fields, function (i, field) {
+                var slotsRequired = FRR.slots[field.type];
+                if (freeSlots < slotsRequired) {
+                    currentRow = $(fromBars('hbt-row'));
+                    entityEditForm.append(currentRow);
+                    freeSlots = 2;
+                }
+                currentRow.append(renderField(field));
+
+                freeSlots = freeSlots - slotsRequired;
+            });
+
+            $('#ka-entity-repr').text(data.label)
+        }, function (errorData) {
+            // On fail render error message.
+            entityEditForm.append(fromBars('hbt-error', errorData))
+        });
+    }
+
+    // Delete entity modal logic.
     var modal = $('#ka-delete-entity-modal');
-    if (modal) {
+    if (modal.length > 0) {
         var defaultContent = modal.find('.default-content');
         var variableContent = modal.find('.variable-content');
 
@@ -111,22 +170,24 @@ $(document).ready(function () {
                     'message': 'Объект успешно удален.'
                 }));
                 modal.data({'mustRefresh': true})
-            }, function (status, error) {
+            }, function (errorData) {
                 // On fail display error message.
-                variableContent.append(fromBars('hbt-error', {
-                    'status': status,
-                    'error': error
-                }))
+                variableContent.append(fromBars('hbt-error', errorData))
             });
         });
         modal.on('hidden.bs.modal', function (e) {
             variableContent.empty().hide();
             defaultContent.show();
             if (modal.data('mustRefresh')) {
-                // Reload current tab to make changes visible.
+                // If called from big list, reload current tab to make changes
+                // visible.
                 var tabLabel = $('#ka-biglist-tab-labels').find('.active');
                 tabLabel.removeClass('active');
                 tabLabel.find('a').tab('show');
+            }
+            else if (modal.data('mustClose')) {
+                // If called from entity edit page, close current tab.
+                window.close()
             }
         })
     }
