@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 #
 # Copyright 2007 Google Inc.
 #
@@ -517,6 +518,8 @@ class ApiHandler(webapp2.RequestHandler):
             self.response.set_status(300)
 
     def delete(self, **kwargs):
+        # TODO: implement correct error message on attempt to delete an entity
+        # which is set as 'required' property somewhere.
         if 'entity_id' in kwargs:
             if '/entities' in self.request.uri:
                 entity = models.from_urlsafe(kwargs['entity_id'])

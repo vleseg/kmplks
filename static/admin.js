@@ -5,7 +5,7 @@ function deleteEntity(id, onSuccess, onFail) {
     })
         .done(onSuccess)
         .fail(function (xhr, status, error) {
-            onFail({'status': status, 'error': error})
+            onFail(status, error)
         })
 }
 
@@ -56,54 +56,79 @@ $(document).ready(function () {
                 e.preventDefault();
                 var target = $(e.target);
                 var entry = target.closest('.ka-biglist-entry');
-                console.log(target, entry);
+
+                // If 'delete' icon/button is clicked, show 'delete entity
+                // confirmation' modal.
                 if (target.hasClass("ka-biglist-delete")) {
                     var modalData = {
+                        'kind': kind,
                         'id': entry.data('id'),
                         'verboseKind': verboseKind,
                         'repr': entry.data('repr'),
-                        'isDocument': kind == 'Document'
                     };
-                    $('body')
-                        .append(fromBars('hbt-delete-entity-modal', modalData));
-
-                    var modal = $('#ka-delete-entity-modal');
-                    modal.modal();
-                    modal.on('hidden.bs.modal', function (e) {
-                        $(e.target).remove()
-                    });
-                    modal.find('#ka-confirm-delete').on('click', function (e) {
-                        var modalBody = modal.find('.modal-body');
-                        modalBody.html(fromBars('hbt-ajax-loader'));
-                        $(e.target).remove();
-                        modal.find('#ka-close-modal').text('Закрыть');
-                        deleteEntity(entry.data('id'), function() {
-                            // On success display success message
-                            modalBody.html(fromBars('hbt-success'), {
-                                'msg': 'Объект успешно удален.'
-                            })
-                        }, function (status, error) {
-                            // On error display error message
-                            modalBody.html(fromBars('hbt-error', {
-                                'status': status,
-                                'error': error
-                            }))
-                        })
-                    })
+                    $('#ka-delete-entity-modal').data(modalData).modal()
                 }
+                // If 'add new item' link is clicked open edit form for new
+                // entity
                 else if (target.closest('.ka-biglist-new')) {
                     window.open('/admin/new?kind=' + kind, '_blank')
                 }
+                // If list item was clicked go to edit form for corresponding
+                // entity
                 else if (target.closest('.ka-biglist-entry')) {
                     var id = entry.data('id');
-                    window
-                        .open('/admin/edit?id=' + id , '_blank');
+                    window.open('/admin/edit?id=' + id, '_blank');
                     e.stopPropagation();
                 }
             })
         });
 
         $('a[data-kind=Service]').click()
+    }
+
+    // Delete entity modal logic
+    var modal = $('#ka-delete-entity-modal');
+    if (modal) {
+        var defaultContent = modal.find('.default-content');
+        var variableContent = modal.find('.variable-content');
+
+        modal.on('show.bs.modal', function () {
+            var data = modal.data();
+            $('#ka-verbose-kind').text(data.verboseKind);
+            $('#ka-repr').text(data.repr);
+            var cascadeDeleteWarning = $('#ka-cascade-delete-warning');
+            if (data.kind == 'Document') cascadeDeleteWarning.show();
+            else cascadeDeleteWarning.hide();
+        });
+        modal.find('#ka-confirm-delete').on('click', function () {
+            defaultContent.hide();
+            variableContent.show();
+
+            modal.find('#ka-close-modal').text('Закрыть');
+            deleteEntity(modal.data('id'), function() {
+                // On success display success message.
+                variableContent.append(fromBars('hbt-success', {
+                    'message': 'Объект успешно удален.'
+                }));
+                modal.data({'mustRefresh': true})
+            }, function (status, error) {
+                // On fail display error message.
+                variableContent.append(fromBars('hbt-error', {
+                    'status': status,
+                    'error': error
+                }))
+            });
+        });
+        modal.on('hidden.bs.modal', function (e) {
+            variableContent.empty().hide();
+            defaultContent.show();
+            if (modal.data('mustRefresh')) {
+                // Reload current tab to make changes visible.
+                var tabLabel = $('#ka-biglist-tab-labels').find('.active');
+                tabLabel.removeClass('active');
+                tabLabel.find('a').tab('show');
+            }
+        })
     }
 });
 

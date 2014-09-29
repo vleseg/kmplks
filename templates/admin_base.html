@@ -1,4 +1,49 @@
 {% extends "base.html" %}
+{# Macros #}
+{# Delete entity modal #}
+{% macro delete_entity_modal() %}
+    <div class="modal fade" id="ka-delete-entity-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Удаление объекта</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="ajax-loader-container"></div>
+                    <div class="default-content">
+                        <p>
+                            Вы уверены, что хотите удалить этот объект?
+                        </p>
+                        <p class="text-danger" id="ka-cascade-delete-warning">
+                            <b>
+                                Удаление документа из этого списка приведет
+                                к его удалению из всех услуг!
+                            </b>
+                        </p>
+                        <div class="alert alert-info">
+                            <p>
+                                <b>Класс:</b>
+                                <span id="ka-verbose-kind"></span>
+                            </p>
+                            <p><b>Значение: </b><span id="ka-repr"></span></p>
+                        </div>
+                    </div>
+                    <div class="variable-content" hidden="hidden"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger default-content"
+                            id="ka-confirm-delete">
+                        Удалить
+                    </button>
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal" id="ka-close-modal">
+                        Не надо!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
 {% block title_affix %}.Admin{% endblock %}
 {% block common_js %}
     <script src="/static/admin.js"></script>
@@ -38,43 +83,6 @@
             <div class="alert alert-success" role="alert">
                 <h4>Отлично!</h4>
                 <p>{{message}}.</p>
-            </div>
-        </script>
-        <!-- Delete entity modal -->
-        <script id="hbt-delete-entity-modal" type="text/x-handlebars-template">
-            <div class="modal fade" id="ka-delete-entity-modal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Удаление сущности</h4>
-                        </div>
-                        <div class="modal-body">
-                            {{#if isDocument}}
-                            <div class="alert alert-warning"
-                                 id="del-relatives-warning">
-                                Удаление документа из этого списка приведет к
-                                его удалению из всех услуг!
-                            </div>
-                            {{/if}}
-                            <p>Вы уверены, что хотите удалить эту сущность?</p>
-                            <div class="">
-                                <p><b>Класс:</b> {{verboseKind}} </p>
-                                <p><b>Значение:</b> {{repr}} </p>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger"
-                                    data-loading-text="Удаляю..."
-                                    id="ka-confirm-delete">
-                                Удалить
-                            </button>
-                            <button type="button" class="btn btn-default"
-                                    data-dismiss="modal" id="ka-close-modal">
-                                Не надо!
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </script>
     {% endraw %}
