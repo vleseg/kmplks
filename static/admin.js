@@ -47,10 +47,25 @@ function fromBars(templateId, data) {
     return template(data)
 }
 
-function renderField(field) {
+function renderField(field, slotsRequired) {
     var hbtName = 'hbt-' + field.type.replace(/_/g, '-');
 
-    return fromBars(hbtName, field)
+    if ('int plain ref multi_ref rich'.indexOf(field.type) != -1) {
+        var fieldId = 'ka-' + field.name + '-field';
+
+        var labelHTML = fromBars('hbt-label', {
+            'fieldId': fieldId,
+            'labelText': field.label
+        });
+        var fieldHTML = fromBars(hbtName, field);
+
+        return fromBars('hbt-field-container', {
+            'labelHTML': labelHTML, 'fieldHTML': fieldHTML,
+            'isNarrow': slotsRequired == 1, 'fieldId': fieldId
+        });
+    }
+    else
+        return hbtName
 }
 
 $(document).ready(function () {
@@ -117,7 +132,6 @@ $(document).ready(function () {
     if (entityEditForm.length > 0) {
         var action = entityEditForm.data('action');
         var toFetch = entityEditForm.data('toFetch');
-        var fields;
 
         fetchAndRenderFields(action, toFetch, function (data) {
             // On success fetch and render fields and their content (if any).
@@ -133,12 +147,32 @@ $(document).ready(function () {
                     entityEditForm.append(currentRow);
                     freeSlots = 2;
                 }
-                currentRow.append(renderField(field));
+                currentRow.append(renderField(field, slotsRequired));
 
                 freeSlots = freeSlots - slotsRequired;
             });
 
             $('#ka-entity-repr').text(data.label)
+
+            // Load CKEditor if HTML button is toggled.
+            var toggleHtmlButtons = $('button.ka-toggle-ckeditor');
+            if (toggleHtmlButtons.length > 0) {
+                toggleHtmlButtons.on('click', function (e) {
+                    var btn = $(e.target);
+                    var textareaId = btn.next().attr('id');
+
+                    if (btn.hasClass('active')) {
+                        var editorInstance = CKEDITOR.instances[textareaId];
+                        editorInstance.destroy();
+                        btn.text(btn.data('initialText'))
+                    }
+                    else {
+                        btn.data({'initialText': btn.text()});
+                        btn.text(btn.data('toggleText'));
+                        CKEDITOR.replace(textareaId);
+                    }
+                })
+            }
         }, function (errorData) {
             // On fail render error message.
             entityEditForm.append(fromBars('hbt-error', errorData))

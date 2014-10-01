@@ -33,17 +33,18 @@ class Choices(object):
     def name_by_value(self, value):
         return self.keys_index[frozenset(value)].get('name')
 
+
 CHOICES = Choices({
     'COUNT_METHOD': {
-    'one_for_all': u'Один экземпляр на комплекс',
-    'per_service': u'Один экземпляр на услугу',
-    'per_ogv': u'Один экземпляр на ведомство'
-},
+        'one_for_all': u'Один экземпляр на комплекс',
+        'per_service': u'Один экземпляр на услугу',
+        'per_ogv': u'Один экземпляр на ведомство'
+    },
     'ORIGINAL_SUPPLY_TYPE': OrderedDict([
-    ('demonstrate', u'Возвращается после приема документов'),
-    ('return_with_result', u'Возвращается после предоставления услуги'),
-    ('no_return', u'Не возвращается')
-])})
+        ('demonstrate', u'Возвращается после приема документов'),
+        ('return_with_result', u'Возвращается после предоставления услуги'),
+        ('no_return', u'Не возвращается')
+    ])})
 
 
 class BaseModel(ndb.Model):
@@ -138,14 +139,11 @@ class BaseModel(ndb.Model):
             prop_cls_name = 'int'
         elif prop_cls_name == 'KeyProperty':
             prop_cls_name = 'multi_ref' if prop._repeated else 'ref'
-            # Referred kind can be stored in KeyProperty as Model subclass of
-            # as string
-            try:
-                objectified['kind'] = prop._kind
-            except:
-                print prop
-            if entity is not None:
-                value = value[0] if prop._repeated else value
+            objectified['kind'] = prop._kind
+            if prop_cls_name == 'multi_ref':
+                objectified['ref_count'] = len(value)
+                if len(value) > 0: value = value[0]
+            if value is not None and value != []:
                 value = value.get().as_repr()
         elif prop_cls_name == 'BooleanProperty':
             prop_cls_name = 'bool'
@@ -157,7 +155,7 @@ class BaseModel(ndb.Model):
         return objectified
 
     @staticmethod
-    def modify_reference( prop, values, method):
+    def modify_reference(prop, values, method):
         if method == 'add':
             for v in values:
                 prop.append(v)
@@ -436,7 +434,7 @@ class Document(BaseModel):
     o_supply_type = ndb.StringProperty(
         default='demonstrate', choices=CHOICES['ORIGINAL_SUPPLY_TYPE'],
         verbose_name=u'Возвращается ли оригинал заявителю?'
-        )
+    )
     n_originals = ndb.IntegerProperty(
         default=1, verbose_name=u'Количество оригиналов')
     n_copies = ndb.IntegerProperty(default=1, verbose_name=u'Количество копий')
@@ -460,6 +458,7 @@ class Document(BaseModel):
         :rtype: dict[str, str | NoneType] |
                 list[dict[str, str | str | NoneType]]
         """
+
         def _compile_single(_dts, _result):
             if _dts.description is None:
                 _result['from_doc'] = self.description
@@ -585,6 +584,7 @@ class DocumentToService(BaseModel):
     document = ndb.KeyProperty(Document, required=True)
     service = ndb.KeyProperty(Service, required=True)
     kompleks = ndb.KeyProperty(Kompleks)
+
 
 this_module = modules[__name__]
 
