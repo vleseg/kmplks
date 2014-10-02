@@ -49,85 +49,12 @@
     <script src="/static/ckeditor/ckeditor.js"></script>
     <script src="/static/admin.js"></script>
     {# Handlebars templates #}
+{% endblock %}
+{% block hb_common %}
     {% raw %}
         <!-- Ajax loader -->
         <script id="hbt-ajax-loader" type="text/x-handlebars-template">
             <img src="/static/ajax-loader.gif" alt="Загрузка..."/>
-        </script>
-        <!-- List of entities in Bootstrap nav tabs -->
-        <script id="hbt-biglist" type="text/x-handlebars-template">
-            <div class="list-group-item list-group-item-success
-                        ka-biglist-new">
-                + Добавить
-            </div>
-            {{#each items}}
-            <div data-id="{{id}}" class="list-group-item ka-biglist-item"
-                 data-repr="{{value}}">
-                {{value}}
-                <i class="glyphicon glyphicon-remove pull-right
-                          ka-biglist-delete"></i>
-            </div>
-            {{/each}}
-        </script>
-        <!-- Entity edit fields -->
-        <!-- meta: field container -->
-        <script id="hbt-field-container" type="text/x-handlebars-template">
-            <div class="form-group
-                        {{#if isNarrow}} col-md-6 {{else}} col-md-12 {{/if}}">
-                {{{labelHTML}}}
-                {{{fieldHTML}}}
-            </div>
-        </script>
-        <!-- meta: label -->
-        <script id="hbt-label" type="text/x-handlebars-template">
-            <label for="{{fieldId}}">{{labelText}}</label>
-        </script>
-        <!-- int -->
-        <script id="hbt-int" type="text/x-handlebars-template">
-            <input class="form-control ka-int-field" type="text"
-                   value="{{value}}" disabled="disabled" id="{{fieldId}}"/>
-        </script>
-        <!-- Plain -->
-        <script id="hbt-plain" type="text/x-handlebars-template">
-            <input class="form-control ka-plain-field" value="{{value}}"
-                   disabled="disabled" type="text" id="{{fieldId}}"/>
-        </script>
-        <!-- Ref -->
-        <script id="hbt-ref" type="text/x-handlebars-template">
-            <div class="input-group ka-ref-field">
-                <input class="form-control" value="{{value}}" id="{{fieldId}}"
-                       disabled="disabled" type="text" title="{{value}}"/>
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button">
-                        Выбрать
-                    </button>
-                </span>
-            </div>
-        </script>
-        <!-- Multi ref -->
-        <script id="hbt-multi-ref" type="text/x-handlebars-template">
-            <div class="input-group ka-multi-ref-field">
-                <input class="form-control" type="text" value="{{value}}"
-                       title="{{value}}" disabled="disabled" id="{{fieldId}}"/>
-                <span class="input-group-addon"
-                      title="Всего элементов">{{ref_count}}</span>
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button">
-                        Выбрать
-                    </button>
-                </span>
-            </div>
-        </script>
-        <!-- Rich -->
-        <script id="hbt-rich" type="text/x-handlebars-template">
-            <button class="btn btn-default ka-toggle-ckeditor" type="button"
-                    data-toggle="button" data-toggle-text="Обычный текст">
-                HTML
-            </button>
-            <textarea name="" id="{{fieldId}}-textarea" cols="120" rows="5"
-                      class="form-control">
-                {{value}}
-            </textarea>
         </script>
         <!-- Error message -->
         <script id="hbt-error" type="text/x-handlebars-template">

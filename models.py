@@ -30,8 +30,8 @@ class Choices(object):
     def as_dict(self, name):
         return self.d[name]
 
-    def name_by_value(self, value):
-        return self.keys_index[frozenset(value)].get('name')
+    def by_value(self, value):
+        return self.keys_index[frozenset(value)].get('items')
 
 
 CHOICES = Choices({
@@ -128,9 +128,7 @@ class BaseModel(ndb.Model):
 
         if prop._choices is not None:
             prop_cls_name = 'enum'
-            choices_name = CHOICES.name_by_value(prop._choices)
-            objectified['choices_name'] = choices_name
-            objectified["choices"] = CHOICES.as_dict(choices_name)
+            objectified["choices"] = CHOICES.by_value(prop._choices)
         elif prop_cls_name == 'StringProperty':
             prop_cls_name = 'plain'
         elif prop_cls_name == 'TextProperty':

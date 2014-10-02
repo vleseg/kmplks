@@ -35,6 +35,10 @@
     </title>
 </head>
 <body>
+    <!-- Template group specific Handlebars templates -->
+    {% block hb_common %}{% endblock %}
+    <!-- Template specific Handlebars templates -->
+    {% block hb_specific %}{% endblock %}
     {% block navbar %}{% endblock %}
     <div class="container">
         <div class="row">

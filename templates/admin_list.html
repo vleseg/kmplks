@@ -4,6 +4,25 @@
     Список объектов:
     <small><span id="ka-big-list-header"></span></small>
 {% endblock %}
+{% block hb_specific %}
+    {% raw %}
+        <!-- List of entities in Bootstrap nav tabs -->
+        <script id="hbt-biglist" type="text/x-handlebars-template">
+            <div class="list-group-item list-group-item-success
+                        ka-biglist-new">
+                + Добавить
+            </div>
+            {{#each items}}
+            <div data-id="{{id}}" class="list-group-item ka-biglist-item"
+                 data-repr="{{value}}">
+                {{value}}
+                <i class="glyphicon glyphicon-remove pull-right
+                          ka-biglist-delete"></i>
+            </div>
+            {{/each}}
+        </script>
+    {% endraw %}
+{% endblock %}
 {% block content %}
     <ul class="nav nav-tabs" role="tablist" id="ka-biglist-tab-labels">
     {% for kind in kinds %}

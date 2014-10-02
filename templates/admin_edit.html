@@ -5,11 +5,102 @@
     {% if action == 'edit' %}Редактирование{% endif %}
     <small><span id="ka-entity-repr"></span></small>
 {% endblock %}
+{% block hb_specific %}
+    {% raw %}
+        <!-- Entity edit fields -->
+        <!-- meta: field container -->
+        <script id="hbt-field-container" type="text/x-handlebars-template">
+            <div class="form-group
+                        {{#if isNarrow}} col-md-6 {{else}} col-md-12 {{/if}}">
+                {{{labelHTML}}}
+                {{{fieldHTML}}}
+            </div>
+        </script>
+        <!-- meta: label -->
+        <script id="hbt-label" type="text/x-handlebars-template">
+            <label for="{{fieldId}}">{{labelText}}</label>
+        </script>
+        <!-- int -->
+        <script id="hbt-int" type="text/x-handlebars-template">
+            <input class="form-control ka-int-field" type="text" name="{{name}}"
+                   value="{{value}}" disabled="disabled" id="{{fieldId}}"/>
+        </script>
+        <!-- Plain -->
+        <script id="hbt-plain" type="text/x-handlebars-template">
+            <input class="form-control ka-plain-field" value="{{value}}"
+                   disabled="disabled" type="text" id="{{fieldId}}"
+                   name="{{name}}"/>
+        </script>
+        <!-- Ref -->
+        <script id="hbt-ref" type="text/x-handlebars-template">
+            <div class="input-group ka-ref-field">
+                <input class="form-control" value="{{value}}" id="{{fieldId}}"
+                       disabled="disabled" type="text" title="{{value}}"
+                       name="{{name}}"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button">
+                        Выбрать
+                    </button>
+                </span>
+            </div>
+        </script>
+        <!-- Multi ref -->
+        <script id="hbt-multi-ref" type="text/x-handlebars-template">
+            <div class="input-group ka-multi-ref-field">
+                <input class="form-control" type="text" value="{{value}}"
+                       title="{{value}}" disabled="disabled" id="{{fieldId}}"
+                       name="{{name}}"/>
+                <span class="input-group-addon"
+                      title="Всего элементов">{{ref_count}}</span>
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button">
+                        Выбрать
+                    </button>
+                </span>
+            </div>
+        </script>
+        <!-- Rich -->
+        <script id="hbt-rich" type="text/x-handlebars-template">
+            <button class="btn btn-default ka-toggle-ckeditor" type="button"
+                    data-toggle="button" data-toggle-text="Обычный текст">
+                HTML
+            </button>
+            <textarea id="{{fieldId}}-textarea" rows="5" name="{{name}}"
+                      class="form-control" disabled="disabled">
+                {{value}}
+            </textarea>
+        </script>
+        <!-- Bool -->
+        <script id="hbt-bool" type="text/x-handlebars-template">
+            <select disabled="disabled" class="form-control" name="{{name}}">
+                <option value="true">Да</option>
+                <option value="false">Нет</option>
+            </select>
+        </script>
+        <!-- Enum -->
+        <script id="hbt-enum" type="text/x-handlebars-template">
+            <select class="form-control" disabled="disabled" name="{{name}}">
+                {{#each choices}}
+                <option value="{{@key}}">{{this}}</option>
+                {{/each}}
+            </select>
+        </script>
+    {% endraw %}
+{% endblock %}
 {% block content %}
     <div class="ajax-loader-container"></div>
     <form id="ka-entity-edit-form" data-action="{{ action }}"
          data-to-fetch="{{ to_fetch }}" role="form">
-        {# GET /admin/api/entities/<entity_id>/ #}
+        <fieldset>
+            {# GET /admin/api/entities/<entity_id>/ #}
+        </fieldset>
+        <div class="pull-right">
+            <button type="submit" class="btn btn-lg btn-primary">
+                Сохранить
+            </button>
+            <button type="button" class="btn btn-lg btn-default">
+                Отмена
+            </button>
+        </div>
     </form>
-    {{ delete_entity_modal() }}
 {% endblock %}

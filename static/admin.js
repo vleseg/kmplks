@@ -47,25 +47,25 @@ function fromBars(templateId, data) {
     return template(data)
 }
 
-function renderField(field, slotsRequired) {
+function renderField(field, slotsRequired, choices) {
     var hbtName = 'hbt-' + field.type.replace(/_/g, '-');
+    var fieldId = 'ka-' + field.name + '-field';
+    var labelHTML = fromBars('hbt-label', {
+        'fieldId': fieldId,
+        'labelText': field.label
+    });
 
-    if ('int plain ref multi_ref rich'.indexOf(field.type) != -1) {
-        var fieldId = 'ka-' + field.name + '-field';
+    var fieldHTML = fromBars(hbtName, field);
 
-        var labelHTML = fromBars('hbt-label', {
-            'fieldId': fieldId,
-            'labelText': field.label
-        });
-        var fieldHTML = fromBars(hbtName, field);
+    var compiled = $(fromBars('hbt-field-container', {
+        'labelHTML': labelHTML, 'fieldHTML': fieldHTML,
+        'isNarrow': slotsRequired == 1, 'fieldId': fieldId
+    }));
 
-        return fromBars('hbt-field-container', {
-            'labelHTML': labelHTML, 'fieldHTML': fieldHTML,
-            'isNarrow': slotsRequired == 1, 'fieldId': fieldId
-        });
-    }
-    else
-        return hbtName
+    if (field.type == 'enum' || field.type == 'bool')
+        compiled.find('select').val(field.value.toString());
+
+    return compiled
 }
 
 $(document).ready(function () {
@@ -144,15 +144,16 @@ $(document).ready(function () {
                 var slotsRequired = FRR.slots[field.type];
                 if (freeSlots < slotsRequired) {
                     currentRow = $(fromBars('hbt-row'));
-                    entityEditForm.append(currentRow);
+                    entityEditForm.find('fieldset').append(currentRow);
                     freeSlots = 2;
                 }
-                currentRow.append(renderField(field, slotsRequired));
+                currentRow
+                    .append(renderField(field, slotsRequired, data.choices));
 
                 freeSlots = freeSlots - slotsRequired;
             });
 
-            $('#ka-entity-repr').text(data.label)
+            $('#ka-entity-repr').text(data.label);
 
             // Load CKEditor if HTML button is toggled.
             var toggleHtmlButtons = $('button.ka-toggle-ckeditor');
@@ -173,6 +174,12 @@ $(document).ready(function () {
                     }
                 })
             }
+
+            // Activate fields on click.
+            entityEditForm.on('submit', function () {
+
+            })
+
         }, function (errorData) {
             // On fail render error message.
             entityEditForm.append(fromBars('hbt-error', errorData))

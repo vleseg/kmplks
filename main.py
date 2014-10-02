@@ -473,11 +473,6 @@ class ApiHandler(webapp2.RequestHandler):
         choices_dict = {}
         for p in kind.iter_properties(names_only=True):
             objectified = kind.objectify_property(p, entity=entity)
-            if 'choices' in objectified:
-                choices = objectified.pop('choices')
-                choices_name = objectified.pop('choices_name')
-                if choices is not None and choices_name not in choices_dict:
-                    choices_dict[choices_name] = choices
             fields.append(objectified)
 
         res_obj = {
