@@ -42,22 +42,22 @@ function fetchAndRenderFields(action, toFetch, onSuccess, onFail) {
 
 function fromBars(templateId, data) {
     /* Compile Handlebars template and render html with data given. */
-    var template = Handlebars.compile($('#' + templateId).html());
+    var template = Handlebars.compile($('#hbt-' + templateId).html());
 
     return template(data)
 }
 
 function renderField(field, slotsRequired, choices) {
-    var hbtName = 'hbt-' + field.type.replace(/_/g, '-');
+    var templateName = field.type.replace(/_/g, '-');
     var fieldId = 'ka-' + field.name + '-field';
-    var labelHTML = fromBars('hbt-label', {
+    var labelHTML = fromBars('label', {
         'fieldId': fieldId,
         'labelText': field.label
     });
 
-    var fieldHTML = fromBars(hbtName, field);
+    var fieldHTML = fromBars(templateName, field);
 
-    var compiled = $(fromBars('hbt-field-container', {
+    var compiled = $(fromBars('field-container', {
         'labelHTML': labelHTML, 'fieldHTML': fieldHTML,
         'isNarrow': slotsRequired == 1, 'fieldId': fieldId
     }));
@@ -72,7 +72,7 @@ $(document).ready(function () {
     // Attack ajax loader to page.
     var ajaxLoaderCntnr = $('.ajax-loader-container');
     if (ajaxLoaderCntnr.length > 0)
-        ajaxLoaderCntnr.append($(fromBars('hbt-ajax-loader')));
+        ajaxLoaderCntnr.append($(fromBars('ajax-loader')));
 
     // Get and build big list of entities for the kind.
     var bigListTabLabelsCntnr = $('#ka-biglist-tab-labels');
@@ -89,10 +89,10 @@ $(document).ready(function () {
 
             fetchAndRenderList(kind, function (data) {
                 // On success compile template and render list.
-                itemsCntnr.html(fromBars('hbt-biglist', data));
+                itemsCntnr.html(fromBars('biglist', data));
                 verboseKind = data['kind']
             }, function (errorData) {
-                itemsCntnr.html(fromBars('hbt-error', errorData))
+                itemsCntnr.html(fromBars('error', errorData))
             });
 
             itemsCntnr.on('click', function (e) {
@@ -128,7 +128,7 @@ $(document).ready(function () {
     }
 
     // Entity edit page logic.
-    var entityEditForm = $('#ka-entity-edit-form');
+    var entityEditForm = $('#ka-edit-form');
     if (entityEditForm.length > 0) {
         var action = entityEditForm.data('action');
         var toFetch = entityEditForm.data('toFetch');
@@ -143,7 +143,7 @@ $(document).ready(function () {
             $.each(data.fields, function (i, field) {
                 var slotsRequired = FRR.slots[field.type];
                 if (freeSlots < slotsRequired) {
-                    currentRow = $(fromBars('hbt-row'));
+                    currentRow = $(fromBars('row'));
                     entityEditForm.find('fieldset').append(currentRow);
                     freeSlots = 2;
                 }
@@ -155,7 +155,7 @@ $(document).ready(function () {
 
             $('#ka-entity-repr').text(data.label);
 
-            // Load CKEditor if HTML button is toggled.
+            // Load/unload CKEditor on 'HTML'/'Plain' button toggle.
             var toggleHtmlButtons = $('button.ka-toggle-ckeditor');
             if (toggleHtmlButtons.length > 0) {
                 toggleHtmlButtons.on('click', function (e) {
@@ -179,11 +179,20 @@ $(document).ready(function () {
             entityEditForm.on('submit', function () {
 
             })
-
         }, function (errorData) {
-            // On fail render error message.
-            entityEditForm.append(fromBars('hbt-error', errorData))
+            // Render error message on fail.
+            entityEditForm.find('fieldset').append(fromBars('error', errorData))
         });
+        
+        // Save changes to entity on submit.
+        entityEditForm.submit(function () {
+            
+        });
+        
+        // Close window on 'Cancel' button click.
+        $('#ka-edit-close-btn').click(function () {
+            window.close()
+        })
     }
 
     // Delete entity modal logic.
@@ -207,13 +216,13 @@ $(document).ready(function () {
             modal.find('#ka-close-modal').text('Закрыть');
             deleteEntity(modal.data('id'), function() {
                 // On success display success message.
-                variableContent.append(fromBars('hbt-success', {
+                variableContent.append(fromBars('success', {
                     'message': 'Объект успешно удален.'
                 }));
                 modal.data({'mustRefresh': true})
             }, function (errorData) {
                 // On fail display error message.
-                variableContent.append(fromBars('hbt-error', errorData))
+                variableContent.append(fromBars('error', errorData))
             });
         });
         modal.on('hidden.bs.modal', function (e) {

@@ -221,7 +221,6 @@ $(document).ready(function () {
 
                     // delete link and icon
                     $('<a/>', {
-                        // TODO: think how uri_for can be used here
                         href: '/admin/delete?id=' + item.id,
                         target: '_blank',
                         class: 'pull-right',

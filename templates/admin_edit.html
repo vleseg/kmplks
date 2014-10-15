@@ -89,16 +89,18 @@
 {% endblock %}
 {% block content %}
     <div class="ajax-loader-container"></div>
-    <form id="ka-entity-edit-form" data-action="{{ action }}"
+    <form id="ka-edit-form" data-action="{{ action }}"
          data-to-fetch="{{ to_fetch }}" role="form">
         <fieldset>
             {# GET /admin/api/entities/<entity_id>/ #}
         </fieldset>
         <div class="pull-right">
-            <button type="submit" class="btn btn-lg btn-primary">
+            <button type="submit" class="btn btn-lg btn-primary"
+                    id="ka-edit-save-btn">
                 Сохранить
             </button>
-            <button type="button" class="btn btn-lg btn-default">
+            <button type="button" class="btn btn-lg btn-default"
+                    id="ka-edit-close-btn">
                 Отмена
             </button>
         </div>

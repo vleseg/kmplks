@@ -474,6 +474,9 @@ class ApiHandler(webapp2.RequestHandler):
         for p in kind.iter_properties(names_only=True):
             objectified = kind.objectify_property(p, entity=entity)
             fields.append(objectified)
+        fields = sorted(
+            fields,
+            key=lambda field: kind.get_sort_key_for_property(field.get('name')))
 
         res_obj = {
             'kind': kind._name[0],

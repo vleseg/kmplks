@@ -55,12 +55,18 @@ class BaseModel(ndb.Model):
         tuple. First element is singular form, second is plural.
     _repr_field: Property, which value will be used as representation of the
         entity (i. e. human-readable primary key).
+    _ordering: Order, in which properties have to be displayed in UI.
     """
     # Meta
     _name = None
     _repr_field = None
+    _ordering = None
 
     id = ndb.IntegerProperty(required=True, verbose_name='ID')
+
+    def __init__(self, **kwds):
+        self.__class__._ordering = ['id'] + self.__class__._ordering
+        super(BaseModel, self).__init__(**kwds)
 
     @classmethod
     def backref_info(cls):
@@ -107,6 +113,13 @@ class BaseModel(ndb.Model):
             entity_properties['parent'] = CFG['ANCESTOR']
 
         cls(**entity_properties).put()
+
+    @classmethod
+    def get_sort_key_for_property(cls, prop_name):
+        if cls._ordering is None:
+            return 0
+        else:
+            return cls._ordering.index(prop_name)
 
     @classmethod
     def iter_properties(cls, names_only=True, exclude=None):
@@ -241,6 +254,7 @@ class DocClass(BaseModel):
     # Meta
     _name = (u'Класс документа', u'Классы документов')
     _repr_field = 'value'
+    _ordering = ['value', 'sort_key']
 
     value = ndb.StringProperty(required=True, verbose_name=u'Значение')
     sort_key = ndb.IntegerProperty(
@@ -278,6 +292,7 @@ class OGV(BaseModel):
     # Meta
     _name = (u'Ведомство', u'Ведомства')
     _repr_field = 'name'
+    _ordering = ['name', 'short_name']
 
     name = ndb.StringProperty(required=True, verbose_name=u"Полное название")
     short_name = ndb.StringProperty(required=True, verbose_name=u'Сокращение')
@@ -301,6 +316,7 @@ class Kompleks(BaseModel):
     # Meta
     _name = (u'Комлпексная услуга', u'Комплексные услуги')
     _repr_field = 'name'
+    _ordering = ['name', 'mfcs']
 
     name = ndb.StringProperty(required=True, verbose_name=u'Название')
 
@@ -349,6 +365,11 @@ class Service(BaseModel):
     # Meta
     _name = (u'Услуга', u'Услуги')
     _repr_field = 'name'
+    _ordering = [
+        'name', 'short_description', 'kb_id', 'prerequisite_description',
+        'max_days', 'max_work_days', 'terms_description', 'ogv',
+        'containing_komplekses', 'related_komplekses', 'dependencies'
+    ]
 
     name = ndb.StringProperty(required=True, verbose_name=u'Название')
     short_description = ndb.TextProperty(
@@ -415,6 +436,11 @@ class Document(BaseModel):
     # Meta
     _name = (u'Документ', u'Документы')
     _repr_field = 'name'
+    _ordering = [
+        'name', 'description', 'o_count_method', 'c_count_method',
+        'o_supply_type', 'n_originals', 'n_copies', 'is_a_paper_document',
+        'doc_class'
+    ]
 
     name = ndb.StringProperty(required=True, verbose_name=u'Название')
     description = ndb.TextProperty(
