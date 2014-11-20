@@ -1,9 +1,13 @@
-{% extends 'admin_base.html' %}
+{% extends 'admin/admin_base.html' %}
 {% block title %}Администрирование{% endblock %}
 {% block head %}
     {% if action == 'new' %}Создание{% endif %}
     {% if action == 'edit' %}Редактирование{% endif %}
     <small><span id="ka-entity-repr"></span></small>
+{% endblock %}
+{% block template_js %}
+    <script src="/static/ckeditor/ckeditor.js"></script>
+    <script src="/static/admin_edit.js"></script>
 {% endblock %}
 {% block hb_specific %}
     {% raw %}

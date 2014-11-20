@@ -1,43 +1,6 @@
-function FieldsRenderingRules() {
-    this.slots = {
-        'int': 1, 'ref': 1, 'multi_ref': 1, 'repr': 1, 'bool': 1, 'enum': 1,
-        'plain': 2, 'rich': 2
-    };
-}
-
-var FRR = new FieldsRenderingRules();
-
-function deleteEntity(id, onSuccess, onFail) {
-    $.ajax({
-        type: 'DELETE', url: '/admin/api/entities/' + id
-    })
-        .done(onSuccess)
-        .fail(function (xhr, status, error) {
-            onFail(status, error)
-        })
-}
-
-function fetchAndRenderList(kindName, onSuccess, onFail) {
-    $.getJSON('/admin/api/' + kindName + '/entities', onSuccess)
-        .fail(function (xhr, status, error) {
-            onFail({'status': status, 'error': error})
-        })
-}
-
-function fetchAndRenderFields(action, toFetch, onSuccess, onFail) {
-    var uriFragment;
-
-    if (action == 'edit')
-        uriFragment = 'entities/' + toFetch;
-    else if (action == 'new')
-        uriFragment = toFetch + '/fields';
-    else
-        throw new Error("Invalid action type: " + action);
-
-    $.getJSON('/admin/api/' + uriFragment, onSuccess)
-        .fail(function (xhr, status, error) {
-            onFail({'status': status, 'error': error})
-        })
+function renderErrorMsg(errorMsgCntr, status, error) {
+    var data = {status: status, error: error}
+    errorMsgCntr.html(fromBars('error', data))
 }
 
 function fromBars(templateId, data) {
@@ -47,62 +10,64 @@ function fromBars(templateId, data) {
     return template(data)
 }
 
-function renderField(field, slotsRequired, choices) {
-    var templateName = field.type.replace(/_/g, '-');
-    var fieldId = 'ka-' + field.name + '-field';
-    var labelHTML = fromBars('label', {
-        'fieldId': fieldId,
-        'labelText': field.label
-    });
+function deleteEntity(id, onSuccess, errorMsgCntr) {
+    /* Wrapper around entity deletion API request. */
+    $.ajax({
+        type: 'DELETE', url: '/admin/api/entities/' + id
+    })
+        .done(onSuccess)
+        .fail(function (xhr, status, error) {
+            renderErrorMsg(errorMsgCntr, status, error)
+        })
+}
 
-    var fieldHTML = fromBars(templateName, field);
-
-    var compiled = $(fromBars('field-container', {
-        'labelHTML': labelHTML, 'fieldHTML': fieldHTML,
-        'isNarrow': slotsRequired == 1, 'fieldId': fieldId
-    }));
-
-    if (field.type == 'enum' || field.type == 'bool')
-        compiled.find('select').val(field.value.toString());
-
-    return compiled
+function fetchList(kindName, onSuccessFn, errorMsgCntr) {
+    /* Wrapper around list of entities fetching API request. */
+    $.getJSON('/admin/api/' + kindName + '/entities', onSuccessFn)
+        .fail(function (xhr, status, error) {
+            renderErrorMsg(errorMsgCntr, status, error)
+        })
 }
 
 $(document).ready(function () {
-    // Attack ajax loader to page.
-    var ajaxLoaderCntnr = $('.ajax-loader-container');
-    if (ajaxLoaderCntnr.length > 0)
-        ajaxLoaderCntnr.append($(fromBars('ajax-loader')));
-
-    // Get and build big list of entities for the kind.
-    var bigListTabLabelsCntnr = $('#ka-biglist-tab-labels');
-    if (bigListTabLabelsCntnr.length > 0) {
-        bigListTabLabelsCntnr.find('a').on('shown.bs.tab', function (e) {
-            var kind = $(e.target).data('kind');
-            var verboseKind;
-
-            var bigListTabs = $('#ka-biglist-tabs');
-            var tab = bigListTabs.find('#ka-biglist-tab-' + kind);
-
-            var itemsCntnr = tab.find('.tab-pane-items');
-            itemsCntnr.empty();
-
-            fetchAndRenderList(kind, function (data) {
-                // On success compile template and render list.
-                itemsCntnr.html(fromBars('biglist', data));
-                verboseKind = data['kind']
-            }, function (errorData) {
-                itemsCntnr.html(fromBars('error', errorData))
+    // Get and build main list of entities for the kind.
+    // Main list allows to delete underlying entities or open them for editing.
+    var mainListTabLabelsCtnr = $('#ka-mainlist-tab-labels');
+    if (mainListTabLabelsCtnr.length > 0) {
+        // Datastore initialization button click trigger.
+        mainListTabLabelsCtnr.find('#ka-mainlist-init-button')
+            .on('click', function () {
+                $.ajax('/admin/api/initialize')
             });
+        // Triggers for tabs.
+        mainListTabLabelsCtnr.find('a').on('shown.bs.tab', function (e) {
+            var kind = $(e.target).data('kind');  // i. e. kind name
+            var verboseKind;  // i. e. kind name in Russian
 
-            itemsCntnr.on('click', function (e) {
+            // Tab, that was opened
+            var tab = $('#ka-mainlist-tabs').find('#ka-mainlist-tab-' + kind);
+
+            var itemsCtnr = tab.find('.tab-pane-items');
+            // Tab is cleared of any previous content, incl. errors.
+            // TODO: clear tab only if it contains only an error message
+            itemsCtnr.empty();
+
+            fetchList(kind, function (data) {
+                // On success compile template, render list and change page
+                // header.
+                itemsCtnr.html(fromBars('mainlist', data));
+                verboseKind = data['kind'];
+                $('#ka-mainlist-header').text(data['kind_plural'])
+            }, itemsCtnr);
+
+            itemsCtnr.on('click', function (e) {
 //                e.preventDefault();
                 var target = $(e.target);
-                var entry = target.closest('.ka-biglist-item');
+                var entry = target.closest('.ka-mainlist-item');
 
                 // If 'delete' icon/button is clicked, show 'delete entity
                 // confirmation' modal.
-                if (target.hasClass("ka-biglist-delete")) {
+                if (target.hasClass("ka-mainlist-delete")) {
                     var modalData = {
                         'kind': kind, 'id': entry.data('id'),
                         'verboseKind': verboseKind, 'repr': entry.data('repr')
@@ -111,12 +76,12 @@ $(document).ready(function () {
                 }
                 // If 'add new item' link is clicked open edit form for new
                 // entity
-                else if (target.hasClass('ka-biglist-new')) {
+                else if (target.hasClass('ka-mainlist-new')) {
                     window.open('/admin/new?kind=' + kind, '_blank')
                 }
                 // If list item was clicked go to edit form for corresponding
                 // entity
-                else if (target.hasClass('ka-biglist-item')) {
+                else if (target.hasClass('ka-mainlist-item')) {
                     var id = entry.data('id');
                     window.open('/admin/edit?id=' + id, '_blank');
                     e.stopPropagation();
@@ -125,74 +90,6 @@ $(document).ready(function () {
         });
 
         $('a[data-kind=Service]').click()
-    }
-
-    // Entity edit page logic.
-    var entityEditForm = $('#ka-edit-form');
-    if (entityEditForm.length > 0) {
-        var action = entityEditForm.data('action');
-        var toFetch = entityEditForm.data('toFetch');
-
-        fetchAndRenderFields(action, toFetch, function (data) {
-            // On success fetch and render fields and their content (if any).
-            console.log(data);
-
-            var freeSlots = 0;
-            var currentRow;
-
-            $.each(data.fields, function (i, field) {
-                var slotsRequired = FRR.slots[field.type];
-                if (freeSlots < slotsRequired) {
-                    currentRow = $(fromBars('row'));
-                    entityEditForm.find('fieldset').append(currentRow);
-                    freeSlots = 2;
-                }
-                currentRow
-                    .append(renderField(field, slotsRequired, data.choices));
-
-                freeSlots = freeSlots - slotsRequired;
-            });
-
-            $('#ka-entity-repr').text(data.label);
-
-            // Load/unload CKEditor on 'HTML'/'Plain' button toggle.
-            var toggleHtmlButtons = $('button.ka-toggle-ckeditor');
-            if (toggleHtmlButtons.length > 0) {
-                toggleHtmlButtons.on('click', function (e) {
-                    var btn = $(e.target);
-                    var textareaId = btn.next().attr('id');
-
-                    if (btn.hasClass('active')) {
-                        var editorInstance = CKEDITOR.instances[textareaId];
-                        editorInstance.destroy();
-                        btn.text(btn.data('initialText'))
-                    }
-                    else {
-                        btn.data({'initialText': btn.text()});
-                        btn.text(btn.data('toggleText'));
-                        CKEDITOR.replace(textareaId);
-                    }
-                })
-            }
-
-            // Activate fields on click.
-            entityEditForm.on('submit', function () {
-
-            })
-        }, function (errorData) {
-            // Render error message on fail.
-            entityEditForm.find('fieldset').append(fromBars('error', errorData))
-        });
-        
-        // Save changes to entity on submit.
-        entityEditForm.submit(function () {
-            
-        });
-        
-        // Close window on 'Cancel' button click.
-        $('#ka-edit-close-btn').click(function () {
-            window.close()
-        })
     }
 
     // Delete entity modal logic.
@@ -220,18 +117,15 @@ $(document).ready(function () {
                     'message': 'Объект успешно удален.'
                 }));
                 modal.data({'mustRefresh': true})
-            }, function (errorData) {
-                // On fail display error message.
-                variableContent.append(fromBars('error', errorData))
-            });
+            }, variableContent);
         });
         modal.on('hidden.bs.modal', function (e) {
             variableContent.empty().hide();
             defaultContent.show();
             if (modal.data('mustRefresh')) {
-                // If called from big list, reload current tab to make changes
+                // If called from main list, reload current tab to make changes
                 // visible.
-                var tabLabel = $('#ka-biglist-tab-labels').find('.active');
+                var tabLabel = $('#ka-mainlist-tab-labels').find('.active');
                 tabLabel.removeClass('active');
                 tabLabel.find('a').tab('show');
             }
@@ -240,15 +134,5 @@ $(document).ready(function () {
                 window.close()
             }
         })
-    }
-});
-
-// Ajax loading indicator show/hide
-$.ajaxSetup({
-    beforeSend:function(){
-        $(".ajax-loader-container").show();
-    },
-    complete:function(){
-        $(".ajax-loader-container").hide();
     }
 });

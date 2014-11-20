@@ -23,15 +23,15 @@ h1 small {
     display: none;  /* Must be hidden unless ajax request is fired  */
 }
 
-.ka-biglist-item, .ka-biglist-new {
+.ka-mainlist-item, .ka-mainlist-new {
     cursor: pointer;
 }
 
-.ka-biglist-delete {
+.ka-mainlist-delete {
     font-size: 1.4em;
     color: lightgray;
 }
 
-.ka-biglist-delete:hover {
+.ka-mainlist-delete:hover {
     color: black;
 }

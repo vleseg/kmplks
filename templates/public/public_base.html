@@ -17,17 +17,9 @@
     {% endif %}
 {% endmacro %}
 {# End shared macros #}
-{% block common_js %}
-    <script src="/static/main.js"></script>
+{% block group_js %}
+    <script src="/static/public.js"></script>
 {% endblock %}
-{% block navbar %}
-    <div class="navbar navbar-default navbar-static-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="{{ uri_for('start') }}">
-                    Kompleks
-                </a>
-            </div>
-        </div>
-    </div>
+{% block group_title %}
+    Kompleks — {% block title %}{% endblock %}
 {% endblock %}

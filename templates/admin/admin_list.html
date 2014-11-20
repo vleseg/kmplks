@@ -1,42 +1,49 @@
-{% extends 'admin_base.html' %}
-{% block title %}Администрирование{% endblock %}
+{% extends 'admin/admin_base.html' %}
+{% block title %}Список объектов{% endblock %}
 {% block head %}
-    Список объектов:
-    <small><span id="ka-big-list-header"></span></small>
+    <span id="ka-mainlist-header"></span>
+{% endblock %}
+{% block template_js %}
+    <script src="/static/admin_biglist.js"></script>
 {% endblock %}
 {% block hb_specific %}
     {% raw %}
         <!-- List of entities in Bootstrap nav tabs -->
-        <script id="hbt-biglist" type="text/x-handlebars-template">
+        <script id="hbt-mainlist" type="text/x-handlebars-template">
             <div class="list-group-item list-group-item-success
-                        ka-biglist-new">
+                        ka-mainlist-new">
                 + Добавить
             </div>
             {{#each items}}
-            <div data-id="{{id}}" class="list-group-item ka-biglist-item"
+            <div data-id="{{id}}" class="list-group-item ka-mainlist-item"
                  data-repr="{{value}}">
                 {{value}}
                 <i class="glyphicon glyphicon-remove pull-right
-                          ka-biglist-delete"></i>
+                          ka-mainlist-delete"></i>
             </div>
             {{/each}}
         </script>
     {% endraw %}
 {% endblock %}
 {% block content %}
-    <ul class="nav nav-tabs" role="tablist" id="ka-biglist-tab-labels">
+    <ul class="nav nav-tabs" role="tablist" id="ka-mainlist-tab-labels">
     {% for kind in kinds %}
         <li>
-            <a href="#ka-biglist-tab-{{ kind.name }}" data-toggle="tab"
+            <a href="#ka-mainlist-tab-{{ kind.name }}" data-toggle="tab"
                role="tab" data-kind="{{ kind.name }}">
             {{ kind.verbose_name }}
             </a>
         </li>
     {% endfor %}
+        <li class="bg-danger">
+            <a href="#" role="button" id="ka-mainlist-init-button">
+                Инициализация
+            </a>
+        </li>
     </ul>
-    <div class="tab-content" id="ka-biglist-tabs">
+    <div class="tab-content" id="ka-mainlist-tabs">
     {% for kind in kinds %}
-        <div class="tab-pane col-md-10" id="ka-biglist-tab-{{ kind.name }}">
+        <div class="tab-pane col-md-10" id="ka-mainlist-tab-{{ kind.name }}">
             <div class="ajax-loader-container"></div>
             <div class="tab-pane-items list-group">
                 {# GET /admin/api/entities #}

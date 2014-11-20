@@ -18,15 +18,18 @@
 from collections import OrderedDict
 from itertools import chain
 import json
+import logging
 # Third-party imports
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 import webapp2
 from webapp2_extras import sessions, routes
 # Project-specific imports
-from config import CFG
 from datastore_init import initialize_datastore
 import models
+
+# jinja2 lib from includes is imported in CFG.
+from config import CFG
 
 
 class KompleksError(BaseException):
@@ -200,9 +203,11 @@ class KompleksHandler(BaseHandler):
 
     User can choose a kompleks by clicking on its name.
     """
-    template_filename = "start.html"
+    template_filename = "public/start.html"
 
     def get(self):
+        logging.info('inside KompleksHandler')
+
         kompleks_id = self.request.get("id")
         if kompleks_id:
             self.store_session_data('kompleks_id', kompleks_id)
@@ -262,7 +267,7 @@ class PrerequisiteChoiceHandler(BaseHandler):
     prerequisites. However, the on-page script will not let a user check
     a prerequisite, whose dependencies were not satisfied.
     """
-    template_filename = 'prerequisites.html'
+    template_filename = 'public/prerequisites.html'
 
     def get(self):
         session_data = self.get_session_data(
@@ -320,7 +325,7 @@ class ServiceChoiceHandler(BaseHandler):
     script will not let a user check services, whose dependencies were not
     satisfied.
     """
-    template_filename = 'services.html'
+    template_filename = 'public/services.html'
 
     def get(self):
         d = self.get_session_data([
@@ -373,7 +378,7 @@ class ResultHandler(BaseHandler):
     This is the final page of this app. It contains a list of documents to be
     provided by an applicant.
     """
-    template_filename = 'result.html'
+    template_filename = 'public/result.html'
 
     def get(self):
         d = self.get_session_data(['kompleks_id', 'service_ids'])
@@ -426,23 +431,8 @@ class ResultHandler(BaseHandler):
         return result
 
 
-class AdminHandler(BaseHandler):
-    template_filename = 'admin_home.html'
-
-    def get(self):
-        self.render()
-
-    def post(self):
-        action = self.request.get('action')
-        if action == 'init-db':
-            taskqueue.add(url=webapp2.uri_for('datastore-init'))
-            self.redirect(webapp2.uri_for('admin'))
-        elif action == 'edit-db':
-            self.redirect(webapp2.uri_for('admin-list'))
-
-
 class AdminList(BaseHandler):
-    template_filename = "admin_list.html"
+    template_filename = "admin/admin_list.html"
 
     def get(self):
         self.context['kinds'] = []
@@ -455,7 +445,7 @@ class AdminList(BaseHandler):
 
 
 class AdminEdit(BaseHandler):
-    template_filename = "admin_edit.html"
+    template_filename = "admin/admin_edit.html"
 
     def get(self):
         action = 'new' if '/new' in self.request.uri else 'edit'
@@ -521,6 +511,8 @@ class ApiHandler(webapp2.RequestHandler):
             res_obj = self.make_res_obj_for_kind(kind, entity=entity)
 
             self.response.out.write(json.dumps(res_obj))
+        elif '/initialize' in self.request.uri:
+            taskqueue.add(url=webapp2.uri_for('datastore-init'))
         else:
             self.response.set_status(300)
 
@@ -580,7 +572,8 @@ app_routes = [
     routes.PathPrefixRoute('/admin/api', [
         webapp2.Route('/<kind_name>/entities', handler=ApiHandler),
         webapp2.Route('/<kind_name>/fields', handler=ApiHandler),
-        webapp2.Route('/entities/<entity_id>', handler=ApiHandler)
+        webapp2.Route('/entities/<entity_id>', handler=ApiHandler),
+        webapp2.Route('/initialize', handler=ApiHandler)
     ]),
     webapp2.Route('/', handler=KompleksHandler, name='start'),
     webapp2.Route('/prerequisites', handler=PrerequisiteChoiceHandler,
@@ -588,10 +581,12 @@ app_routes = [
     webapp2.Route('/services', handler=ServiceChoiceHandler,
                   name='services'),
     webapp2.Route('/result', handler=ResultHandler, name='result'),
-    webapp2.Route('/admin', handler=AdminHandler, name='admin'),
+    webapp2.Route('/admin', handler=AdminList, name='admin'),
     webapp2.Route('/admin/datastore-init', handler=AdminWorker,
                   name='datastore-init'),
-    webapp2.Route('/admin/list', handler=AdminList, name='admin-list'),
+    # The following route is not needed anymore since /admin now points to
+    # entity list page.
+    # webapp2.Route('/admin/list', handler=AdminList, name='admin-list'),
     webapp2.Route('/admin/edit', handler=AdminEdit, name='admin-edit'),
     webapp2.Route('/admin/new', handler=AdminEdit, name='admin-new')
 ]

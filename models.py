@@ -65,7 +65,10 @@ class BaseModel(ndb.Model):
     id = ndb.IntegerProperty(required=True, verbose_name='ID')
 
     def __init__(self, **kwds):
-        self.__class__._ordering = ['id'] + self.__class__._ordering
+        if self.__class__._ordering is None:
+            self.__class__._ordering = ['id']
+        else:
+            self.__class__._ordering = ['id'] + self.__class__._ordering
         super(BaseModel, self).__init__(**kwds)
 
     @classmethod
@@ -274,6 +277,7 @@ class MFC(BaseModel):
     # Meta
     _name = (u'МФЦ', u'МФЦ')
     _repr_field = 'name'
+    _ordering = ['name']
 
     name = ndb.StringProperty(required=True, verbose_name="Название")
 
