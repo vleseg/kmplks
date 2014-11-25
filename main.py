@@ -706,7 +706,7 @@ class ApiHandler(BaseHandler):
             self.response.set_status(300)
 
 
-class AdminWorker(webapp2.RequestHandler):
+class AdminWorker(BaseHandler):
     @user_required
     def post(self):
         initialize_datastore()
