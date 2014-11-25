@@ -23,7 +23,8 @@ import logging
 from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 import webapp2
-from webapp2_extras import sessions, routes
+from webapp2_extras import sessions, routes, auth
+from webapp2_extras.auth import InvalidPasswordError, InvalidAuthIdError
 # Project-specific imports
 from datastore_init import initialize_datastore
 import models
@@ -62,9 +63,30 @@ CFG['JINJA2_ENV'].filters['to_url'] = to_url
 CFG['JINJA2_ENV'].globals['uri_for'] = webapp2.uri_for
 
 
+def user_required(handler):
+    """
+    Decorator, that checks if there's a user associated with the current
+    session.
+    Will also fail if there's no session present.
+
+    :param handler: webapp2 handler to be decorated.
+    :returns: Passed in handler if check is successful, otherwise user is
+        redirected to login page.
+    """
+    def check_login(self, *args, **kwargs):
+        auth = self.auth
+
+        if not auth.get_user_by_session():
+            self.redirect(self.uri_for('login'), abort=True)
+        else:
+            return handler(self, *args, **kwargs)
+
+    return check_login
+
+
 class BaseHandler(webapp2.RequestHandler):
     """
-    Base class for all handlers in this app. All session handling logic and
+    Base class for all handlers in this app. Session handling logic and
     convenience method render() are defined here.
     """
     template_filename = ""
@@ -73,16 +95,97 @@ class BaseHandler(webapp2.RequestHandler):
         super(BaseHandler, self).__init__(request, response)
         # Will be used with jinja2 template.
         self.context = {}
-        # Will be used later in dispatch().
-        self.session_store = None
+
+    @webapp2.cached_property
+    def auth(self):
+        """
+        Shortcut to access the auth instance as a property.
+        """
+        return auth.get_auth()
+
+    @webapp2.cached_property
+    def session(self):
+        """
+        Returns a session using default cookie key.
+        """
+        return self.session_store.get_session(backend='datastore')
+
+    @webapp2.cached_property
+    def user(self):
+        """
+        Shortcut to access the curred logged in user.
+
+        Unlike user_info, it fetches information from the persistence layer and
+        returns an instance of underlying model.
+
+        :returns: The instance of the user model associated to the logged in
+        user.
+        """
+        u = self.user_info
+        return self.user_model.get_by_id(u['user_id']) if u else None
+
+    @webapp2.cached_property
+    def user_info(self):
+        """
+        Shortcut to access a subset of the user attributes that are stored in
+        the session.
+
+        The list of attributes to store in the session is specified in
+        config['webapp2_extras.auth']['user_attributes'].
+
+        :returns: A dictionary with most user information.
+        """
+        return self.auth.get_user_by_session()
+
+    @webapp2.cached_property
+    def user_model(self):
+        """
+        Returns the implementation of the user model.
+
+        It is consistent with config['webapp2_extras.auth']['user_model'], if
+        set.
+        """
+        return self.auth.store.user_model
+
+    @staticmethod
+    def construct_service_graph(services):
+        """
+        Constructs a dictionary, that represents a graph of dependencies
+        between services.
+
+        Resulting dictionary is serialized as JSON and passed in a context for
+        rendering and is later used by special JS script, that does not let a
+        user choose a service, whose dependencies were not satisfied.
+
+        :type services: list[Service]
+        """
+        service_keys = [s.key for s in services]
+        service_ids = [k.urlsafe() for k in service_keys]
+
+        service_graph = dict(
+            (id_, {'children': [], 'parents': []}) for id_ in service_ids)
+
+        for s, sid in zip(services, service_ids):
+            relations = service_graph[sid]
+            relations['days'] = s.max_days
+            relations['workDays'] = s.max_work_days
+            relations['enabled'] = True
+            relations['checked'] = False
+
+            for parent_key in s.dependencies:
+                if parent_key in service_keys:
+                    parent_id = parent_key.urlsafe()
+                    relations['parents'].append(parent_id)
+                    service_graph[parent_id]['children'].append(sid)
+
+        return service_graph
 
     def dispatch(self):
         """
         Wraps default dispatcher with session handling routine.
         """
         # Get a session store for this request.
-        self.session_store = sessions.get_store(
-            request=self.request, key=CFG['ANCESTOR'])
+        self.session_store = sessions.get_store(request=self.request)
 
         try:
             # Dispatch the request.
@@ -90,30 +193,6 @@ class BaseHandler(webapp2.RequestHandler):
         finally:
             # Save all sessions.
             self.session_store.save_sessions(self.response)
-
-    @webapp2.cached_property
-    def session(self):
-        """
-        Returns a session using default cookie key.
-        """
-        return self.session_store.get_session()
-
-    def store_session_data(self, key, value):
-        """
-        Puts data into session store.
-
-        Ensures integrity. Note that you can't put None values in session
-        store, since it would cause ambiguity on retrieval time: one wouldn't
-        know, if self.session.get() returns None because key is not found or
-        because None value was stored.
-
-        :type key: str
-        """
-        if value is None:
-            raise SessionHandlingError(
-                "Attempt to put a None value by key '{}' in session store."
-                .format(key))
-        self.session[key] = value
 
     def get_session_data(self, keys, obligatory=True):
         """
@@ -150,6 +229,23 @@ class BaseHandler(webapp2.RequestHandler):
 
         return data
 
+    def store_session_data(self, key, value):
+        """
+        Puts data into session store.
+
+        Ensures integrity. Note that you can't put None values in session
+        store, since it would cause ambiguity on retrieval time: one wouldn't
+        know, if self.session.get() returns None because key is not found or
+        because None value was stored.
+
+        :type key: str
+        """
+        if value is None:
+            raise SessionHandlingError(
+                "Attempt to put a None value by key '{}' in session store."
+                .format(key))
+        self.session[key] = value
+
     def render(self):
         """
         Renders template and context together.
@@ -157,41 +253,8 @@ class BaseHandler(webapp2.RequestHandler):
         A convenience method.
         """
         template = CFG['JINJA2_ENV'].get_template(self.template_filename)
+        self.context['user'] = self.user_info
         self.response.out.write(template.render(**self.context))
-
-
-    @staticmethod
-    def construct_service_graph(services):
-        """
-        Constructs a dictionary, that represents a graph of dependencies
-        between services.
-
-        Resulting dictionary is serialized as JSON and passed in a context for
-        rendering and is later used by special JS script, that does not let a
-        user choose a service, whose dependencies were not satisfied.
-
-        :type services: list[Service]
-        """
-        service_keys = [s.key for s in services]
-        service_ids = [k.urlsafe() for k in service_keys]
-
-        service_graph = dict(
-            (id_, {'children': [], 'parents': []}) for id_ in service_ids)
-
-        for s, sid in zip(services, service_ids):
-            relations = service_graph[sid]
-            relations['days'] = s.max_days
-            relations['workDays'] = s.max_work_days
-            relations['enabled'] = True
-            relations['checked'] = False
-
-            for parent_key in s.dependencies:
-                if parent_key in service_keys:
-                    parent_id = parent_key.urlsafe()
-                    relations['parents'].append(parent_id)
-                    service_graph[parent_id]['children'].append(sid)
-
-        return service_graph
 
 
 class KompleksHandler(BaseHandler):
@@ -206,8 +269,6 @@ class KompleksHandler(BaseHandler):
     template_filename = "public/start.html"
 
     def get(self):
-        logging.info('inside KompleksHandler')
-
         kompleks_id = self.request.get("id")
         if kompleks_id:
             self.store_session_data('kompleks_id', kompleks_id)
@@ -431,9 +492,89 @@ class ResultHandler(BaseHandler):
         return result
 
 
+class AddUserHandler(BaseHandler):
+    """
+    Handler for user add page.
+
+    This is where a new user can be introduced into the app. Note that this
+    page is only accessible to the app admin (in GAE terms). This is why it's
+    not decorated by user_required, but is mentioned in app.yaml
+    """
+    template_filename = 'admin/add_user.html'
+
+    def get(self):
+        self.render()
+
+    def post(self):
+        # No validation is required at this point, since page will only be
+        # available to app admin.
+        username = self.request.get('username')
+        email = self.request.get("email")
+        password = self.request.get('password')
+
+        user_data = self.user_model.create_user(
+            username, email_address=email, password_raw=password, name=username)
+
+        if not user_data[0]:  # user_data is a tuple
+            self.context.update(
+                {'error': u'Пользователь с имененм {} уже '
+                          u'существует.'.format(username)})
+            self.render()
+        else:
+            self.context.update(
+                {'success': u'Пользователь {} успешно создан!'.format(
+                    username)})
+            self.render()
+
+        # Building email confirm uri.
+        # user = user_data[0]
+        # user_id = user.get_id()
+        # token = self.user_model.create_signup_token(user_id)
+        # verification_uri = self.uri_for(
+        #     'verification', type='v', user_id=user_id, signup_token=token,
+        #     _full=True)
+
+
+class LoginHandler(BaseHandler):
+    template_filename = 'admin/login.html'
+
+    def get(self):
+        self.render()
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+
+        try:
+            u = self.auth.get_user_by_password(
+                username, password, remember=True, save_session=True)
+
+            self.redirect(self.uri_for('admin'))
+        except (InvalidAuthIdError, InvalidPasswordError) as e:
+            self.context.update(
+                {'error': u'Неправильное имя пользователя или пароль.',
+                 'username': username})
+            self.render()
+
+
+class LogoutHandler(BaseHandler):
+    @user_required
+    def get(self):
+        self.auth.unset_session()
+        self.redirect(self.uri_for('start'))
+
+
 class AdminList(BaseHandler):
+    """
+    Handler for list of entities.
+
+    This is where all entities, that are present in app's datastore can be
+    viewed. Entities are grouped by their kinds. Deleting is also possible from
+    here.
+    """
     template_filename = "admin/admin_list.html"
 
+    @user_required
     def get(self):
         self.context['kinds'] = []
         for kind in models.iter_datastore_kinds():
@@ -447,6 +588,7 @@ class AdminList(BaseHandler):
 class AdminEdit(BaseHandler):
     template_filename = "admin/admin_edit.html"
 
+    @user_required
     def get(self):
         action = 'new' if '/new' in self.request.uri else 'edit'
         to_fetch = self.request.get('kind')
@@ -456,7 +598,7 @@ class AdminEdit(BaseHandler):
         self.render()
 
 
-class ApiHandler(webapp2.RequestHandler):
+class ApiHandler(BaseHandler):
     @staticmethod
     def make_res_obj_for_kind(kind, entity=None):
         fields = []
@@ -480,6 +622,9 @@ class ApiHandler(webapp2.RequestHandler):
 
         return res_obj
 
+    # TODO: add 'login required' JSON response (for api requests) in
+    # user_required
+    @user_required
     def get(self, **kwargs):
         self.response.headers.add('Content-Type', 'application/json')
 
@@ -516,6 +661,7 @@ class ApiHandler(webapp2.RequestHandler):
         else:
             self.response.set_status(300)
 
+    @user_required
     def delete(self, **kwargs):
         # TODO: implement correct error message on attempt to delete an entity
         # which is set as 'required' property somewhere.
@@ -530,6 +676,7 @@ class ApiHandler(webapp2.RequestHandler):
         else:
             self.response.set_status(300)
 
+    @user_required
     def post(self, **kwargs):
         self.response.headers.add('Content-Type', 'application/json')
 
@@ -544,6 +691,7 @@ class ApiHandler(webapp2.RequestHandler):
 
                 self.response.out.write(json.dumps({'id': id_}))
 
+    @user_required
     def put(self, **kwargs):
         if 'entity_id' in kwargs:
             if '/entities' in self.request.uri:
@@ -559,14 +707,18 @@ class ApiHandler(webapp2.RequestHandler):
 
 
 class AdminWorker(webapp2.RequestHandler):
+    @user_required
     def post(self):
         initialize_datastore()
 
 
-config = {'webapp2_extras.sessions': {
-    'secret_key': 'O12ZXGyXkE32Fz0kGWd5',
-    'session_max_age': 3600 * 24
-}}
+config = {
+    'webapp2_extras.auth': {
+        'user_attributes': ['name']
+    },
+    'webapp2_extras.sessions': {
+        'secret_key': 'O12ZXGyXkE32Fz0kGWd5'
+    }}
 
 app_routes = [
     routes.PathPrefixRoute('/admin/api', [
@@ -582,6 +734,9 @@ app_routes = [
                   name='services'),
     webapp2.Route('/result', handler=ResultHandler, name='result'),
     webapp2.Route('/admin', handler=AdminList, name='admin'),
+    webapp2.Route('/admin/login', handler=LoginHandler, name='login'),
+    webapp2.Route('/admin/logout', handler=LogoutHandler, name='logout'),
+    webapp2.Route('/admin/adduser', handler=AddUserHandler, name='add-user'),
     webapp2.Route('/admin/datastore-init', handler=AdminWorker,
                   name='datastore-init'),
     # The following route is not needed anymore since /admin now points to

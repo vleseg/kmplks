@@ -1,0 +1,41 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Вход в приложение{% endblock %}
+{% block head %}Вход в приложение{% endblock %}
+{% block content %}
+    {% if error %}
+    {# I'm not reusing handlebars template from admin_base.html because it's
+       message body is absolutely not what I need here #}
+        <div class="alert alert-danger" role="alert">
+            <h4>Ошибка!</h4>
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+    <form class="form-horizontal" action="{{ uri_for('login') }}"
+          role="form" method="post">
+        <div class="form-group">
+            <label for="username" class="col-md-2 control-label">
+                Имя пользователя:
+            </label>
+            <div class="col-md-10">
+                <input class="form-control" id="username" name="username"
+                       type="text" placeholder="{{ username }}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label" for="password">
+                Пароль
+            </label>
+            <div class="col-md-10">
+                <input type="password" class="form-control" id="password"
+                       name="password"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-default">
+                    Войти
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
