@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import os
 import unittest
 # Third-party imports
-from google.appengine.ext import ndb, testbed
+from google.appengine.ext import testbed
 import json
 import webtest
 # Project imports
@@ -60,7 +60,6 @@ class AppTest(KompleksTestCase):
         dts_items = list(test_srv.backref_query('DocumentToService', 'service'))
 
         self.assertEqual(len(dts_items), 7)
-
 
     # Testing handlers.
     def test_standard_routine(self):
@@ -169,8 +168,7 @@ class AppTest(KompleksTestCase):
             'name', u'Заявление о регистрации по месту жительства, форма №6',
             key_only=False)
 
-        response = self.testapp.get(
-            '/admin/api/entities/' + test_doc.urlsafe())
+        response = self.testapp.get('/admin/api/entities/' + test_doc.urlsafe())
 
         self.assertEqual(response.status_int, 200)
         response_obj = json.loads(response.body)
@@ -354,6 +352,56 @@ class DatastoreModTest(KompleksTestCase):
         self.assertEqual(test_srv.ogv, ogv)
         self.assertEqual(test_srv.containing_komplekses, [kmplks])
         self.assertAllIn(test_srv.dependencies, dependencies)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.testbed.deactivate()
+
+
+# TODO: finish auth tests
+class AuthTest(KompleksTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.testapp = webtest.TestApp(app)
+        cls.testbed = testbed.Testbed()
+        cls.testbed.activate()
+        cls.testbed.init_datastore_v3_stub()
+        cls.testbed.init_memcache_stub()
+        cls.path_to_test_data = os.path.join(
+            os.path.dirname(__file__), 'test_data.xml')
+
+    def setUp(self):
+        initialize_datastore(self.path_to_test_data)
+
+    def test_new_user(self):
+        post_params = {
+            'username': 'test', 'email': 'test@example.com', 'password': '123'}
+        response = self.testapp.post(
+            '/admin/adduser', params=post_params)
+
+        self.assertEqual(200, response.status_int)
+        self.assertAllIn(
+            [u'Отлично!', u'Пользователь test успешно создан.'],
+            response.html.get_text())
+
+        response = self.testapp.post(
+            '/admin/adduser', params=post_params)
+        self.assertEqual(200, response.status_int)
+        self.assertAllIn(
+            [u'Ошибка!', u'Пользователь с именем test уже существует.'],
+            response.html.get_text())
+
+    def test_user_required(self):
+        response = self.testapp.get('/admin')
+        # I don't know exactly what redirect-class HTTP will be assigned.
+        self.assertEqual(response.status_int / 100, 3)
+        self.assertTrue(response.location.endswith('/admin/login'))
+
+    def test_login(self):
+        # Register test user.
+        post_params = {
+            'username': 'test', 'email': 'test@example.com', 'password': '123'}
+        self.testapp.post('/admin/adduser', params=post_params)
 
     @classmethod
     def tearDownClass(cls):

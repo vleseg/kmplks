@@ -1,5 +1,4 @@
 # coding=utf-8
-# TODO: update UML schema and description in Evernote correspondingly
 from __future__ import unicode_literals
 from collections import OrderedDict
 from sys import modules

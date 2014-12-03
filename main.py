@@ -516,14 +516,10 @@ class AddUserHandler(BaseHandler):
             username, email_address=email, password_raw=password, name=username)
 
         if not user_data[0]:  # user_data is a tuple
-            self.context.update(
-                {'error': u'Пользователь с имененм {} уже '
-                          u'существует.'.format(username)})
+            self.context.update({'error': 'user_exists', 'username': username})
             self.render()
         else:
-            self.context.update(
-                {'success': u'Пользователь {} успешно создан!'.format(
-                    username)})
+            self.context.update({'success': True, 'username': username})
             self.render()
 
         # Building email confirm uri.

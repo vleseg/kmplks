@@ -2,19 +2,19 @@
 {% block title %}Новый пользователь{% endblock %}
 {% block head %}Создание нового пользователя{% endblock %}
 {% block content %}
-    {% if error %}
+    {% if error == 'user_exists' %}
     {# I'm not reusing handlebars template from admin_base.html because it's
        message body is absolutely not what I need here #}
         <div class="alert alert-danger" role="alert">
             <h4>Ошибка!</h4>
-            <p>{{ error }}</p>
+            <p>Пользователь с именем <strong>{{ username }}</strong> уже существует.</p>
         </div>
     {% endif %}
     {% if success %}
     {# TODO: think about reusing handlebars tempalte from admin_base here #}
     <div class="alert alert-success" role="alert">
         <h4>Отлично!</h4>
-        <p>{{ success }}</p>
+        <p>Пользователь <strong>{{ username }}</strong> успешно создан.</p>
     </div>
     {% endif %}
     <form class="form-horizontal" action="{{ uri_for('add-user') }}"
