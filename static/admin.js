@@ -1,5 +1,5 @@
 function renderErrorMsg(errorMsgCntr, status, error) {
-    var data = {status: status, error: error}
+    var data = {status: status, error: error};
     errorMsgCntr.html(fromBars('error', data))
 }
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
                 modal.data({'mustRefresh': true})
             }, variableContent);
         });
-        modal.on('hidden.bs.modal', function (e) {
+        modal.on('hidden.bs.modal', function () {
             variableContent.empty().hide();
             defaultContent.show();
             if (modal.data('mustRefresh')) {

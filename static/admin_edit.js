@@ -65,7 +65,7 @@ $(document).ready(function() {
             var freeSlots = 0;
             var currentRow;
 
-            $.each(data.fields, function (i, field) {
+            data.fields.forEach(function (field) {
                 var slotsRequired = FRR.slots[field.type];
                 if (freeSlots < slotsRequired) {
                     currentRow = $(fromBars('row'));

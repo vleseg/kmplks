@@ -83,8 +83,10 @@ def initialize_datastore(path_to_xml=None):
                 elif whoami(property_class) == 'BooleanProperty':
                     value_to_store = reader.get_bool()
                 elif whoami(property_class) == 'KeyProperty':
-                    referred_kind = models.get_kind(property_class._kind)
-                    req_params = {'property_': referred_kind.id}
+                    referred_kind = models.kind_by_name(property_class._kind)
+                    req_params = {
+                        'property_': referred_kind.id, 'key_only': True
+                    }
                     if property_class._repeated:
                         value_to_store = []
                         for id_ in map(int, reader.xpath('item/text()')):

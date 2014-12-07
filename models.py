@@ -88,7 +88,7 @@ class BaseModel(ndb.Model):
 
 
     @classmethod
-    def by_property(cls, property_, value, key_only=True):
+    def by_property(cls, property_, value, key_only=False):
         qry_params = {}
         # Check if in test mode
         if get_application_id() != 'testbed-test':
@@ -191,8 +191,20 @@ class BaseModel(ndb.Model):
         return result
 
     def backref_query(self, kind_name, property_name):
-        kind = get_kind(kind_name)
+        """
+        Returns a query over kind specified by kind_name, whose property,
+        specified by property_name refers to current entity.
+
+        :type kind_name: str
+        :type property_name: str
+        :rtype ndb.Query
+        """
+        kind = kind_by_name(kind_name)
         prop = getattr(kind, property_name)
+        if not isinstance(prop, ndb.KeyProperty):
+            raise KompleksModelError(
+                "Cannot perform backref query: {}.{} is not a reference "
+                "property".format(kind_name, property_name))
 
         return kind.query(prop == self.key)
 
@@ -634,7 +646,7 @@ def iter_datastore_kinds():
             pass
 
 
-def get_kind(raw_kind):
+def kind_by_name(raw_kind):
     if isinstance(raw_kind, (str, unicode)):
         try:
             return getattr(this_module, raw_kind)

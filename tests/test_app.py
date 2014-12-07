@@ -4,9 +4,11 @@ import os
 import unittest
 # Third-party imports
 from google.appengine.ext import testbed
+from google.appengine.ext import ndb
 import json
 import webtest
 # Project imports
+from config import CFG
 from datastore_init import initialize_datastore
 from main import app
 from models import Document, Service, Kompleks, MFC, from_urlsafe, OGV
@@ -47,6 +49,7 @@ class AppTest(KompleksTestCase):
         initialize_datastore(path_to_test_data)
 
     # Misc testing
+    # TODO: do more misc testing here
     def test_backref_query(self):
         backref_info = Kompleks.backref_info()
         self.assertEqual(backref_info, {
@@ -54,8 +57,7 @@ class AppTest(KompleksTestCase):
             'DocumentToService': ['kompleks']})
 
         test_srv = Service.by_property(
-            u'name', u'Государственная регистрация рождения ребенка',
-            key_only=False)
+            u'name', u'Государственная регистрация рождения ребенка')
 
         dts_items = list(test_srv.backref_query('DocumentToService', 'service'))
 
@@ -119,6 +121,7 @@ class AppTest(KompleksTestCase):
         ), result_page.testbody)
 
     def test_api_list(self):
+        # TODO: test api list refetch after items were added/deleted
         response = self.testapp.get('/admin/api/Service/entities')
 
         self.assertEqual(response.status_int, 200)
@@ -164,9 +167,9 @@ class AppTest(KompleksTestCase):
         ])
 
     def test_api_entity(self):
+        # TODO: test api refetch after api was modified/deleted
         test_doc = Document.by_property(
-            'name', u'Заявление о регистрации по месту жительства, форма №6',
-            key_only=False)
+            'name', u'Заявление о регистрации по месту жительства, форма №6')
 
         response = self.testapp.get('/admin/api/entities/' + test_doc.urlsafe())
 
@@ -219,55 +222,70 @@ class DatastoreModTest(KompleksTestCase):
         cls.testbed.init_memcache_stub()
         cls.path_to_test_data = os.path.join(
             os.path.dirname(__file__), 'test_data.xml')
+        cls.testapp.post(
+            '/admin/adduser',
+            {'username': 'test', 'email': 'test', 'password': 'test'})
+        cls.testapp.post(
+            '/admin/login', {'username': 'test', 'password': 'test'})
 
     def setUp(self):
         initialize_datastore(self.path_to_test_data)
 
-    def test_delete_entity(self):
-        services = Service.query().fetch()
-        srv_to_dts = [
-            {'object': s,
-             'len_before': len(
-                 s.backref_query('DocumentToService', 'service').fetch())} for
-            s in services
+    def test_delete_entity_simple(self):
+        new_mfc = MFC(name='test', id=-1)
+        new_mfc.put()
+        new_mfc_key = new_mfc.key
+
+        self.testapp.delete('/admin/api/entities/' + new_mfc_key.urlsafe())
+
+        self.assertIsNone(new_mfc_key.get())
+
+    def test_delete_entity_cascade(self):
+        # TODO: test erroneous cascade delete of entities, that are referenced
+        # as a required property.
+        initial_dts_count = [
+            {'service': s,
+             'count': len(
+                 s.backref_query('DocumentToService', 'service').fetch())}
+            for s in Service.query().fetch()
         ]
 
-        test_doc = Document.by_property(
-            'name', u'Документ, удостоверяющий личность заявителя',
-            key_only=False)
-        test_mfc = MFC.by_property('name', u'МФЦ г. Нюрба', key_only=False)
-        testdoc_urlsafe = test_doc.urlsafe()
+        # == Testing cascade delete of references ==
+        test_mfc = MFC.by_property('name', u'МФЦ г. Нюрба')
         testmfc_urlsafe = test_mfc.urlsafe()
 
-        self.testapp.delete('/admin/api/entities/' + testdoc_urlsafe)
         self.testapp.delete('/admin/api/entities/' + testmfc_urlsafe)
 
-        for item in srv_to_dts:
-            s = item['object']
+        # Only one MFC entity is left.
+        self.assertEqual(len(MFC.query().fetch()), 1)
+        # Only one MFC entity is now referenced by the sole kompleks in test
+        # data.
+        kompleks = Kompleks.by_property('name', u'Рождение ребенка')
+        self.assertEqual(len(kompleks.mfcs), 1)
+
+        # == Testing cascade delete of linked DocumentToService entities ==
+        test_doc = Document.by_property(
+            'name', u'Документ, удостоверяющий личность заявителя')
+        testdoc_urlsafe = test_doc.urlsafe()
+
+        self.testapp.delete('/admin/api/entities/' + testdoc_urlsafe)
+
+        # All DocumentToService entities linked to the deleted document are gone
+        # as well.
+        for item in initial_dts_count:
+            s = item['service']
             self.assertEqual(
-                item['len_before'] - 1,
+                item['count'] - 1,
                 len(s.backref_query('DocumentToService', 'service').fetch()))
 
-        self.assertEqual(len(MFC.query().fetch()), 1)
-        birth_kompleks = Kompleks.by_property(
-            'name', u'Рождение ребенка', key_only=False)
-        self.assertEqual(len(birth_kompleks.mfcs), 1)
-
-        response_after = self.testapp.get(
-            '/admin/api/entities/' + testdoc_urlsafe, expect_errors=True)
-
-        self.assertEqual(response_after.status_int, 404)
-
     def test_modify_entity(self):
+        # TODO: test erroneous cases (required field deleted, field type
+        # mismatch etc.)
         test_srv = Service.by_property(
-            'name', u'Предоставление земельного участка многодетной семье',
-            key_only=False
-        )
+            'name', u'Предоставление земельного участка многодетной семье')
         required_srv = Service.by_property(
-            'name', u'Регистрация по месту жительства', key_only=False
-        )
-        kmplks_to_remove = Kompleks.by_property(
-            'name', u'Рождение ребенка', key_only=False)
+            'name', u'Регистрация по месту жительства')
+        kmplks_to_remove = Kompleks.by_property('name', u'Рождение ребенка')
 
         test_srv.prerequisite_description = u"это нужно будет удалить"
         test_srv.put()
@@ -296,21 +314,23 @@ class DatastoreModTest(KompleksTestCase):
         self.assertEqual(test_srv.short_description, u'тест тест тест')
 
     def test_new_entity(self):
+        # TODO: test erroneous cases (required fields left blank, field type
+        # mismatch etc.)
         dependencies = [
             Service.by_property('name', n, key_only=True) for n in
             (u'Государственная регистрация рождения ребенка',
              u'Регистрация по месту жительства')
         ]
-        kmplks = Kompleks.by_property(
+        kompleks = Kompleks.by_property(
             'name', u'Рождение ребенка', key_only=True)
         ogv = OGV.by_property('short_name', u'УЗАГС', key_only=True)
 
         req_data = [
-            {'name': 'id', 'value': 100500},
+            {'name': 'id', 'value': -1},
             {'name': 'name', 'value': u'Тестовая услуга'},
             {'name': 'short_description',
              'value': u'Короткое тестовое описание тестовой услуги'},
-            {'name': 'kb_id', 'value': 100500},
+            {'name': 'kb_id', 'value': -1},
             {'name': 'prerequisite_description',
              'value': u'Тестовое описание условий, при которых нужда в '
                       u'тестовой услуге отпадает'},
@@ -320,7 +340,7 @@ class DatastoreModTest(KompleksTestCase):
              'value': u'Тестовый комментарий к срокам предоставления тестовой '
                       u'услуги'},
             {'name': 'ogv', 'value': ogv.urlsafe()},
-            {'name': 'containing_komplekses', 'value': [kmplks.urlsafe()]},
+            {'name': 'containing_komplekses', 'value': [kompleks.urlsafe()]},
             {'name': 'dependencies',
              'value': [d.urlsafe() for d in dependencies]}
         ]
@@ -331,34 +351,29 @@ class DatastoreModTest(KompleksTestCase):
 
         test_srv = from_urlsafe(json.loads(response.body).get('id'))
 
-        self.assertEqual(test_srv.id, 100500)
-        self.assertEqual(test_srv.name, u'Тестовая услуга')
         self.assertEqual(
-            test_srv.short_description,
-            u'Короткое тестовое описание тестовой услуги'
+            (test_srv.id, test_srv.name, test_srv.short_description,
+             test_srv.kb_id, test_srv.prerequisite_description,
+             test_srv.max_days, test_srv.max_work_days,
+             test_srv.terms_description, test_srv.ogv,
+             test_srv.containing_komplekses, test_srv.dependencies),
+            (-1, u'Тестовая услуга',
+             u'Короткое тестовое описание тестовой услуги', -1,
+             u'Тестовое описание условий, при которых нужда в тестовой услуге '
+             u'отпадает', 10, 100,
+             u'Тестовый комментарий к срокам предоставления тестовой услуги',
+             ogv, [kompleks], dependencies)
         )
-        self.assertEqual(test_srv.kb_id, 100500)
-        self.assertEqual(
-            test_srv.prerequisite_description,
-            u'Тестовое описание условий, при которых нужда в тестовой услуге '
-            u'отпадает'
-        )
-        self.assertEqual(test_srv.max_days, 10)
-        self.assertEqual(test_srv.max_work_days, 100)
-        self.assertEqual(
-            test_srv.terms_description,
-            u'Тестовый комментарий к срокам предоставления тестовой услуги'
-        )
-        self.assertEqual(test_srv.ogv, ogv)
-        self.assertEqual(test_srv.containing_komplekses, [kmplks])
-        self.assertAllIn(test_srv.dependencies, dependencies)
 
     @classmethod
     def tearDownClass(cls):
         cls.testbed.deactivate()
 
 
-# TODO: finish auth tests
+def response_title(response):
+    return response.html('title')[0].get_text().strip()
+
+
 class AuthTest(KompleksTestCase):
     @classmethod
     def setUpClass(cls):
@@ -369,9 +384,6 @@ class AuthTest(KompleksTestCase):
         cls.testbed.init_memcache_stub()
         cls.path_to_test_data = os.path.join(
             os.path.dirname(__file__), 'test_data.xml')
-
-    def setUp(self):
-        initialize_datastore(self.path_to_test_data)
 
     def test_new_user(self):
         post_params = {
@@ -393,15 +405,27 @@ class AuthTest(KompleksTestCase):
 
     def test_user_required(self):
         response = self.testapp.get('/admin')
-        # I don't know exactly what redirect-class HTTP will be assigned.
+        # Must redirect to login page.
         self.assertEqual(response.status_int / 100, 3)
-        self.assertTrue(response.location.endswith('/admin/login'))
+        self.assertIn(u'Вход в приложение', response_title(response.follow()))
 
     def test_login(self):
         # Register test user.
         post_params = {
-            'username': 'test', 'email': 'test@example.com', 'password': '123'}
+            'username': 'testuser', 'email': 'test@example.com',
+            'password': '123'}
         self.testapp.post('/admin/adduser', params=post_params)
+
+        # Login as test user.
+        post_params = {'username': 'testuser', 'password': '123'}
+        response = self.testapp.post(
+            '/admin/login', params=post_params).follow()
+        self.assertEqual(response.status_int, 200)
+        self.assertIn(u'Список объектов', response_title(response))
+        self.assertIn('testuser', response)
+
+    def tearDown(self):
+        self.testapp.reset()
 
     @classmethod
     def tearDownClass(cls):

@@ -522,14 +522,6 @@ class AddUserHandler(BaseHandler):
             self.context.update({'success': True, 'username': username})
             self.render()
 
-        # Building email confirm uri.
-        # user = user_data[0]
-        # user_id = user.get_id()
-        # token = self.user_model.create_signup_token(user_id)
-        # verification_uri = self.uri_for(
-        #     'verification', type='v', user_id=user_id, signup_token=token,
-        #     _full=True)
-
 
 class LoginHandler(BaseHandler):
     template_filename = 'admin/login.html'
@@ -625,7 +617,7 @@ class ApiHandler(BaseHandler):
         self.response.headers.add('Content-Type', 'application/json')
 
         if 'kind_name' in kwargs:
-            kind = models.get_kind(kwargs['kind_name'])
+            kind = models.kind_by_name(kwargs['kind_name'])
 
             if '/entities' in self.request.uri:
                 items = map(lambda e: e.as_tuple('_urlsafe', kind._repr_field),
@@ -679,7 +671,7 @@ class ApiHandler(BaseHandler):
         if 'kind_name' in kwargs:
             if '/entities' in self.request.uri:
                 req_body = json.loads(self.request.body)
-                kind = models.get_kind(kwargs['kind_name'])
+                kind = models.kind_by_name(kwargs['kind_name'])
                 entity = kind()
                 for field in req_body:
                     entity.decode_and_set_property(field)
